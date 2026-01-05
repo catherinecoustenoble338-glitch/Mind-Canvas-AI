@@ -25,88 +25,72 @@ const nodeTypes = {
 
 function CustomControls() {
   const { zoomIn, zoomOut, fitView } = useReactFlow();
-  const { layoutNodes, viewMode, setViewMode } = useAppStore();
+  const { layoutNodes } = useAppStore();
 
   return (
-    <Panel position="bottom-left" className="flex flex-col gap-2 ml-4 mb-4 md:mb-4 mb-20">
-      {/* Zoom Controls */}
-      <div className="flex flex-col bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="h-10 w-10 md:h-8 md:w-8 rounded-none border-b border-slate-100 hover:bg-slate-50 text-slate-600"
-          onClick={() => zoomIn()}
-          title="Zoom In"
-        >
-          <Plus size={20} className="md:w-4 md:h-4" />
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="h-10 w-10 md:h-8 md:w-8 rounded-none border-b border-slate-100 hover:bg-slate-50 text-slate-600"
-          onClick={() => zoomOut()}
-          title="Zoom Out"
-        >
-          <Minus size={20} className="md:w-4 md:h-4" />
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="h-10 w-10 md:h-8 md:w-8 rounded-none hover:bg-slate-50 text-slate-600"
-          onClick={() => fitView()}
-          title="Fit View"
-        >
-          <Maximize size={18} className="md:w-3.5 md:h-3.5" />
-        </Button>
+    <Panel position="bottom-right" className="flex flex-col gap-2 mr-4 mb-4 md:mb-4 mb-20 items-end">
+      {/* MiniMap Placeholder */}
+      <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden w-[200px] h-[150px] mb-2 hidden md:block">
+         <MiniMap 
+            style={{ position: 'relative', width: '100%', height: '100%' }} 
+            nodeStrokeColor="#e2e8f0"
+            nodeColor="#f1f5f9"
+            maskColor="rgba(240, 242, 245, 0.6)"
+         />
       </div>
-      
-      {/* Bottom Bar Controls Group */}
-      <div className="flex gap-2 items-center">
-         {/* View Mode Toggle */}
-         <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-0.5 flex">
-            <Button
-               variant="ghost"
-               size="sm"
-               onClick={() => setViewMode('visual')}
-               className={cn(
-                  "h-8 px-2 text-xs gap-1.5 rounded-md transition-all",
-                  viewMode === 'visual' ? "bg-slate-100 text-slate-900 font-medium shadow-sm" : "text-slate-500 hover:text-slate-700"
-               )}
-            >
-               <Layers size={14} />
-               <span className="hidden md:inline">Visual</span>
-            </Button>
-            <Button
-               variant="ghost"
-               size="sm"
-               onClick={() => setViewMode('brief')}
-               className={cn(
-                  "h-8 px-2 text-xs gap-1.5 rounded-md transition-all",
-                  viewMode === 'brief' ? "bg-slate-100 text-slate-900 font-medium shadow-sm" : "text-slate-500 hover:text-slate-700"
-               )}
-            >
-               <FileText size={14} />
-               <span className="hidden md:inline">Brief</span>
-            </Button>
-         </div>
 
-         {/* Layout Button */}
-         <div className="bg-white rounded-lg shadow-sm border border-slate-200">
-             <Button 
-               variant="ghost" 
-               size="icon" 
-               className="h-9 w-9 md:h-9 md:w-9 rounded text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-               onClick={layoutNodes}
-               title="Auto Align Pages"
-             >
-                <LayoutTemplate size={18} />
-             </Button>
-         </div>
+      <div className="flex gap-2 items-end">
+          {/* Zoom Controls */}
+          <div className="flex flex-col bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-10 w-10 md:h-8 md:w-8 rounded-none border-b border-slate-100 hover:bg-slate-50 text-slate-600"
+              onClick={() => zoomIn()}
+              title="Zoom In"
+            >
+              <Plus size={20} className="md:w-4 md:h-4" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-10 w-10 md:h-8 md:w-8 rounded-none border-b border-slate-100 hover:bg-slate-50 text-slate-600"
+              onClick={() => zoomOut()}
+              title="Zoom Out"
+            >
+              <Minus size={20} className="md:w-4 md:h-4" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-10 w-10 md:h-8 md:w-8 rounded-none hover:bg-slate-50 text-slate-600"
+              onClick={() => fitView()}
+              title="Fit View"
+            >
+              <Maximize size={18} className="md:w-3.5 md:h-3.5" />
+            </Button>
+          </div>
+          
+          {/* Bottom Bar Controls Group */}
+          <div className="flex gap-2 items-center">
+             {/* Layout Button */}
+             <div className="bg-white rounded-lg shadow-sm border border-slate-200">
+                 <Button 
+                   variant="ghost" 
+                   size="icon" 
+                   className="h-9 w-9 md:h-9 md:w-9 rounded text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                   onClick={layoutNodes}
+                   title="Auto Align Pages"
+                 >
+                    <LayoutTemplate size={18} />
+                 </Button>
+             </div>
 
-         {/* Settings Button */}
-         <div className="bg-white rounded-lg shadow-sm border border-slate-200">
-            <SettingsDialog />
-         </div>
+             {/* Settings Button */}
+             <div className="bg-white rounded-lg shadow-sm border border-slate-200">
+                <SettingsDialog />
+             </div>
+          </div>
       </div>
     </Panel>
   );
