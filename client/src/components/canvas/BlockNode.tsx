@@ -214,12 +214,12 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
 
       {/* PAGE CONTAINER */}
       <div className={cn(
-         "w-full bg-white rounded-[24px] overflow-hidden shadow-lg border-2 border-[#74859A] ring-1 ring-black/5 transition-colors",
+         "w-full bg-white rounded-[24px] shadow-lg border-2 border-[#74859A] ring-1 ring-black/5 transition-colors",
          selected ? "ring-2 ring-blue-500 ring-offset-2" : "hover:border-[#64748B]" 
       )}>
          
          {/* HEADER (Title and Delete) */}
-         <div className="bg-white border-b border-slate-100 px-[8px] py-2 flex flex-col items-center relative group/header min-h-[36px]">
+         <div className="bg-white border-b border-slate-100 px-[8px] py-2 flex flex-col items-center relative group/header min-h-[36px] rounded-t-[22px]">
             {/* Title Input/Display - Centered */}
             <div className="w-full px-6 flex justify-center">
                 {isEditingTitle ? (
@@ -371,7 +371,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                <Reorder.Item 
                   key={block.id} 
                   value={block} 
-                  className="w-full relative group/block rounded-md overflow-hidden nodrag"
+                  className="w-full relative group/block rounded-md nodrag"
                   onPointerDown={(e) => e.stopPropagation()} 
                >
                   {/* EDIT OVERLAY - Only show input when editing label */}
@@ -407,41 +407,39 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                            openDetails(block);
                        }
                     }}
-                    className="cursor-pointer hover:brightness-95 transition-all relative flex flex-col"
+                    className="cursor-pointer hover:brightness-95 transition-all relative"
                   >
-                     {/* DETAILS OVERLAY (VFP & Features) - Placed BEFORE WireframeVisual */}
-                     {showDetails && (
-                        <div className="bg-white px-2 pt-2 pb-1 flex flex-col gap-1.5 relative z-10">
+                     <WireframeVisual type={block.type} label={block.label} />
+                     
+                     {/* DETAILS OVERLAY (VFP & Features) - Placed to the RIGHT */}
+                     {showDetails && (block.vfp || block.features) && (
+                        <div className="absolute left-[105%] top-0 w-[160px] bg-white/95 backdrop-blur-sm rounded-md shadow-md border border-slate-200 p-2 flex flex-col gap-1.5 z-50 text-left">
+                             {/* Arrow pointing left */}
+                             <div className="absolute top-3 -left-1.5 w-3 h-3 bg-white border-l border-b border-slate-200 transform rotate-45"></div>
+                             
                              {/* VFP */}
                              {(block.vfp) && (
-                                <div className="text-[10px] font-medium text-slate-700 leading-tight">
+                                <div className="text-[10px] font-medium text-slate-700 leading-tight relative z-10">
                                    {block.vfp}
                                 </div>
                              )}
                              
                              {/* Features */}
                              {(block.features) && (
-                                <div className="text-[9px] text-slate-500 leading-tight">
+                                <div className="text-[9px] text-slate-500 leading-tight relative z-10">
                                    <div className="flex flex-col gap-0.5">
-                                     {block.features.split('\n').slice(0, 3).map((line, i) => (
+                                     {block.features.split('\n').slice(0, 5).map((line, i) => (
                                        <div key={i} className="flex gap-1 items-start">
                                           <span className="mt-1 w-0.5 h-0.5 rounded-full bg-slate-400 shrink-0"></span>
                                           <span className="truncate">{line.replace(/^[-*•]\s?/, '')}</span>
                                        </div>
                                      ))}
-                                     {block.features.split('\n').length > 3 && <span className="text-[8px] text-slate-400 pl-1.5 italic">more...</span>}
+                                     {block.features.split('\n').length > 5 && <span className="text-[8px] text-slate-400 pl-1.5 italic">more...</span>}
                                    </div>
                                 </div>
                              )}
-
-                             {/* Empty State Hint if nothing is set */}
-                             {!block.vfp && !block.features && (
-                                <div className="text-[9px] text-slate-300 italic">No details...</div>
-                             )}
                         </div>
                      )}
-
-                     <WireframeVisual type={block.type} label={block.label} />
                   </div>
                   
                   {/* HOVER CONTROLS LAYER */}
