@@ -13,6 +13,7 @@ import ReactFlow, {
 } from 'reactflow';
 import { useAppStore } from '@/store/useAppStore';
 import CustomBlockNode from './BlockNode';
+import CustomEdge from './CustomEdge';
 import { NavigationPopup } from './NavigationPopup';
 import { SettingsDialog } from './SettingsDialog';
 import { Button } from '@/components/ui/button';
@@ -22,6 +23,10 @@ import { cn } from '@/lib/utils';
 
 const nodeTypes = {
   block: CustomBlockNode,
+};
+
+const edgeTypes = {
+  default: CustomEdge,
 };
 
 function CustomControls() {
@@ -180,6 +185,7 @@ function MindMapContent() {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         onSelectionChange={handleSelectionChange}
         onPaneClick={onPaneClick}
         fitView

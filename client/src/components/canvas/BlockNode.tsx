@@ -114,7 +114,8 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
 
       {/* TOP STRIP: Status & Icons (Detached) */}
       <div className="w-full flex justify-between items-end gap-1 mb-1 min-h-[20px]">
-          <div className="flex items-center gap-1">
+          {/* Left Group: Assignee & Status Combined */}
+          <div className="flex items-center bg-white rounded-full shadow-sm border border-slate-100 p-0.5 gap-1 pr-1.5 transition-all hover:shadow-md hover:border-slate-200">
              {/* Assignee Avatar Dropdown */}
              <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -154,17 +155,21 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Status Dropdown (Left aligned) */}
+            <div className="h-3 w-[1px] bg-slate-200 mx-0.5"></div>
+
+            {/* Status Dropdown (Right of Avatar) */}
             <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button 
                   className={cn(
-                      "text-[9px] font-bold px-0.5 rounded-sm uppercase tracking-wider hover:opacity-80 flex items-center justify-center transition-colors border shadow-sm w-[20px] h-[20px]", 
-                      statusColors[data.status]
+                      "text-[9px] font-bold rounded-sm uppercase tracking-wider hover:opacity-80 flex items-center justify-center transition-colors w-[20px] h-[20px] bg-transparent", 
+                      data.status === 'idea' ? "text-slate-500" :
+                      data.status === 'in_progress' ? "text-blue-500" :
+                      data.status === 'review' ? "text-purple-500" :
+                      data.status === 'done' ? "text-emerald-500" : "text-red-500"
                   )}
-                  title={statusLabels[data.status]} // Tooltip for accessibility/usability
+                  title={statusLabels[data.status]}
               >
-                {/* Only icon is visible in collapsed state as requested */}
                 {statusIcons[data.status]}
               </button>
             </DropdownMenuTrigger>
@@ -179,28 +184,33 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
           </DropdownMenu>
           </div>
 
-          {/* Tech Stack Icons (Right aligned) */}
-          <div className="flex gap-1 justify-end flex-wrap max-w-[120px]">
-            {data.icons && data.icons.map((icon, i) => (
-                <div key={i} className="group/icon relative bg-white rounded-sm shadow-sm border border-slate-100 flex items-center justify-center w-[20px] h-[20px]">
-                    <img 
-                      src={`https://cdn.simpleicons.org/${icon.toLowerCase().replace(/\s+/g, '')}`} 
-                      alt={icon} 
-                      className="w-3.5 h-3.5 opacity-80"
-                    />
-                    {selected && (
-                      <div 
-                        className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-[1px] cursor-pointer opacity-0 group-hover/icon:opacity-100 z-10"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeIconFromNode(id, icon);
-                        }}
-                      >
-                        <X size={8} />
-                      </div>
-                    )}
-                </div>
-            ))}
+          {/* Tech Stack Icons (Right aligned) - Combined Group */}
+          <div className="flex bg-white rounded-full shadow-sm border border-slate-100 p-0.5 px-1.5 gap-1 justify-end flex-wrap max-w-[120px] min-h-[26px] items-center">
+            {data.icons && data.icons.length > 0 ? (
+                data.icons.map((icon, i) => (
+                    <div key={i} className="group/icon relative flex items-center justify-center w-[16px] h-[16px] transition-transform hover:scale-110 cursor-pointer">
+                        <img 
+                          src={`https://cdn.simpleicons.org/${icon.toLowerCase().replace(/\s+/g, '')}`} 
+                          alt={icon} 
+                          className="w-3.5 h-3.5 opacity-80 hover:opacity-100"
+                          title={icon}
+                        />
+                        {selected && (
+                          <div 
+                            className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-2 h-2 flex items-center justify-center opacity-0 group-hover/icon:opacity-100 z-10 shadow-sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeIconFromNode(id, icon);
+                            }}
+                          >
+                            <X size={6} />
+                          </div>
+                        )}
+                    </div>
+                ))
+            ) : (
+                <div className="w-3 h-3 rounded-full bg-slate-100"></div>
+            )}
           </div>
       </div>
 

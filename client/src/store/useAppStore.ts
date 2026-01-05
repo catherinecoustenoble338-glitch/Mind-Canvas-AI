@@ -156,6 +156,8 @@ interface AppState {
   setInsertAfterBlockId: (id: string | null) => void;
   layoutNodes: () => void;
 
+  updateEdgeData: (id: string, data: Partial<Edge>) => void;
+  
   // History & Logging
   past: { nodes: BlockNode[], edges: Edge[] }[];
   future: { nodes: BlockNode[], edges: Edge[] }[];
@@ -739,5 +741,14 @@ export const useAppStore = create<AppState>((set, get) => ({
     const { nodes, edges, showDetails } = get();
     const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(nodes, edges, 'TB', showDetails);
     set({ nodes: layoutedNodes, edges: layoutedEdges });
+  },
+
+  updateEdgeData: (id, data) => {
+    get().pushToHistory('Updated Edge Style');
+    set({
+      edges: get().edges.map((edge) =>
+        edge.id === id ? { ...edge, ...data } : edge
+      ),
+    });
   }
 }));
