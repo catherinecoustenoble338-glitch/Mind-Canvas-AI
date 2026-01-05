@@ -369,7 +369,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
          </div>
 
          {/* BLOCKS STACK */}
-         <Reorder.Group axis="y" values={data.blocks} onReorder={handleReorder} className="flex flex-col w-full bg-white p-[8px] gap-1 min-h-[40px]">
+         <Reorder.Group axis="y" values={data.blocks} onReorder={handleReorder} className={cn("flex flex-col w-full bg-white p-[8px] min-h-[40px]", showDetails ? "gap-6" : "gap-1")}>
             {data.blocks.map((block) => (
                <Reorder.Item 
                   key={block.id} 
@@ -419,7 +419,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                      
                      {/* RIGHT SIDE: DETAILS (Within Flow) */}
                      {showDetails && (
-                        <div className="w-[160px] shrink-0 pt-2 flex flex-col gap-1.5 text-left border-l border-dashed border-slate-200 pl-4 min-h-[40px]">
+                        <div className="w-[160px] shrink-0 flex flex-col gap-1.5 text-left border-l border-dashed border-slate-200 pl-4 min-h-[40px] pt-0">
                              {/* VFP */}
                              {(block.vfp) && (
                                 <div className="text-[10px] font-medium text-slate-700 leading-tight">

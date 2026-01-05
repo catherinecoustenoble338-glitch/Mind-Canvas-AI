@@ -20,9 +20,9 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB', sho
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
   const nodeWidth = showDetails ? 440 : 240; // Block width (200px or 400px) + reduced spacing
-  const nodeHeight = showDetails ? 500 : 400; // More realistic average height estimates to reduce vertical gaps
+  const nodeHeight = showDetails ? 800 : 500; // Increased height estimate to prevent vertical overlap
 
-  dagreGraph.setGraph({ rankdir: direction, align: 'DL', ranksep: 50, nodesep: showDetails ? 60 : 40 }); // Adjusted spacing
+  dagreGraph.setGraph({ rankdir: direction, align: 'DL', ranksep: 100, nodesep: showDetails ? 80 : 40 }); // Increased spacing for better separation
 
   nodes.forEach((node) => {
     dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
