@@ -280,10 +280,10 @@ export function Sidebar() {
                                 <button
                                     key={tool.type}
                                     onClick={() => handleToolClick(tool.type)}
-                                    className="relative group transition-all transform hover:scale-[1.02] hover:shadow-lg rounded-sm overflow-hidden"
+                                    className="relative group transition-all transform hover:scale-[1.01] hover:shadow-lg rounded-sm overflow-hidden"
                                 >
-                                   {/* Scale adjusted for single column visibility */}
-                                   <div className="pointer-events-none origin-top-left transform scale-[0.90] w-[111%]">
+                                   {/* Removed scaling hacks to make sidebar preview 1:1 with canvas */}
+                                   <div className="pointer-events-none w-full">
                                       <WireframeVisual type={tool.type} label={tool.label} />
                                    </div>
                                 </button>

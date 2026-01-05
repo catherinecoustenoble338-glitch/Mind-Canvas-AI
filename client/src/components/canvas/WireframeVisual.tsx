@@ -11,11 +11,9 @@ interface WireframeVisualProps {
 export function WireframeVisual({ type, className, label }: WireframeVisualProps) {
   // Base classes
   // Using slate-500 by default for graphite look
-  // p-3 min-h-[48px] removed redundant flex properties
   const base = "w-full overflow-hidden relative flex flex-col p-3 min-h-[48px] justify-start items-start transition-all bg-slate-500 rounded-sm";
   
   // Helper for text label inside the block (white text) - ALWAYS Top-Left
-  // Added absolute positioning to ensure it's always at top-left and not pushed down
   const BlockLabel = () => (
     <span className={cn(
       "absolute top-2 left-2 z-20 text-white text-[10px] font-medium leading-tight mb-2 truncate block opacity-90 shadow-sm text-left max-w-[90%] tracking-wide font-apple-system"
@@ -123,14 +121,20 @@ export function WireframeVisual({ type, className, label }: WireframeVisualProps
          <div className={cn(base, "h-[80px]", className)}>
             <BlockLabel />
             <ContentWrapper>
-              <div className="flex-1 w-full relative rounded-sm overflow-hidden grid grid-cols-3 gap-px border border-white/50 h-full">
-                 <div className="col-span-2 border-r border-white/30 flex items-center justify-center">
-                     <div className="w-2 h-3 border border-white/60 rounded-full rounded-bl-none transform -rotate-45"></div>
+              <div className="flex-1 w-full relative rounded-sm overflow-hidden border border-white/50 h-full bg-slate-400/20">
+                 {/* Better Map Representation - Streets */}
+                 <div className="absolute inset-0 flex flex-col gap-2 p-1 opacity-40">
+                    <div className="w-full h-1 bg-white/30 rotate-12 transform origin-top-left"></div>
+                    <div className="w-full h-1 bg-white/30 -rotate-6 transform origin-bottom-right mt-4"></div>
+                    <div className="absolute top-0 right-1/3 h-full w-1 bg-white/30"></div>
                  </div>
-                 <div className="border-r border-white/30"></div>
-                 <div></div>
-                 {/* Horizontal grid line simulation */}
-                 <div className="absolute top-1/2 w-full h-px bg-white/30"></div>
+                 {/* Map Pin */}
+                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <div className="relative">
+                        <div className="w-3 h-3 bg-slate-300 rounded-full border-2 border-slate-600 z-10 relative"></div>
+                        <div className="w-0.5 h-2 bg-slate-600 absolute top-2 left-1/2 transform -translate-x-1/2"></div>
+                    </div>
+                 </div>
               </div>
             </ContentWrapper>
          </div>
@@ -349,13 +353,13 @@ export function WireframeVisual({ type, className, label }: WireframeVisualProps
        return (
          <div className={cn(base, "h-[60px]", className)}>
             <BlockLabel />
-            <ContentWrapper>
-              <div className="flex justify-between mt-2 w-full gap-2">
-                 <div className="flex-1 flex gap-1 items-center border-b border-white/20 pb-1">
+            <ContentWrapper className="mt-1">
+              <div className="flex justify-between h-full w-full gap-2 items-center">
+                 <div className="flex-1 flex gap-1 items-center border-b border-white/20 pb-2">
                      <div className="w-1.5 h-1.5 border border-white/50 rounded-sm"></div>
                      <Line w="w-full" h="h-1" />
                  </div>
-                 <div className="flex-1 flex gap-1 items-center border-b border-white/20 pb-1">
+                 <div className="flex-1 flex gap-1 items-center border-b border-white/20 pb-2">
                      <div className="w-1.5 h-1.5 border border-white/50 rounded-sm"></div>
                      <Line w="w-full" h="h-1" />
                  </div>
@@ -423,8 +427,8 @@ export function WireframeVisual({ type, className, label }: WireframeVisualProps
        return (
           <div className={cn(base, "min-h-[40px]", className)}>
              <BlockLabel />
-             <ContentWrapper className="mt-3">
-               <div className="flex justify-start gap-2 w-full border-t border-white/20 pt-1">
+             <ContentWrapper className="mt-4">
+               <div className="flex justify-start gap-2 w-full pt-1">
                   <Line w="w-8" h="h-1" />
                   <Line w="w-8" h="h-1" />
                   <Line w="w-8" h="h-1" />
@@ -644,8 +648,8 @@ export function WireframeVisual({ type, className, label }: WireframeVisualProps
        return (
           <div className={cn(base, "min-h-[40px]", className)}>
              <BlockLabel />
-             <ContentWrapper className="mt-3">
-               <div className="w-full border-t border-white/20 pt-1">
+             <ContentWrapper className="mt-4">
+               <div className="w-full pt-1">
                    <div className="flex justify-start items-center gap-2 w-full">
                       <div className="space-y-0.5">
                          <Line w="w-3" h="h-0.5" />
@@ -709,7 +713,9 @@ export function WireframeVisual({ type, className, label }: WireframeVisualProps
                 {[1,2,3].map(i => (
                    <div key={i} className="flex items-center flex-1">
                       <div className="flex flex-col items-center w-full">
-                          <div className="w-2 h-2 rounded-full border border-white/50 flex items-center justify-center bg-white/10"></div>
+                          <div className="w-3 h-3 rounded-full border border-white/50 flex items-center justify-center bg-white/10">
+                             <span className="text-[6px] text-white font-mono">{i}</span>
+                          </div>
                           <Line w="w-full" h="h-px" className="mt-1" />
                       </div>
                    </div>
@@ -724,7 +730,7 @@ export function WireframeVisual({ type, className, label }: WireframeVisualProps
         <div className={cn(base, "h-[70px]", className)}>
            <BlockLabel />
            <ContentWrapper>
-             <div className="space-y-1 w-full">
+             <div className="space-y-1 w-full overflow-hidden">
                 <div className="flex justify-between items-center border border-white/30 rounded-sm p-1">
                    <Line w="w-2/3" h="h-1" />
                    <div className="text-[6px] text-white/50">v</div>
@@ -756,10 +762,10 @@ export function WireframeVisual({ type, className, label }: WireframeVisualProps
           <div className={cn(base, "h-[60px]", className)}>
              <BlockLabel />
              <ContentWrapper>
-               <div className="flex items-center gap-2 px-1 w-full mt-1">
-                  <div className="flex flex-col items-center">
+               <div className="flex items-center gap-2 px-1 w-full mt-1 overflow-hidden h-full">
+                  <div className="flex flex-col items-center h-full">
                      <div className="w-2 h-2 rounded-full border border-white/50"></div>
-                     <div className="w-px h-4 bg-white/30"></div>
+                     <div className="w-px flex-1 bg-white/30 min-h-[20px]"></div>
                      <div className="w-2 h-2 rounded-full border border-white/50"></div>
                   </div>
                   <div className="flex-1 space-y-3">
@@ -795,7 +801,7 @@ export function WireframeVisual({ type, className, label }: WireframeVisualProps
                   <div className="w-10 h-full border border-white/30 flex items-center justify-center bg-white/5 relative overflow-hidden">
                       <div className="w-3 h-4 border-2 border-white/40 rounded-full rounded-bl-none transform -rotate-45"></div>
                   </div>
-                  <div className="flex-1 py-1">
+                  <div className="flex-1 py-1 flex flex-col justify-center">
                      <Line w="w-full" h="h-1" className="mt-1" />
                      <Line w="w-2/3" h="h-1" className="mt-1" />
                      <div className="flex gap-1 mt-2">
@@ -835,10 +841,15 @@ export function WireframeVisual({ type, className, label }: WireframeVisualProps
                <div className="flex justify-end items-center w-full border-b border-white/20 pb-1">
                   <Line w="w-4" h="h-1" />
                </div>
-               <div className="mt-1 w-full flex gap-1 h-full">
-                   <div className="flex-1 border-r border-white/20"></div>
-                   <div className="flex-1 border-r border-white/20"></div>
-                   <div className="flex-1"></div>
+               <div className="mt-1 w-full flex flex-col gap-1 h-full">
+                   <div className="flex gap-1 w-full">
+                       <div className="flex-1 border-b border-white/20 h-4"></div>
+                       <div className="flex-1 border-b border-white/20 h-4"></div>
+                       <div className="flex-1 border-b border-white/20 h-4"></div>
+                   </div>
+                   <div className="flex justify-end w-full">
+                        <Line w="w-1/3" h="h-1" />
+                   </div>
                </div>
              </ContentWrapper>
           </div>
