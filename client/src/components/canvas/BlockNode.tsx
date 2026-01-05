@@ -115,20 +115,20 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
       {/* TOP STRIP: Status & Icons (Detached) */}
       <div className="w-full flex justify-between items-end gap-1 mb-1 min-h-[20px]">
           {/* Left Group: Assignee & Status Combined */}
-          <div className="flex items-center bg-white rounded-full shadow-sm border border-slate-100 p-0.5 gap-1 pr-1.5 transition-all hover:shadow-md hover:border-slate-200">
+          <div className="flex items-center bg-white rounded-full shadow-sm border border-slate-100 p-0.5 gap-0.5 pr-1.5 transition-all hover:shadow-md hover:border-slate-200">
              {/* Assignee Avatar Dropdown */}
              <DropdownMenu>
               <DropdownMenuTrigger asChild>
                  <div 
                    className={cn(
-                     "rounded-full cursor-pointer transition-transform hover:scale-105 border border-transparent hover:border-slate-200",
+                     "rounded-full cursor-pointer transition-transform hover:scale-105",
                      assigneeUser ? "opacity-100" : "opacity-60 hover:opacity-100"
                    )} 
                    title={assigneeUser ? `Assigned to: ${assigneeUser.name}` : "Click to assign"}
                  >
-                   <Avatar className="h-[20px] w-[20px] shadow-sm">
+                   <Avatar className="h-[20px] w-[20px] shadow-sm border-0">
                      <AvatarImage src={assigneeUser?.avatar} alt={assigneeUser?.name} />
-                     <AvatarFallback className="text-[8px] font-bold bg-white text-slate-500 border border-slate-200">
+                     <AvatarFallback className="text-[8px] font-bold bg-white text-slate-500 border-0">
                        {assigneeUser ? getInitials(assigneeUser.name) : <User size={10} />}
                      </AvatarFallback>
                    </Avatar>
@@ -154,8 +154,6 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-
-            <div className="h-3 w-[1px] bg-slate-200 mx-0.5"></div>
 
             {/* Status Dropdown (Right of Avatar) */}
             <DropdownMenu>
@@ -225,16 +223,18 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
             {/* Title Input/Display - Centered */}
             <div className="w-full px-6 flex justify-center">
                 {isEditingTitle ? (
-                   <Input 
+                   <textarea
                       autoFocus
-                      className="h-5 text-[13px] font-bold text-[#3B82F6] px-1 py-0 w-full border-slate-200 text-center"
+                      className="text-[13px] font-bold text-[#3B82F6] px-1 py-0 w-full border border-slate-200 rounded text-center resize-none bg-slate-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
                       defaultValue={data.label}
+                      rows={2}
                       onBlur={(e) => {
                          updateNodeData(id, { label: e.target.value });
                          setIsEditingTitle(false);
                       }}
                       onKeyDown={(e) => {
-                         if (e.key === 'Enter') {
+                         if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
                             updateNodeData(id, { label: e.currentTarget.value });
                             setIsEditingTitle(false);
                          }
@@ -243,7 +243,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                    />
                 ) : (
                    <span 
-                      className="text-[13px] font-bold text-[#3B82F6] block truncate cursor-pointer hover:bg-slate-50 px-1 rounded transition-colors w-full text-center"
+                      className="text-[13px] font-bold text-[#3B82F6] block cursor-pointer hover:bg-slate-50 px-1 rounded transition-colors w-full text-center whitespace-normal line-clamp-2 min-h-[20px]"
                       onClick={(e) => {
                          e.stopPropagation();
                          setIsEditingTitle(true);
