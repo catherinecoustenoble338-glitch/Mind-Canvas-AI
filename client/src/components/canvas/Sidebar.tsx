@@ -136,8 +136,12 @@ export function Sidebar() {
     } else {
       addNode({ x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 });
     }
-    // Optional: Close sidebar on mobile after selection if desired, but user might want to add multiple.
-    // Let's keep it open for now.
+    
+    // Close sidebar on mobile after selection to show the result on canvas
+    // We check window.innerWidth to determine if it's mobile
+    if (window.innerWidth < 768) {
+       setSidebarOpen(false);
+    }
   };
 
   const filteredGroups = TOOL_GROUPS.map(group => ({

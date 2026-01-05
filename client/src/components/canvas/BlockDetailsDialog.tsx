@@ -121,7 +121,7 @@ export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockD
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] h-[600px] flex flex-col p-0 gap-0 overflow-hidden bg-white">
+      <DialogContent className="w-full h-full sm:h-[600px] sm:max-w-[500px] flex flex-col p-0 gap-0 overflow-hidden bg-white sm:rounded-lg rounded-none border-none sm:border">
         <DialogHeader className="p-4 border-b border-slate-100 bg-slate-50/50 flex flex-row items-center justify-between space-y-0">
           <div className="flex-1 mr-4">
              <div className="flex items-center gap-2 mb-1">
@@ -134,6 +134,9 @@ export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockD
                 placeholder="Block Name"
              />
           </div>
+          <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="sm:hidden -mr-2 text-slate-400">
+             <X size={20} />
+          </Button>
         </DialogHeader>
 
         <Tabs defaultValue="description" className="flex-1 flex flex-col overflow-hidden">
