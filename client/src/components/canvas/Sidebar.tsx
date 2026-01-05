@@ -146,7 +146,7 @@ export function Sidebar() {
   })).filter(group => group.tools.length > 0);
 
   return (
-    <div className="h-full flex flex-col bg-white border-r border-slate-200 w-full md:w-[320px] shadow-xl z-10 font-sans">
+    <div className="h-full flex flex-col bg-white border-r border-slate-200 w-full md:w-[320px] shadow-2xl shadow-black/5 z-10 font-sans">
       {/* Header Logo */}
       <div className="p-4 pl-4 md:pl-14 border-b border-slate-100 flex items-center justify-between bg-white">
         <div className="flex items-center gap-3">
@@ -171,7 +171,7 @@ export function Sidebar() {
       </div>
 
       {/* Main Content Area */}
-      <ScrollArea className="flex-1 bg-slate-50/50">
+      <ScrollArea className="flex-1 bg-background">
         
         {/* Selection Details Panel */}
         {selectedNode ? (
@@ -295,7 +295,7 @@ export function Sidebar() {
                                 <button
                                     key={tool.type}
                                     onClick={() => handleToolClick(tool.type)}
-                                    className="relative group transition-all transform hover:scale-[1.01] hover:shadow-lg rounded-sm overflow-hidden"
+                                    className="relative group transition-all transform hover:scale-[1.01] hover:shadow-lg rounded-lg overflow-hidden"
                                 >
                                    {/* Removed scaling hacks to make sidebar preview 1:1 with canvas */}
                                    <div className="pointer-events-none w-full">
@@ -316,14 +316,14 @@ export function Sidebar() {
         <div className="bg-slate-100 p-1 rounded-md flex gap-1">
             <button 
                 onClick={() => setViewMode('visual')}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium rounded-sm transition-all ${viewMode === 'visual' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium rounded-lg transition-all ${viewMode === 'visual' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
             >
                 <Monitor size={12} />
                 Visual
             </button>
             <button 
                 onClick={() => setViewMode('brief')}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium rounded-sm transition-all ${viewMode === 'brief' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium rounded-lg transition-all ${viewMode === 'brief' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
             >
                 <List size={12} />
                 Brief

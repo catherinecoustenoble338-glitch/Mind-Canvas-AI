@@ -109,7 +109,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
 
       {/* PAGE CONTAINER */}
       <div className={cn(
-         "w-full bg-white rounded-[4px] overflow-hidden shadow-sm border-[1.5px] transition-colors",
+         "w-full bg-white rounded-xl overflow-hidden shadow-md border-transparent ring-1 ring-black/5 transition-colors",
          selected ? "border-[#3B82F6] shadow-md" : "border-[#3B82F6]/60 hover:border-[#3B82F6]" 
       )}>
          
@@ -166,7 +166,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                <Reorder.Item 
                   key={block.id} 
                   value={block} 
-                  className="w-full relative group/block rounded-[3px] overflow-hidden nodrag"
+                  className="w-full relative group/block rounded-md overflow-hidden nodrag"
                   onPointerDown={(e) => e.stopPropagation()} 
                >
                   {/* EDIT OVERLAY - Only show input when editing label */}
