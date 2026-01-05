@@ -162,16 +162,6 @@ export function SettingsDialog() {
                       <TabsTrigger value="library" className="justify-start gap-2 px-3 py-2 h-9 text-xs data-[state=active]:bg-white data-[state=active]:shadow-sm border border-transparent data-[state=active]:border-slate-200/60 shrink-0">
                          <LayoutGrid size={14} /> Library
                       </TabsTrigger>
-                      <TabsTrigger value="chats" className="justify-start gap-2 px-3 py-2 h-9 text-xs data-[state=active]:bg-white data-[state=active]:shadow-sm border border-transparent data-[state=active]:border-slate-200/60 w-full shrink-0">
-                         <div className="flex justify-between items-center w-full gap-2">
-                            <span className="flex items-center gap-2"><MessageSquare size={14} /> Chats</span>
-                            {blocksWithChats.length > 0 && (
-                                <Badge variant="secondary" className="h-4 px-1 text-[9px] min-w-[16px] justify-center bg-blue-100 text-blue-700 hidden sm:flex">
-                                    {blocksWithChats.length}
-                                </Badge>
-                            )}
-                         </div>
-                      </TabsTrigger>
                       <TabsTrigger value="services" className="justify-start gap-2 px-3 py-2 h-9 text-xs data-[state=active]:bg-white data-[state=active]:shadow-sm border border-transparent data-[state=active]:border-slate-200/60 w-full shrink-0">
                          <div className="flex justify-between items-center w-full gap-2">
                             <span className="flex items-center gap-2"><Zap size={14} /> Services</span>
@@ -361,56 +351,6 @@ export function SettingsDialog() {
                            </div>
                         </div>
                      ))}
-                  </div>
-               </TabsContent>
-
-               {/* Chats Tab */}
-               <TabsContent value="chats" className="flex-1 m-0 p-4 sm:p-6 space-y-6 overflow-auto w-full">
-                  <div className="space-y-1">
-                     <h3 className="text-lg font-semibold text-slate-800">Recent Chats</h3>
-                     <p className="text-xs text-slate-500">Messages from collaborators and system.</p>
-                  </div>
-                  <div className="space-y-2">
-                     {blocksWithChats.length === 0 ? (
-                        <div className="text-center py-10 text-slate-400 text-sm border border-dashed border-slate-200 rounded-lg">
-                            <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <MessageSquare size={20} className="text-slate-300" />
-                            </div>
-                            <p>No active conversations yet.</p>
-                            <p className="text-xs text-slate-400 mt-1">Start a discussion in any block's details panel.</p>
-                        </div>
-                     ) : (
-                        blocksWithChats.map((chat) => (
-                            <div 
-                                key={chat.blockId} 
-                                className="flex items-start gap-3 p-3 border border-slate-100 rounded-lg bg-white hover:bg-blue-50/50 hover:border-blue-100 cursor-pointer transition-all group"
-                                onClick={() => handleChatClick(chat.blockId)}
-                            >
-                               <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs shrink-0 border border-blue-200">
-                                  {chat.sender === 'user' ? 'ME' : 'AI'}
-                               </div>
-                               <div className="flex-1 min-w-0">
-                                  <div className="flex justify-between items-baseline mb-0.5">
-                                     <span className="font-semibold text-sm text-slate-800 truncate flex items-center gap-1.5">
-                                        {chat.blockLabel}
-                                        <span className="text-[10px] font-normal text-slate-400 px-1.5 py-0.5 bg-slate-100 rounded-full truncate max-w-[100px]">
-                                            {chat.nodeLabel}
-                                        </span>
-                                     </span>
-                                     <span className="text-[10px] text-slate-400 shrink-0">
-                                        {formatDistanceToNow(chat.timestamp, { addSuffix: true })}
-                                     </span>
-                                  </div>
-                                  <p className="text-xs text-slate-600 line-clamp-1 group-hover:text-slate-800">
-                                     {chat.lastMessage}
-                                  </p>
-                               </div>
-                               <div className="self-center opacity-0 group-hover:opacity-100 text-blue-400 transition-opacity">
-                                  <ChevronRight size={16} />
-                               </div>
-                            </div>
-                         ))
-                     )}
                   </div>
                </TabsContent>
 

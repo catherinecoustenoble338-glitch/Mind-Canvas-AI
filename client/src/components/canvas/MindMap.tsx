@@ -13,6 +13,7 @@ import ReactFlow, {
 } from 'reactflow';
 import { useAppStore } from '@/store/useAppStore';
 import CustomBlockNode from './BlockNode';
+import { NavigationPopup } from './NavigationPopup';
 import { SettingsDialog } from './SettingsDialog';
 import { Button } from '@/components/ui/button';
 import { Plus, Minus, Maximize, ZoomIn, ZoomOut, LayoutTemplate, FileText, Layers, Undo2, Redo2 } from 'lucide-react';
@@ -134,6 +135,11 @@ function CustomControls() {
              {/* Settings Button */}
              <div className="bg-white rounded-lg shadow-sm border border-slate-200">
                 <SettingsDialog />
+             </div>
+
+             {/* Navigation Popup (Pop Pub) */}
+             <div className="bg-white rounded-lg shadow-sm border border-slate-200">
+                <NavigationPopup />
              </div>
           </div>
       </div>
