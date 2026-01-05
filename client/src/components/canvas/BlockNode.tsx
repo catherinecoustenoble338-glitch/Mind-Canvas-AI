@@ -409,46 +409,39 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                     }}
                     className="cursor-pointer hover:brightness-95 transition-all relative flex flex-col"
                   >
-                     <WireframeVisual type={block.type} label={block.label} />
-                     
-                     {/* DETAILS OVERLAY (VFP & Features) */}
+                     {/* DETAILS OVERLAY (VFP & Features) - Placed BEFORE WireframeVisual */}
                      {showDetails && (
-                        <div className="bg-white/95 backdrop-blur-sm border-t border-slate-100 p-2 flex flex-col gap-2 mt-[-1px] relative z-10">
+                        <div className="bg-white px-2 pt-2 pb-1 flex flex-col gap-1.5 relative z-10">
                              {/* VFP */}
-                             <div className="bg-emerald-50/50 rounded p-1.5 border border-emerald-100/50">
-                                <div className="flex items-center gap-1 mb-0.5">
-                                   <Target size={8} className="text-emerald-600" />
-                                   <span className="text-[8px] font-bold uppercase text-emerald-700 tracking-wider">VFP</span>
+                             {(block.vfp) && (
+                                <div className="text-[10px] font-medium text-slate-700 leading-tight">
+                                   {block.vfp}
                                 </div>
-                                <div className="text-[9px] text-slate-600 leading-tight line-clamp-2">
-                                   {block.vfp || "Define block goal..."}
-                                </div>
-                             </div>
+                             )}
                              
                              {/* Features */}
-                             <div className="bg-blue-50/50 rounded p-1.5 border border-blue-100/50">
-                                <div className="flex items-center gap-1 mb-0.5">
-                                   <List size={8} className="text-blue-600" />
-                                   <span className="text-[8px] font-bold uppercase text-blue-700 tracking-wider">Feat.</span>
+                             {(block.features) && (
+                                <div className="text-[9px] text-slate-500 leading-tight">
+                                   <div className="flex flex-col gap-0.5">
+                                     {block.features.split('\n').slice(0, 3).map((line, i) => (
+                                       <div key={i} className="flex gap-1 items-start">
+                                          <span className="mt-1 w-0.5 h-0.5 rounded-full bg-slate-400 shrink-0"></span>
+                                          <span className="truncate">{line.replace(/^[-*•]\s?/, '')}</span>
+                                       </div>
+                                     ))}
+                                     {block.features.split('\n').length > 3 && <span className="text-[8px] text-slate-400 pl-1.5 italic">more...</span>}
+                                   </div>
                                 </div>
-                                <div className="text-[9px] text-slate-600 leading-tight">
-                                   {block.features ? (
-                                      <div className="flex flex-col gap-0.5">
-                                        {block.features.split('\n').slice(0, 3).map((line, i) => (
-                                          <div key={i} className="flex gap-1 items-start truncate">
-                                             <span className="mt-1 w-0.5 h-0.5 rounded-full bg-blue-400 shrink-0"></span>
-                                             <span className="truncate">{line.replace(/^[-*•]\s?/, '')}</span>
-                                          </div>
-                                        ))}
-                                        {block.features.split('\n').length > 3 && <span className="text-[8px] text-slate-400 pl-1.5 italic">more...</span>}
-                                      </div>
-                                   ) : (
-                                      "List features..."
-                                   )}
-                                </div>
-                             </div>
+                             )}
+
+                             {/* Empty State Hint if nothing is set */}
+                             {!block.vfp && !block.features && (
+                                <div className="text-[9px] text-slate-300 italic">No details...</div>
+                             )}
                         </div>
                      )}
+
+                     <WireframeVisual type={block.type} label={block.label} />
                   </div>
                   
                   {/* HOVER CONTROLS LAYER */}
