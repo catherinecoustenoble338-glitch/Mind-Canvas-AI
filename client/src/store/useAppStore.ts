@@ -153,6 +153,10 @@ interface AppState {
   undo: () => void;
   redo: () => void;
   pushToHistory: (actionLabel: string) => void;
+
+  // Dialog Navigation
+  activeBlockId: string | null;
+  setActiveBlockId: (id: string | null) => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -542,6 +546,9 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   sidebarOpen: true,
   setSidebarOpen: (open) => set({ sidebarOpen: open }),
+
+  activeBlockId: null,
+  setActiveBlockId: (id) => set({ activeBlockId: id }),
 
   layoutNodes: () => {
     get().pushToHistory('Auto Layout');

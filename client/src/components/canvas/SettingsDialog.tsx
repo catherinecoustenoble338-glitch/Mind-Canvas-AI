@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -27,15 +27,58 @@ import {
   Plus,
   History,
   Undo2,
-  Redo2
+  Redo2,
+  FileText,
+  ChevronRight
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { useAppStore } from '@/store/useAppStore';
+import { useAppStore, BlockItem } from '@/store/useAppStore';
 import { formatDistanceToNow } from 'date-fns';
 
 export function SettingsDialog() {
   const [open, setOpen] = useState(false);
-  const { historyLog } = useAppStore();
+  const { historyLog, nodes, setActiveBlockId } = useAppStore();
+
+  // Aggregate all blocks with chat messages
+  const blocksWithChats = useMemo(() => {
+    const chats: { 
+        nodeId: string, 
+        nodeLabel: string, 
+        blockId: string, 
+        blockLabel: string, 
+        blockType: string,
+        lastMessage: string, 
+        timestamp: number,
+        sender: 'user' | 'system',
+        unread: boolean 
+    }[] = [];
+
+    nodes.forEach(node => {
+        node.data.blocks.forEach(block => {
+            if (block.chatMessages && block.chatMessages.length > 0) {
+                const lastMsg = block.chatMessages[block.chatMessages.length - 1];
+                chats.push({
+                    nodeId: node.id,
+                    nodeLabel: node.data.label,
+                    blockId: block.id,
+                    blockLabel: block.label || block.type,
+                    blockType: block.type,
+                    lastMessage: lastMsg.text,
+                    timestamp: lastMsg.timestamp,
+                    sender: lastMsg.sender,
+                    unread: true // In a real app we'd track read state
+                });
+            }
+        });
+    });
+
+    return chats.sort((a, b) => b.timestamp - a.timestamp);
+  }, [nodes]);
+
+  const handleChatClick = (blockId: string) => {
+      setActiveBlockId(blockId);
+      setOpen(false);
+  };
 
   // Mock Data
   const projects = [
@@ -88,7 +131,11 @@ export function SettingsDialog() {
                       <TabsTrigger value="chats" className="justify-start gap-2 px-3 py-2 h-9 text-xs data-[state=active]:bg-white data-[state=active]:shadow-sm border border-transparent data-[state=active]:border-slate-200/60 w-full shrink-0">
                          <div className="flex justify-between items-center w-full gap-2">
                             <span className="flex items-center gap-2"><MessageSquare size={14} /> Chats</span>
-                            <Badge variant="secondary" className="h-4 px-1 text-[9px] min-w-[16px] justify-center bg-blue-100 text-blue-700 hidden sm:flex">3</Badge>
+                            {blocksWithChats.length > 0 && (
+                                <Badge variant="secondary" className="h-4 px-1 text-[9px] min-w-[16px] justify-center bg-blue-100 text-blue-700 hidden sm:flex">
+                                    {blocksWithChats.length}
+                                </Badge>
+                            )}
                          </div>
                       </TabsTrigger>
                       <TabsTrigger value="services" className="justify-start gap-2 px-3 py-2 h-9 text-xs data-[state=active]:bg-white data-[state=active]:shadow-sm border border-transparent data-[state=active]:border-slate-200/60 w-full shrink-0">
@@ -198,19 +245,46 @@ export function SettingsDialog() {
                      <p className="text-xs text-slate-500">Messages from collaborators and system.</p>
                   </div>
                   <div className="space-y-2">
-                     {[1,2,3].map(i => (
-                        <div key={i} className="flex items-start gap-3 p-3 border-b border-slate-50 hover:bg-slate-50 cursor-pointer">
-                           <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs shrink-0">U{i}</div>
-                           <div className="flex-1 min-w-0">
-                              <div className="flex justify-between">
-                                 <span className="font-medium text-sm text-slate-800 truncate">User {i}</span>
-                                 <span className="text-[10px] text-slate-400 shrink-0">10:2{i} AM</span>
-                              </div>
-                              <p className="text-xs text-slate-500 mt-1 line-clamp-1">Updated the header design based on feedback...</p>
-                           </div>
-                           <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 shrink-0"></div>
+                     {blocksWithChats.length === 0 ? (
+                        <div className="text-center py-10 text-slate-400 text-sm border border-dashed border-slate-200 rounded-lg">
+                            <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <MessageSquare size={20} className="text-slate-300" />
+                            </div>
+                            <p>No active conversations yet.</p>
+                            <p className="text-xs text-slate-400 mt-1">Start a discussion in any block's details panel.</p>
                         </div>
-                     ))}
+                     ) : (
+                        blocksWithChats.map((chat) => (
+                            <div 
+                                key={chat.blockId} 
+                                className="flex items-start gap-3 p-3 border border-slate-100 rounded-lg bg-white hover:bg-blue-50/50 hover:border-blue-100 cursor-pointer transition-all group"
+                                onClick={() => handleChatClick(chat.blockId)}
+                            >
+                               <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs shrink-0 border border-blue-200">
+                                  {chat.sender === 'user' ? 'ME' : 'AI'}
+                               </div>
+                               <div className="flex-1 min-w-0">
+                                  <div className="flex justify-between items-baseline mb-0.5">
+                                     <span className="font-semibold text-sm text-slate-800 truncate flex items-center gap-1.5">
+                                        {chat.blockLabel}
+                                        <span className="text-[10px] font-normal text-slate-400 px-1.5 py-0.5 bg-slate-100 rounded-full truncate max-w-[100px]">
+                                            {chat.nodeLabel}
+                                        </span>
+                                     </span>
+                                     <span className="text-[10px] text-slate-400 shrink-0">
+                                        {formatDistanceToNow(chat.timestamp, { addSuffix: true })}
+                                     </span>
+                                  </div>
+                                  <p className="text-xs text-slate-600 line-clamp-1 group-hover:text-slate-800">
+                                     {chat.lastMessage}
+                                  </p>
+                               </div>
+                               <div className="self-center opacity-0 group-hover:opacity-100 text-blue-400 transition-opacity">
+                                  <ChevronRight size={16} />
+                               </div>
+                            </div>
+                         ))
+                     )}
                   </div>
                </TabsContent>
 

@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useState } from 'react';
+import React, { memo, useCallback, useState, useEffect } from 'react';
 import { Handle, Position, NodeProps, useReactFlow } from 'reactflow';
 import { useAppStore, BlockData, PageStatus, BlockItem } from '@/store/useAppStore';
 import WireframeVisual from './WireframeVisual';
@@ -17,7 +17,7 @@ import { PageDetailsDialog } from './PageDetailsDialog';
 import { Button } from '@/components/ui/button';
 
 const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
-  const { viewMode, showDetails, removeIconFromNode, removeBlockFromNode, updateNodeData, updateBlockLabel, reorderBlocks, addChildNode, removeNode } = useAppStore();
+  const { viewMode, showDetails, removeIconFromNode, removeBlockFromNode, updateNodeData, updateBlockLabel, reorderBlocks, addChildNode, removeNode, activeBlockId, setActiveBlockId } = useAppStore();
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   
@@ -25,6 +25,18 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [pageDetailsDialogOpen, setPageDetailsDialogOpen] = useState(false);
   const [selectedBlockForDetails, setSelectedBlockForDetails] = useState<BlockItem | null>(null);
+
+  // Effect to handle external navigation to this node's blocks (e.g. from Settings > Chats)
+  useEffect(() => {
+    if (activeBlockId) {
+      const block = data.blocks.find(b => b.id === activeBlockId);
+      if (block) {
+        setSelectedBlockForDetails(block);
+        setDetailsDialogOpen(true);
+        setActiveBlockId(null); // Reset global trigger
+      }
+    }
+  }, [activeBlockId, data.blocks, setActiveBlockId]);
 
   // Status Colors
   const statusColors: Record<PageStatus, string> = {
