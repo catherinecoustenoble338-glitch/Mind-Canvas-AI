@@ -124,8 +124,8 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
 
       {/* PAGE CONTAINER */}
       <div className={cn(
-         "w-full bg-white rounded-xl overflow-hidden shadow-md border-transparent ring-1 ring-black/5 transition-colors",
-         selected ? "border-[#3B82F6] shadow-md" : "border-[#3B82F6]/60 hover:border-[#3B82F6]" 
+         "w-full bg-white rounded-[24px] overflow-hidden shadow-lg border-4 border-[#74859A] ring-1 ring-black/5 transition-colors",
+         selected ? "ring-2 ring-blue-500 ring-offset-2" : "hover:border-[#64748B]" 
       )}>
          
          {/* HEADER (Title and Delete) */}

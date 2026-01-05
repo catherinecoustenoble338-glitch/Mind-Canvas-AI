@@ -40,10 +40,15 @@
   --color-ring: hsl(220 10% 80%);
 
   /* Block Theme System */
-  --color-block-bg: #818181;
-  --color-block-stroke: #CACACA;
-  --color-block-text: #FDFDFD;
-  --color-block-bg-hover: #757575;
+  --color-block-bg: #74859A; /* Slate Blue from reference */
+  --color-block-stroke: #A8B5C3; /* Lighter slate for skeletal elements */
+  --color-block-text: #FFFFFF;
+  --color-block-bg-hover: #64748B;
+  
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 28px;
 
   /* Apple System Font Stack */
   --font-apple-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
