@@ -314,26 +314,6 @@ export function Sidebar() {
         </div>
 
       </ScrollArea>
-      
-      {/* Footer / View Toggle */}
-      <div className="p-3 border-t border-slate-200 bg-white">
-        <div className="bg-slate-100 p-1 rounded-md flex gap-1">
-            <button 
-                onClick={() => setViewMode('visual')}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium rounded-lg transition-all ${viewMode === 'visual' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-            >
-                <Monitor size={12} />
-                Visual
-            </button>
-            <button 
-                onClick={() => setViewMode('brief')}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium rounded-lg transition-all ${viewMode === 'brief' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-            >
-                <List size={12} />
-                Brief
-            </button>
-        </div>
-      </div>
     </div>
   );
 }
