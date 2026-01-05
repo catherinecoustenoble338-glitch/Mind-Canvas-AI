@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAppStore, BlockItem } from '@/store/useAppStore';
 import { 
   Dialog,
@@ -12,8 +12,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageSquare, Paperclip, Send, FileText, Check, X, Target, List } from 'lucide-react';
+import { MessageSquare, Paperclip, Send, FileText, Check, X, Target, List, User, Bot, Loader2, Sparkles } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
 
 interface BlockDetailsDialogProps {
   nodeId: string;
@@ -25,6 +26,8 @@ interface BlockDetailsDialogProps {
 export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockDetailsDialogProps) {
   const { updateBlockDescription, updateBlockLabel, updateBlockVFP, updateBlockFeatures, addBlockChatMessage } = useAppStore();
   const [messageText, setMessageText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
   
   // Local state for editing to allow "Save" action
   const [tempLabel, setTempLabel] = useState(block.label || '');
@@ -41,6 +44,13 @@ export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockD
           setTempFeatures(block.features || '');
       }
   }, [open, block]);
+
+  // Auto-scroll to bottom of chat
+  useEffect(() => {
+    if (scrollRef.current) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [block.chatMessages, isTyping, open]);
 
   const handleSave = () => {
       updateBlockLabel(nodeId, block.id, tempLabel);
@@ -106,14 +116,16 @@ export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockD
       sender: 'user',
     });
     setMessageText('');
+    setIsTyping(true);
     
     // Simulate system response after a delay
     setTimeout(() => {
+        setIsTyping(false);
         addBlockChatMessage(nodeId, block.id, {
             text: "Received. I'll take a look at the attached documents and update the design accordingly.",
             sender: 'system',
         });
-    }, 1000);
+    }, 1500);
   };
   
   const handleFileUpload = () => {
@@ -216,49 +228,113 @@ export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockD
                 </div>
             </TabsContent>
 
-            <TabsContent value="chat" className="flex-1 flex flex-col m-0 overflow-hidden">
-                <ScrollArea className="flex-1 p-4 bg-slate-50/30">
-                    <div className="space-y-4">
+            <TabsContent value="chat" className="flex-1 flex flex-col m-0 overflow-hidden bg-slate-50/30">
+                <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+                    <div className="space-y-6">
                         {(!block.chatMessages || block.chatMessages.length === 0) && (
-                            <div className="text-center text-xs text-slate-400 py-10 italic">
-                                No messages yet. Start a discussion or upload files for this block.
+                            <div className="flex flex-col items-center justify-center py-10 opacity-50">
+                                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                                    <MessageSquare size={24} className="text-slate-400" />
+                                </div>
+                                <p className="text-sm font-medium text-slate-600">No messages yet</p>
+                                <p className="text-xs text-slate-400 text-center max-w-[200px] mt-1">Start a discussion or upload files relevant to this block.</p>
                             </div>
                         )}
                         {block.chatMessages?.map((msg) => (
-                            <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                <div className={`max-w-[80%] rounded-lg p-3 text-sm ${msg.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-white border border-slate-200 text-slate-700 shadow-sm'}`}>
-                                    {msg.text}
-                                    {msg.attachments && msg.attachments.length > 0 && (
-                                        <div className="mt-2 space-y-1">
-                                            {msg.attachments.map((file, i) => (
-                                                <div key={i} className={`flex items-center gap-2 text-xs p-1.5 rounded ${msg.sender === 'user' ? 'bg-white/20' : 'bg-slate-100'}`}>
-                                                    <FileText size={12} />
-                                                    <span className="truncate">{file}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                    <div className={`text-[9px] mt-1 text-right ${msg.sender === 'user' ? 'text-blue-100' : 'text-slate-400'}`}>
-                                        {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            <div key={msg.id} className={cn(
+                                "flex gap-3 max-w-[90%]",
+                                msg.sender === 'user' ? "ml-auto flex-row-reverse" : "mr-auto"
+                            )}>
+                                {/* Avatar */}
+                                <div className={cn(
+                                    "w-8 h-8 rounded-full flex items-center justify-center shrink-0 border shadow-sm",
+                                    msg.sender === 'user' ? "bg-blue-100 border-blue-200 text-blue-600" : "bg-white border-slate-200 text-purple-600"
+                                )}>
+                                    {msg.sender === 'user' ? <User size={14} /> : <Bot size={14} />}
+                                </div>
+
+                                {/* Message Bubble */}
+                                <div className="flex flex-col gap-1 min-w-0">
+                                    <div className={cn(
+                                        "rounded-2xl px-4 py-2.5 text-sm shadow-sm",
+                                        msg.sender === 'user' 
+                                            ? "bg-blue-600 text-white rounded-tr-sm" 
+                                            : "bg-white border border-slate-200 text-slate-800 rounded-tl-sm"
+                                    )}>
+                                        <div className="whitespace-pre-wrap leading-relaxed">{msg.text}</div>
+                                        
+                                        {msg.attachments && msg.attachments.length > 0 && (
+                                            <div className="mt-3 space-y-2">
+                                                {msg.attachments.map((file, i) => (
+                                                    <div key={i} className={cn(
+                                                        "flex items-center gap-2 text-xs p-2 rounded-lg border",
+                                                        msg.sender === 'user' 
+                                                            ? "bg-white/10 border-white/20 text-white" 
+                                                            : "bg-slate-50 border-slate-100 text-slate-600"
+                                                    )}>
+                                                        <div className="p-1 bg-white/20 rounded">
+                                                            <FileText size={12} />
+                                                        </div>
+                                                        <span className="truncate font-medium">{file}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
+                                    <span className={cn(
+                                        "text-[10px] text-slate-400 px-1",
+                                        msg.sender === 'user' ? "text-right" : "text-left"
+                                    )}>
+                                        {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </span>
                                 </div>
                             </div>
                         ))}
+                        
+                        {/* Typing Indicator */}
+                        {isTyping && (
+                             <div className="flex gap-3 max-w-[90%] mr-auto">
+                                <div className="w-8 h-8 rounded-full bg-white border border-slate-200 text-purple-600 flex items-center justify-center shrink-0 shadow-sm">
+                                    <Sparkles size={14} />
+                                </div>
+                                <div className="bg-white border border-slate-200 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm flex items-center gap-1">
+                                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></span>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </ScrollArea>
-                <div className="p-3 bg-white border-t border-slate-100 flex gap-2 items-center">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 hover:text-blue-500" onClick={handleFileUpload}>
-                        <Paperclip size={16} />
+                <div className="p-3 bg-white border-t border-slate-100 flex gap-2 items-end">
+                    <Button variant="ghost" size="icon" className="h-9 w-9 text-slate-500 hover:text-blue-500 shrink-0" onClick={handleFileUpload}>
+                        <Paperclip size={18} />
                     </Button>
-                    <Input 
-                        placeholder="Type a message..." 
-                        className="h-8 text-sm bg-slate-50 border-slate-200 focus-visible:ring-1"
-                        value={messageText}
-                        onChange={(e) => setMessageText(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                    />
-                    <Button size="icon" className="h-8 w-8 bg-blue-500 hover:bg-blue-600" onClick={handleSendMessage}>
-                        <Send size={14} />
+                    <div className="flex-1 relative">
+                        <Textarea 
+                            placeholder="Type a message..." 
+                            className="min-h-[36px] max-h-[120px] text-sm bg-slate-50 border-slate-200 focus-visible:ring-1 focus-visible:ring-blue-500 resize-none py-2 pr-10"
+                            value={messageText}
+                            onChange={(e) => setMessageText(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleSendMessage();
+                                }
+                            }}
+                            rows={1}
+                        />
+                    </div>
+                    <Button 
+                        size="icon" 
+                        className={cn(
+                            "h-9 w-9 shrink-0 transition-all",
+                            messageText.trim() ? "bg-blue-600 hover:bg-blue-700" : "bg-slate-200 text-slate-400 hover:bg-slate-300"
+                        )}
+                        onClick={handleSendMessage}
+                        disabled={!messageText.trim()}
+                    >
+                        <Send size={16} className={messageText.trim() ? "ml-0.5" : ""} />
                     </Button>
                 </div>
             </TabsContent>
