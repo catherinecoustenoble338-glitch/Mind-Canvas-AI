@@ -1,9 +1,9 @@
 import React, { memo, useCallback, useState } from 'react';
 import { Handle, Position, NodeProps, useReactFlow } from 'reactflow';
-import { useAppStore, BlockData, PageStatus } from '@/store/useAppStore';
+import { useAppStore, BlockData, PageStatus, BlockItem } from '@/store/useAppStore';
 import WireframeVisual from './WireframeVisual';
 import { cn } from '@/lib/utils';
-import { X, MoreHorizontal, ChevronDown, Trash2, GripVertical } from 'lucide-react';
+import { X, MoreHorizontal, ChevronDown, Trash2, GripVertical, MessageSquare, Info } from 'lucide-react';
 import { Reorder, useDragControls } from 'framer-motion';
 import {
   DropdownMenu,
@@ -12,10 +12,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from '@/components/ui/input';
+import { BlockDetailsDialog } from './BlockDetailsDialog';
+import { Button } from '@/components/ui/button';
 
 const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
   const { viewMode, removeIconFromNode, removeBlockFromNode, updateNodeData, updateBlockLabel, reorderBlocks } = useAppStore();
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [selectedBlockForDetails, setSelectedBlockForDetails] = useState<BlockItem | null>(null);
 
   // Status Colors
   const statusColors: Record<PageStatus, string> = {
@@ -42,11 +46,16 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
     reorderBlocks(id, newOrder);
   };
 
+  const openDetails = (block: BlockItem) => {
+      setSelectedBlockForDetails(block);
+      setDetailsDialogOpen(true);
+  };
+
   return (
     <div 
       className={cn(
         "relative rounded-sm transition-all duration-200 group bg-transparent flex flex-col items-center",
-        viewMode === 'visual' ? "w-[200px]" : "w-[180px]"
+        viewMode === 'visual' ? "w-[200px]" : "w-[200px]" // Consistent width for both modes to accommodate text
       )}
     >
       {/* Handles */}
@@ -100,27 +109,24 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
       {/* PAGE CONTAINER */}
       <div className={cn(
          "w-full bg-white rounded-[4px] overflow-hidden shadow-sm border-[1.5px] transition-colors",
-         // Match the blue outline from the reference for selected/default state
          selected ? "border-[#3B82F6] shadow-md" : "border-[#3B82F6]/60 hover:border-[#3B82F6]" 
       )}>
          
-         {/* HEADER (Just Title, Left Aligned) - Reference has a white header with blue text */}
+         {/* HEADER (Just Title, Left Aligned) */}
          <div className="bg-white border-b border-slate-100 px-2 py-2 text-left">
             <span className="text-[13px] font-bold text-[#3B82F6] block truncate">{data.label}</span>
          </div>
 
-         {/* BLOCKS STACK - Padding matching reference */}
-         {/* Using Reorder.Group for drag and drop */}
+         {/* BLOCKS STACK */}
          <Reorder.Group axis="y" values={data.blocks} onReorder={handleReorder} className="flex flex-col w-full bg-white p-1 gap-1 min-h-[40px]">
             {data.blocks.map((block) => (
                <Reorder.Item 
                   key={block.id} 
                   value={block} 
                   className="w-full relative group/block rounded-[3px] overflow-hidden nodrag"
-                  // Prevent drag propagation to ReactFlow canvas - this is key for Framer Motion drag to work without dragging the node
                   onPointerDown={(e) => e.stopPropagation()} 
                >
-                  {/* EDIT OVERLAY - Only show input when editing */}
+                  {/* EDIT OVERLAY - Only show input when editing label */}
                    {editingBlockId === block.id && (
                       <div className="absolute inset-0 z-20 bg-black/50 flex items-center justify-center p-1">
                         <Input 
@@ -142,32 +148,63 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                       </div>
                    )}
 
-                  {/* Visual Component - Pass label down */}
+                  {/* CONTENT RENDERING */}
                   <div 
                     onClick={(e) => {
                        e.stopPropagation();
                        setEditingBlockId(block.id);
                     }}
-                    className="cursor-pointer hover:brightness-95 transition-all"
+                    className="cursor-pointer hover:brightness-95 transition-all relative"
                   >
-                     <WireframeVisual type={block.type} label={block.label} />
+                     {viewMode === 'visual' ? (
+                        <WireframeVisual type={block.type} label={block.label} />
+                     ) : (
+                        // BRIEF VIEW: Description Text
+                        <div className="w-full bg-slate-50 border border-slate-200 rounded-sm p-3 min-h-[60px] flex flex-col gap-1">
+                            <div className="flex items-center gap-2">
+                                <span className="bg-slate-200 text-slate-600 px-1 py-0.5 rounded-[2px] text-[9px] font-bold uppercase tracking-wider">{block.type.replace(/_/g, ' ')}</span>
+                                <span className="text-[11px] font-bold text-slate-800 truncate">{block.label}</span>
+                            </div>
+                            <p className="text-[10px] text-slate-500 leading-relaxed line-clamp-3">
+                                {block.description || "No description provided. Click to add details."}
+                            </p>
+                        </div>
+                     )}
                   </div>
                   
-                  {/* Drag Handle (Visible on Hover) - Left side */}
-                  <div className="absolute top-1/2 -translate-y-1/2 left-1 opacity-0 group-hover/block:opacity-100 text-white/80 cursor-grab active:cursor-grabbing z-10 drop-shadow-md">
-                     <GripVertical size={12} />
+                  {/* HOVER CONTROLS LAYER */}
+                  <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover/block:opacity-100 transition-opacity z-10">
+                      {/* Chat / Details Button */}
+                      <Button 
+                         size="icon" 
+                         variant="ghost" 
+                         className="h-5 w-5 bg-black/50 hover:bg-black/70 text-white rounded-[2px] backdrop-blur-sm"
+                         onClick={(e) => {
+                            e.stopPropagation();
+                            openDetails(block);
+                         }}
+                      >
+                         <MessageSquare size={10} />
+                      </Button>
+
+                      {/* Delete Button */}
+                      <Button 
+                         size="icon" 
+                         variant="ghost" 
+                         className="h-5 w-5 bg-red-500/80 hover:bg-red-600 text-white rounded-[2px] backdrop-blur-sm"
+                         onClick={(e) => {
+                            e.stopPropagation();
+                            removeBlockFromNode(id, block.id);
+                         }}
+                      >
+                          <Trash2 size={10} />
+                      </Button>
                   </div>
 
-                  {/* Delete Action (Visible on Hover) - Top Right overlay */}
-                  <button 
-                      className="absolute top-1 right-1 opacity-0 group-hover/block:opacity-100 text-white/80 hover:text-white hover:bg-red-500/80 p-0.5 rounded transition-all z-10"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeBlockFromNode(id, block.id);
-                      }}
-                  >
-                      <Trash2 size={12} />
-                  </button>
+                  {/* Drag Handle (Visible on Hover) - Left side */}
+                  <div className="absolute top-1/2 -translate-y-1/2 left-1 opacity-0 group-hover/block:opacity-100 text-white/50 hover:text-white cursor-grab active:cursor-grabbing z-10 drop-shadow-md">
+                     <GripVertical size={12} />
+                  </div>
                   
                   {/* Connection Handles (Visible on Hover) - Floating outside */}
                   <div className="absolute top-1/2 -translate-y-1/2 -left-2 opacity-0 group-hover/block:opacity-100 transition-opacity z-10">
@@ -185,9 +222,18 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
             )}
          </Reorder.Group>
          
-         {/* Footer/Bottom bar of the card (Reference has a footer-like area sometimes, or just rounded bottom) */}
          <div className="h-1 bg-slate-50"></div>
       </div>
+
+      {/* Details Dialog */}
+      {selectedBlockForDetails && (
+          <BlockDetailsDialog 
+             nodeId={id} 
+             block={selectedBlockForDetails} 
+             open={detailsDialogOpen} 
+             onOpenChange={setDetailsDialogOpen} 
+          />
+      )}
     </div>
   );
 };

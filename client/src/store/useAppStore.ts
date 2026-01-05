@@ -42,10 +42,20 @@ export type WireframeType =
 
 export type PageStatus = 'idea' | 'in_progress' | 'review' | 'done' | 'error';
 
+export interface ChatMessage {
+  id: string;
+  text: string;
+  sender: 'user' | 'system';
+  timestamp: number;
+  attachments?: string[];
+}
+
 export interface BlockItem {
   id: string;
   type: WireframeType;
   label?: string; // Ability to name each block
+  description?: string;
+  chatMessages?: ChatMessage[];
 }
 
 export interface BlockData {
@@ -72,6 +82,8 @@ interface AppState {
   addBlockToNode: (nodeId: string, type: WireframeType) => void;
   removeBlockFromNode: (nodeId: string, blockId: string) => void;
   updateBlockLabel: (nodeId: string, blockId: string, label: string) => void;
+  updateBlockDescription: (nodeId: string, blockId: string, description: string) => void;
+  addBlockChatMessage: (nodeId: string, blockId: string, message: Omit<ChatMessage, 'id' | 'timestamp'>) => void;
   reorderBlocks: (nodeId: string, newBlocks: BlockItem[]) => void;
   updateNodeData: (id: string, data: Partial<BlockData>) => void;
   setViewMode: (mode: 'visual' | 'brief') => void;
@@ -90,11 +102,11 @@ export const useAppStore = create<AppState>((set, get) => ({
         label: 'Home Page', 
         status: 'done',
         blocks: [
-          { id: 'b1', type: 'interface_header', label: 'Main Nav' },
-          { id: 'b2', type: 'hero_arrows', label: 'Hero Section' },
-          { id: 'b3', type: 'features', label: 'Key Features' },
-          { id: 'b4', type: 'cta_image', label: 'Sign Up Call' },
-          { id: 'b5', type: 'footer', label: 'Footer' }
+          { id: 'b1', type: 'interface_header', label: 'Main Nav', description: 'Main navigation header with logo and links' },
+          { id: 'b2', type: 'hero_arrows', label: 'Hero Section', description: 'Hero section with carousel and call to action' },
+          { id: 'b3', type: 'features', label: 'Key Features', description: 'Grid of 3 key product features' },
+          { id: 'b4', type: 'cta_image', label: 'Sign Up Call', description: 'Large image with sign up form side-by-side' },
+          { id: 'b5', type: 'footer', label: 'Footer', description: 'Standard footer with sitemap links' }
         ],
         description: 'Main landing page structure.',
         icons: ['React', 'Vite']
@@ -108,9 +120,9 @@ export const useAppStore = create<AppState>((set, get) => ({
         label: 'Pricing Page', 
         status: 'in_progress',
         blocks: [
-           { id: 'b1', type: 'interface_header', label: 'Nav' },
-           { id: 'b2', type: 'plans', label: 'Pricing Tiers' },
-           { id: 'b3', type: 'faq', label: 'Common Questions' },
+           { id: 'b1', type: 'interface_header', label: 'Nav', description: 'Simplified navigation' },
+           { id: 'b2', type: 'plans', label: 'Pricing Tiers', description: 'Comparison of Free, Pro, and Enterprise plans' },
+           { id: 'b3', type: 'faq', label: 'Common Questions', description: 'Accordion list of frequently asked questions' },
            { id: 'b4', type: 'footer', label: 'Footer' }
         ],
         description: 'Pricing tiers and comparison.',
@@ -163,7 +175,9 @@ export const useAppStore = create<AppState>((set, get) => ({
       const newBlock: BlockItem = { 
         id: Math.random().toString(36).substr(2, 9), 
         type,
-        label: type.replace(/_/g, ' ') // Default label from type
+        label: type.replace(/_/g, ' '), // Default label from type
+        description: '',
+        chatMessages: []
       };
       get().updateNodeData(nodeId, { blocks: [...node.data.blocks, newBlock] });
     }
@@ -182,6 +196,34 @@ export const useAppStore = create<AppState>((set, get) => ({
       const updatedBlocks = node.data.blocks.map(b => 
         b.id === blockId ? { ...b, label } : b
       );
+      get().updateNodeData(nodeId, { blocks: updatedBlocks });
+    }
+  },
+
+  updateBlockDescription: (nodeId, blockId, description) => {
+    const node = get().nodes.find(n => n.id === nodeId);
+    if (node) {
+      const updatedBlocks = node.data.blocks.map(b => 
+        b.id === blockId ? { ...b, description } : b
+      );
+      get().updateNodeData(nodeId, { blocks: updatedBlocks });
+    }
+  },
+
+  addBlockChatMessage: (nodeId, blockId, message) => {
+    const node = get().nodes.find(n => n.id === nodeId);
+    if (node) {
+      const updatedBlocks = node.data.blocks.map(b => {
+        if (b.id === blockId) {
+          const newMessage: ChatMessage = {
+            id: Math.random().toString(36).substr(2, 9),
+            timestamp: Date.now(),
+            ...message
+          };
+          return { ...b, chatMessages: [...(b.chatMessages || []), newMessage] };
+        }
+        return b;
+      });
       get().updateNodeData(nodeId, { blocks: updatedBlocks });
     }
   },
