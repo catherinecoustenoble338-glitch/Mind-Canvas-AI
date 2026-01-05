@@ -22,7 +22,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
   const nodeWidth = 300; // Block width + spacing
   const nodeHeight = 600; // Average block height + spacing
 
-  dagreGraph.setGraph({ rankdir: direction, align: 'DL', ranksep: 100, nodesep: 100 });
+  dagreGraph.setGraph({ rankdir: direction, align: 'DL', ranksep: 100, nodesep: 50 });
 
   nodes.forEach((node) => {
     dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
