@@ -207,9 +207,27 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                             <div className="flex items-center gap-2">
                                 <span className="text-[11px] font-bold text-slate-800 truncate">{block.label}</span>
                             </div>
-                            <p className="text-[10px] text-slate-500 leading-relaxed line-clamp-3">
-                                {block.description || "No description provided. Click to add details."}
-                            </p>
+                            <div className="text-[10px] text-slate-500 leading-relaxed">
+                               {block.description ? (
+                                  block.description.split('\n').map((line, i) => {
+                                     const trimmed = line.trim();
+                                     const isBullet = trimmed.startsWith('-') || trimmed.startsWith('*') || trimmed.startsWith('•');
+                                     
+                                     if (isBullet) {
+                                        return (
+                                           <div key={i} className="flex gap-1.5 ml-1 items-start">
+                                              <span className="mt-1 w-1 h-1 rounded-full bg-slate-400 shrink-0 block"></span>
+                                              <span className="leading-tight">{trimmed.replace(/^[-*•]\s?/, '')}</span>
+                                           </div>
+                                        );
+                                     }
+                                     
+                                     return <div key={i} className={cn("leading-tight", i > 0 && "mt-1")}>{line}</div>;
+                                  })
+                               ) : (
+                                  <span className="italic opacity-50">No description provided. Click to add details.</span>
+                               )}
+                            </div>
                         </div>
                      )}
                   </div>
