@@ -19,88 +19,88 @@ import { WireframeVisual } from './WireframeVisual';
 // Detailed Tool Mapping based on Octopus.do screenshot provided
 const TOOL_GROUPS: { name: string, tools: { type: WireframeType, label: string, color: string }[] }[] = [
   {
-    name: "Blue Group (Content)",
+    name: "Content & Media",
     tools: [
-      { type: 'images', label: 'Images', color: 'bg-blue-500' },
-      { type: 'slider', label: 'Slider', color: 'bg-blue-500' },
-      { type: 'text_video', label: 'Text & Video', color: 'bg-blue-500' },
-      { type: 'text', label: 'Text', color: 'bg-blue-500' },
-      { type: 'two_col_images_text', label: 'Two-col + Text', color: 'bg-blue-400' },
-      { type: 'map', label: 'Map', color: 'bg-blue-500' },
-      { type: 'text_image', label: 'Text & Image', color: 'bg-blue-500' },
-      { type: 'vanilla_img_placeholder', label: 'Img Placeholder', color: 'bg-blue-400' },
-      { type: 'left_text_on_image', label: 'Left Text Img', color: 'bg-blue-500' },
-      { type: 'slider_2_column', label: 'Slider 2 Col', color: 'bg-blue-500' },
-      { type: 'two_col_images', label: 'Two-col Images', color: 'bg-blue-400' },
+      { type: 'images', label: 'Images', color: 'bg-slate-500' },
+      { type: 'slider', label: 'Slider', color: 'bg-slate-500' },
+      { type: 'text_video', label: 'Text & Video', color: 'bg-slate-500' },
+      { type: 'text', label: 'Text', color: 'bg-slate-500' },
+      { type: 'two_col_images_text', label: 'Two-col + Text', color: 'bg-slate-500' },
+      { type: 'map', label: 'Map', color: 'bg-slate-500' },
+      { type: 'text_image', label: 'Text & Image', color: 'bg-slate-500' },
+      { type: 'vanilla_img_placeholder', label: 'Img Placeholder', color: 'bg-slate-500' },
+      { type: 'left_text_on_image', label: 'Left Text Img', color: 'bg-slate-500' },
+      { type: 'slider_2_column', label: 'Slider 2 Col', color: 'bg-slate-500' },
+      { type: 'two_col_images', label: 'Two-col Images', color: 'bg-slate-500' },
     ]
   },
   {
-    name: "Green Group (Headers)",
+    name: "Headers & Navigation",
     tools: [
-      { type: 'header', label: 'Header', color: 'bg-emerald-400' },
-      { type: 'title', label: 'Title', color: 'bg-emerald-400' },
-      { type: 'features_green', label: 'Features', color: 'bg-emerald-400' },
-      { type: 'interface_header', label: 'Interface Header', color: 'bg-emerald-400' },
-      { type: 'table', label: 'Table', color: 'bg-blue-500' }, // Visual override
-      { type: 'bullets', label: 'Bullets', color: 'bg-blue-500' }, // Visual override
-      { type: 'mobile_top_bar', label: 'Mobile / Top', color: 'bg-orange-300' }, // Mixed
-      { type: 'no_logo_navigation', label: 'No-logo Nav', color: 'bg-emerald-400' },
-      { type: 'articles', label: 'Articles', color: 'bg-blue-500' },
-      { type: 'profile', label: 'Profile', color: 'bg-blue-500' },
+      { type: 'header', label: 'Header', color: 'bg-slate-500' },
+      { type: 'title', label: 'Title', color: 'bg-slate-500' },
+      { type: 'features_green', label: 'Features', color: 'bg-slate-500' },
+      { type: 'interface_header', label: 'Interface Header', color: 'bg-slate-500' },
+      { type: 'table', label: 'Table', color: 'bg-slate-500' },
+      { type: 'bullets', label: 'Bullets', color: 'bg-slate-500' },
+      { type: 'mobile_top_bar', label: 'Mobile / Top', color: 'bg-slate-500' },
+      { type: 'no_logo_navigation', label: 'No-logo Nav', color: 'bg-slate-500' },
+      { type: 'articles', label: 'Articles', color: 'bg-slate-500' },
+      { type: 'profile', label: 'Profile', color: 'bg-slate-500' },
     ]
   },
   {
-    name: "Red Group (Features/CTA)",
+    name: "Features & CTA",
     tools: [
-      { type: 'features', label: 'Features', color: 'bg-rose-400' },
-      { type: 'cards', label: 'Cards', color: 'bg-red-400' },
-      { type: 'cta', label: 'CTA', color: 'bg-red-400' },
-      { type: 'cta_image', label: 'CTA & Image', color: 'bg-red-400' },
-      { type: 'slider_cards', label: 'Slider Cards', color: 'bg-red-400' },
-      { type: 'buttons_left_aligned', label: 'Buttons Left', color: 'bg-red-400' },
-      { type: 'hero_arrows', label: 'Hero Arrows', color: 'bg-sky-500' },
+      { type: 'features', label: 'Features', color: 'bg-slate-500' },
+      { type: 'cards', label: 'Cards', color: 'bg-slate-500' },
+      { type: 'cta', label: 'CTA', color: 'bg-slate-500' },
+      { type: 'cta_image', label: 'CTA & Image', color: 'bg-slate-500' },
+      { type: 'slider_cards', label: 'Slider Cards', color: 'bg-slate-500' },
+      { type: 'buttons_left_aligned', label: 'Buttons Left', color: 'bg-slate-500' },
+      { type: 'hero_arrows', label: 'Hero Arrows', color: 'bg-slate-500' },
     ]
   },
   {
-    name: "Orange Group (Forms)",
+    name: "Forms & Interactions",
     tools: [
-      { type: 'text_form', label: 'Text & Form', color: 'bg-orange-300' },
-      { type: 'form', label: 'Form', color: 'bg-orange-300' },
-      { type: 'sign_in', label: 'Sign In', color: 'bg-orange-300' },
-      { type: 'text_sidebar_form', label: 'Text & Sidebar', color: 'bg-orange-300' },
-      { type: 'hamburger', label: 'Hamburger', color: 'bg-orange-300' },
-      { type: 'upload_button', label: 'Upload Button', color: 'bg-orange-300' },
-      { type: 'next', label: 'Next', color: 'bg-orange-300' },
-      { type: 'radiobuttons', label: 'Radiobuttons', color: 'bg-orange-300' },
-      { type: 'toggles', label: 'Toggles', color: 'bg-orange-300' },
+      { type: 'text_form', label: 'Text & Form', color: 'bg-slate-500' },
+      { type: 'form', label: 'Form', color: 'bg-slate-500' },
+      { type: 'sign_in', label: 'Sign In', color: 'bg-slate-500' },
+      { type: 'text_sidebar_form', label: 'Text & Sidebar', color: 'bg-slate-500' },
+      { type: 'hamburger', label: 'Hamburger', color: 'bg-slate-500' },
+      { type: 'upload_button', label: 'Upload Button', color: 'bg-slate-500' },
+      { type: 'next', label: 'Next', color: 'bg-slate-500' },
+      { type: 'radiobuttons', label: 'Radiobuttons', color: 'bg-slate-500' },
+      { type: 'toggles', label: 'Toggles', color: 'bg-slate-500' },
     ]
   },
   {
-    name: "Purple Group (Dividers)",
+    name: "Structure & Misc",
     tools: [
-       { type: 'divider', label: 'Divider', color: 'bg-purple-400' },
-       { type: 'footer', label: 'Footer', color: 'bg-purple-400' },
-       { type: 'loading', label: 'Loading', color: 'bg-purple-400' },
-       { type: 'audio', label: 'Audio', color: 'bg-blue-500' },
-       { type: 'post_thread', label: 'Post Thread', color: 'bg-blue-500' },
+       { type: 'divider', label: 'Divider', color: 'bg-slate-500' },
+       { type: 'footer', label: 'Footer', color: 'bg-slate-500' },
+       { type: 'loading', label: 'Loading', color: 'bg-slate-500' },
+       { type: 'audio', label: 'Audio', color: 'bg-slate-500' },
+       { type: 'post_thread', label: 'Post Thread', color: 'bg-slate-500' },
     ]
   },
   {
-    name: "Cyan/Blue Group (Misc)",
+    name: "Components",
     tools: [
-       { type: 'map_contacts', label: 'Map + Contacts', color: 'bg-blue-500' },
-       { type: 'table_of_contents', label: 'Table of Contents', color: 'bg-blue-500' },
-       { type: 'invoice', label: 'Invoice', color: 'bg-blue-500' },
-       { type: 'checklist', label: 'Checklist', color: 'bg-blue-500' },
-       { type: 'steps', label: 'Steps', color: 'bg-blue-500' },
-       { type: 'accordion', label: 'Accordion', color: 'bg-blue-500' },
-       { type: 'chart', label: 'Chart', color: 'bg-blue-500' },
-       { type: 'catalog', label: 'Catalog', color: 'bg-blue-500' },
-       { type: 'plans', label: 'Plans', color: 'bg-blue-500' },
-       { type: 'carousel', label: 'Carousel', color: 'bg-blue-500' },
-       { type: 'faq', label: 'FAQ', color: 'bg-blue-500' },
-       { type: 'timeline', label: 'Timeline', color: 'bg-blue-500' },
-       { type: 'pagination', label: 'Pagination', color: 'bg-emerald-400' },
+       { type: 'map_contacts', label: 'Map + Contacts', color: 'bg-slate-500' },
+       { type: 'table_of_contents', label: 'Table of Contents', color: 'bg-slate-500' },
+       { type: 'invoice', label: 'Invoice', color: 'bg-slate-500' },
+       { type: 'checklist', label: 'Checklist', color: 'bg-slate-500' },
+       { type: 'steps', label: 'Steps', color: 'bg-slate-500' },
+       { type: 'accordion', label: 'Accordion', color: 'bg-slate-500' },
+       { type: 'chart', label: 'Chart', color: 'bg-slate-500' },
+       { type: 'catalog', label: 'Catalog', color: 'bg-slate-500' },
+       { type: 'plans', label: 'Plans', color: 'bg-slate-500' },
+       { type: 'carousel', label: 'Carousel', color: 'bg-slate-500' },
+       { type: 'faq', label: 'FAQ', color: 'bg-slate-500' },
+       { type: 'timeline', label: 'Timeline', color: 'bg-slate-500' },
+       { type: 'pagination', label: 'Pagination', color: 'bg-slate-500' },
     ]
   }
 ];
@@ -146,7 +146,7 @@ export function Sidebar() {
     <div className="h-full flex flex-col bg-white border-r border-slate-200 w-[320px] shadow-xl z-10 font-sans">
       {/* Header Logo */}
       <div className="p-4 border-b border-slate-100 flex items-center gap-3 bg-white">
-        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white shadow-md shadow-primary/20">
+        <div className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center text-white shadow-md">
            <Grid size={18} />
         </div>
         <div className="flex flex-col">
@@ -301,14 +301,14 @@ export function Sidebar() {
         <div className="bg-slate-100 p-1 rounded-md flex gap-1">
             <button 
                 onClick={() => setViewMode('visual')}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium rounded-sm transition-all ${viewMode === 'visual' ? 'bg-white text-primary shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium rounded-sm transition-all ${viewMode === 'visual' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
             >
                 <Monitor size={12} />
                 Visual
             </button>
             <button 
                 onClick={() => setViewMode('brief')}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium rounded-sm transition-all ${viewMode === 'brief' ? 'bg-white text-primary shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium rounded-sm transition-all ${viewMode === 'brief' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
             >
                 <List size={12} />
                 Brief
