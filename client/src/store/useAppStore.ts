@@ -13,11 +13,20 @@ import {
   applyEdgeChanges
 } from 'reactflow';
 
-export type BlockType = 'hero' | 'features' | 'text' | 'gallery' | 'form' | 'video' | 'footer' | 'pricing';
+export type WireframeType = 
+  | 'hero' | 'features' | 'text' | 'gallery' | 'form' | 'video' | 'footer' | 'pricing'
+  | 'header' | 'cards' | 'cta' | 'map' | 'chart' | 'slider' | 'table' | 'testimonials'
+  | 'signup' | 'login' | 'faq' | 'team' | 'steps' | 'tabs' | 'timeline' | 'divider'
+  | 'hero_arrows' | 'text_image' | 'two_col_images' | 'article' | 'profile' | 'pagination';
+
+export interface BlockItem {
+  id: string;
+  type: WireframeType;
+}
 
 export interface BlockData {
   label: string;
-  type: BlockType;
+  blocks: BlockItem[];
   description?: string;
   icons?: string[]; // List of service names/icons
 }
@@ -34,7 +43,9 @@ interface AppState {
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
   
-  addNode: (type: BlockType, position: { x: number, y: number }) => void;
+  addNode: (position: { x: number, y: number }) => void;
+  addBlockToNode: (nodeId: string, type: WireframeType) => void;
+  removeBlockFromNode: (nodeId: string, blockId: string) => void;
   updateNodeData: (id: string, data: Partial<BlockData>) => void;
   setViewMode: (mode: 'visual' | 'brief') => void;
   setSelectedNode: (id: string | null) => void;
@@ -50,37 +61,36 @@ export const useAppStore = create<AppState>((set, get) => ({
       position: { x: 250, y: 0 },
       data: { 
         label: 'Home Page', 
-        type: 'hero',
-        description: 'Main landing page with hero section and value prop.',
+        blocks: [
+          { id: 'b1', type: 'header' },
+          { id: 'b2', type: 'hero' },
+          { id: 'b3', type: 'features' },
+          { id: 'b4', type: 'cta' },
+          { id: 'b5', type: 'footer' }
+        ],
+        description: 'Main landing page structure.',
         icons: ['React', 'Vite']
       },
     },
     {
       id: '2',
       type: 'block',
-      position: { x: 100, y: 300 },
+      position: { x: 100, y: 500 },
       data: { 
-        label: 'Features', 
-        type: 'features',
-        description: 'Grid of key features and benefits.',
-        icons: []
-      },
-    },
-    {
-      id: '3',
-      type: 'block',
-      position: { x: 400, y: 300 },
-      data: { 
-        label: 'Pricing', 
-        type: 'pricing',
-        description: 'Pricing tiers and comparison table.',
+        label: 'Pricing Page', 
+        blocks: [
+           { id: 'b1', type: 'header' },
+           { id: 'b2', type: 'pricing' },
+           { id: 'b3', type: 'faq' },
+           { id: 'b4', type: 'footer' }
+        ],
+        description: 'Pricing tiers and comparison.',
         icons: ['Stripe']
       },
     },
   ],
   edges: [
     { id: 'e1-2', source: '1', target: '2', animated: true, style: { stroke: 'var(--color-border)' } },
-    { id: 'e1-3', source: '1', target: '3', animated: true, style: { stroke: 'var(--color-border)' } },
   ],
   viewMode: 'visual',
   selectedNodeId: null,
@@ -101,20 +111,35 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
   },
 
-  addNode: (type: BlockType, position) => {
+  addNode: (position) => {
     const id = Math.random().toString(36).substr(2, 9);
     const newNode: BlockNode = {
       id,
       type: 'block',
       position,
       data: {
-        label: 'New Section',
-        type,
-        description: 'Add a description...',
+        label: 'New Page',
+        blocks: [{ id: Math.random().toString(36).substr(2, 9), type: 'header' }],
+        description: 'New page description...',
         icons: []
       },
     };
     set({ nodes: [...get().nodes, newNode] });
+  },
+
+  addBlockToNode: (nodeId, type) => {
+    const node = get().nodes.find(n => n.id === nodeId);
+    if (node) {
+      const newBlock: BlockItem = { id: Math.random().toString(36).substr(2, 9), type };
+      get().updateNodeData(nodeId, { blocks: [...node.data.blocks, newBlock] });
+    }
+  },
+
+  removeBlockFromNode: (nodeId, blockId) => {
+    const node = get().nodes.find(n => n.id === nodeId);
+    if (node) {
+      get().updateNodeData(nodeId, { blocks: node.data.blocks.filter(b => b.id !== blockId) });
+    }
   },
 
   updateNodeData: (id, data) => {
