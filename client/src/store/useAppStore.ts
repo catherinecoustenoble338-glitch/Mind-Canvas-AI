@@ -86,6 +86,7 @@ interface AppState {
   addBlockChatMessage: (nodeId: string, blockId: string, message: Omit<ChatMessage, 'id' | 'timestamp'>) => void;
   reorderBlocks: (nodeId: string, newBlocks: BlockItem[]) => void;
   updateNodeData: (id: string, data: Partial<BlockData>) => void;
+  addChildNode: (parentId: string) => void;
   setViewMode: (mode: 'visual' | 'brief') => void;
   setSelectedNode: (id: string | null) => void;
   addIconToNode: (nodeId: string, icon: string) => void;
@@ -237,6 +238,46 @@ export const useAppStore = create<AppState>((set, get) => ({
       nodes: get().nodes.map((node) =>
         node.id === id ? { ...node, data: { ...node.data, ...data } } : node
       ),
+    });
+  },
+
+  addChildNode: (parentId) => {
+    const parentNode = get().nodes.find(n => n.id === parentId);
+    if (!parentNode) return;
+
+    const newId = Math.random().toString(36).substr(2, 9);
+    // Position below the parent node
+    const position = {
+      x: parentNode.position.x,
+      y: parentNode.position.y + 400 // Vertical spacing
+    };
+
+    const newNode: BlockNode = {
+      id: newId,
+      type: 'block',
+      position,
+      data: {
+        label: 'New Page',
+        status: 'idea',
+        blocks: [{ id: Math.random().toString(36).substr(2, 9), type: 'interface_header', label: 'Header' }],
+        description: 'New page...',
+        icons: []
+      },
+    };
+
+    const newEdge: Edge = {
+      id: `e${parentId}-${newId}`,
+      source: parentId,
+      target: newId,
+      animated: false, // Static arrow as requested
+      type: 'default',
+      markerEnd: { type: 'arrowclosed' as any }, // Ensure it's an arrow
+      style: { stroke: '#475569', strokeWidth: 2 } // Darker slate (slate-600) and slightly thicker
+    };
+
+    set({
+      nodes: [...get().nodes, newNode],
+      edges: [...get().edges, newEdge]
     });
   },
 

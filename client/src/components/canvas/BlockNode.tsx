@@ -3,7 +3,7 @@ import { Handle, Position, NodeProps, useReactFlow } from 'reactflow';
 import { useAppStore, BlockData, PageStatus, BlockItem } from '@/store/useAppStore';
 import WireframeVisual from './WireframeVisual';
 import { cn } from '@/lib/utils';
-import { X, MoreHorizontal, ChevronDown, Trash2, GripVertical, MessageSquare, Info } from 'lucide-react';
+import { X, MoreHorizontal, ChevronDown, Trash2, GripVertical, MessageSquare, Info, PlusCircle } from 'lucide-react';
 import { Reorder, useDragControls } from 'framer-motion';
 import {
   DropdownMenu,
@@ -16,7 +16,7 @@ import { BlockDetailsDialog } from './BlockDetailsDialog';
 import { Button } from '@/components/ui/button';
 
 const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
-  const { viewMode, removeIconFromNode, removeBlockFromNode, updateNodeData, updateBlockLabel, reorderBlocks } = useAppStore();
+  const { viewMode, removeIconFromNode, removeBlockFromNode, updateNodeData, updateBlockLabel, reorderBlocks, addChildNode } = useAppStore();
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [selectedBlockForDetails, setSelectedBlockForDetails] = useState<BlockItem | null>(null);
@@ -222,6 +222,20 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
          </Reorder.Group>
          
          <div className="h-1 bg-slate-50"></div>
+      </div>
+      
+      {/* Bottom Plus Button (Add Child) - Visible on Hover */}
+      <div className="absolute -bottom-5 opacity-0 group-hover:opacity-100 transition-opacity z-50">
+        <button 
+           className="bg-white hover:bg-slate-50 text-slate-400 hover:text-blue-500 rounded-full shadow-md border border-slate-200 p-1 transition-colors"
+           onClick={(e) => {
+             e.stopPropagation();
+             addChildNode(id);
+           }}
+           title="Add child page"
+        >
+           <PlusCircle size={20} />
+        </button>
       </div>
 
       {/* Details Dialog */}
