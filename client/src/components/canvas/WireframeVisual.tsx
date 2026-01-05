@@ -11,7 +11,7 @@ interface WireframeVisualProps {
 export function WireframeVisual({ type, className, label }: WireframeVisualProps) {
   // Base classes
   // Using Design System Variables
-  const base = "w-full overflow-hidden relative flex flex-col p-4 min-h-[48px] justify-start items-start transition-all bg-block-bg rounded-xl hover:bg-block-bg-hover";
+  const base = "w-full overflow-hidden relative flex flex-col p-4 min-h-[48px] justify-start items-start transition-all bg-block-bg rounded-[4px] hover:bg-block-bg-hover";
   
   // Helper for text label inside the block - Using Design System Text Color
   const BlockLabel = () => (
