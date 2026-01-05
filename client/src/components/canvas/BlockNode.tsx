@@ -3,12 +3,15 @@ import { Handle, Position, NodeProps, useReactFlow } from 'reactflow';
 import { useAppStore, BlockData, PageStatus, BlockItem } from '@/store/useAppStore';
 import WireframeVisual from './WireframeVisual';
 import { cn } from '@/lib/utils';
-import { X, MoreHorizontal, ChevronDown, Trash2, GripVertical, MessageSquare, Info, PlusCircle, Lightbulb, Loader2, Eye, CheckCircle2, AlertCircle, AlertTriangle, FileText, Target, List } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { X, MoreHorizontal, ChevronDown, Trash2, GripVertical, MessageSquare, Info, PlusCircle, Lightbulb, Loader2, Eye, CheckCircle2, AlertCircle, AlertTriangle, FileText, Target, List, User } from 'lucide-react';
 import { Reorder, useDragControls } from 'framer-motion';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -27,10 +30,21 @@ import { BlockDetailsDialog } from './BlockDetailsDialog';
 import { PageDetailsDialog } from './PageDetailsDialog';
 import { Button } from '@/components/ui/button';
 
+const getInitials = (name: string) => {
+  return name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+    .substring(0, 2);
+};
+
 const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
-  const { viewMode, showDetails, removeIconFromNode, removeBlockFromNode, updateNodeData, updateBlockLabel, reorderBlocks, addChildNode, removeNode, activeBlockId, setActiveBlockId } = useAppStore();
+  const { viewMode, showDetails, removeIconFromNode, removeBlockFromNode, updateNodeData, updateBlockLabel, reorderBlocks, addChildNode, removeNode, activeBlockId, setActiveBlockId, adminUsers } = useAppStore();
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
+  
+  const assigneeUser = adminUsers.find(u => u.id === data.assignee);
   
   // Dialog States
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
@@ -100,8 +114,48 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
 
       {/* TOP STRIP: Status & Icons (Detached) */}
       <div className="w-full flex justify-between items-end gap-1 mb-1 min-h-[20px]">
-          {/* Status Dropdown (Left aligned) */}
-          <DropdownMenu>
+          <div className="flex items-center gap-1">
+             {/* Assignee Avatar Dropdown */}
+             <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                 <div 
+                   className={cn(
+                     "rounded-full cursor-pointer transition-transform hover:scale-105 border border-transparent hover:border-slate-200",
+                     assigneeUser ? "opacity-100" : "opacity-60 hover:opacity-100"
+                   )} 
+                   title={assigneeUser ? `Assigned to: ${assigneeUser.name}` : "Click to assign"}
+                 >
+                   <Avatar className="h-[20px] w-[20px] shadow-sm">
+                     <AvatarImage src={assigneeUser?.avatar} alt={assigneeUser?.name} />
+                     <AvatarFallback className="text-[8px] font-bold bg-white text-slate-500 border border-slate-200">
+                       {assigneeUser ? getInitials(assigneeUser.name) : <User size={10} />}
+                     </AvatarFallback>
+                   </Avatar>
+                 </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-48 ml-2" align="start">
+                <DropdownMenuLabel className="text-xs text-slate-500 uppercase tracking-wider">Assignee</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => updateNodeData(id, { assignee: undefined })} className="gap-2 cursor-pointer">
+                   <div className="h-6 w-6 rounded-full border border-dashed border-slate-300 flex items-center justify-center bg-slate-50">
+                     <X size={12} className="text-slate-400"/>
+                   </div>
+                   <span className="text-sm">Unassigned</span>
+                </DropdownMenuItem>
+                {adminUsers.map(user => (
+                  <DropdownMenuItem key={user.id} onClick={() => updateNodeData(id, { assignee: user.id })} className="gap-2 cursor-pointer">
+                    <Avatar className="h-6 w-6 border border-slate-100">
+                       <AvatarImage src={user.avatar} />
+                       <AvatarFallback className="text-[9px] bg-slate-100 text-slate-600">{getInitials(user.name)}</AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm truncate">{user.name}</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Status Dropdown (Left aligned) */}
+            <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button 
                   className={cn(
@@ -123,6 +177,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+          </div>
 
           {/* Tech Stack Icons (Right aligned) */}
           <div className="flex gap-1 justify-end flex-wrap max-w-[120px]">

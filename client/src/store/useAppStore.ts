@@ -103,6 +103,7 @@ export interface BlockItem {
   chatMessages?: ChatMessage[];
   vfp?: string; // Valuable Final Product
   features?: string; // Bullet list of features
+  assignee?: string; // ID of the assigned team member
 }
 
 export interface BlockData {
@@ -113,6 +114,7 @@ export interface BlockData {
   icons?: string[]; // List of service names/icons
   vfp?: string; // Valuable Final Product for Page
   features?: string; // Bullet list of features for Page
+  assignee?: string; // ID of the assigned team member
 }
 
 export type BlockNode = Node<BlockData>;
