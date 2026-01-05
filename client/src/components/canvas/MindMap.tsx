@@ -39,7 +39,7 @@ function CustomControls() {
          />
       </div>
 
-      <div className="flex gap-3 items-end">
+      <div className="flex flex-col gap-3 items-end">
           {/* Zoom Controls - Larger touch targets on mobile */}
           <div className="flex flex-col bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
             <Button 
@@ -74,8 +74,8 @@ function CustomControls() {
             </Button>
           </div>
           
-          {/* Bottom Bar Controls Group */}
-          <div className="flex gap-3 items-center">
+          {/* Bottom Bar Controls Group - Now vertical */}
+          <div className="flex flex-col gap-3 items-center">
              {/* Layout Button */}
              <div className="bg-white rounded-lg shadow-sm border border-slate-200">
                  <Button 

@@ -23,9 +23,9 @@ export default function Board() {
         {/* Toggle Button - hidden when sidebar is open on mobile to avoid overlap */}
         <div className={`absolute top-4 left-4 z-50 transition-opacity duration-300 ${sidebarOpen ? 'opacity-0 md:opacity-100 pointer-events-none md:pointer-events-auto' : 'opacity-100'}`}>
             <Button 
-                variant="outline" 
+                variant="ghost" 
                 size="icon" 
-                className="h-10 w-10 md:h-8 md:w-8 bg-white shadow-sm border-slate-200 text-slate-600 hover:text-slate-900"
+                className="h-10 w-10 md:h-8 md:w-8 bg-white shadow-sm border border-slate-200 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-50"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
             >
                 {sidebarOpen ? <PanelLeftClose size={18} /> : <Menu size={18} />}
