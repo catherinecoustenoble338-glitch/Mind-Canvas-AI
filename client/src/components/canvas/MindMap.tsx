@@ -28,8 +28,8 @@ function CustomControls() {
   const { layoutNodes } = useAppStore();
 
   return (
-    <Panel position="bottom-right" className="flex flex-col gap-2 mr-4 mb-4 md:mb-4 mb-20 items-end">
-      {/* MiniMap Placeholder */}
+    <Panel position="bottom-right" className="flex flex-col gap-3 mr-4 mb-4 md:mb-4 mb-20 items-end">
+      {/* MiniMap Placeholder - Hidden on mobile, visible on desktop */}
       <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden w-[200px] h-[150px] mb-2 hidden md:block">
          <MiniMap 
             style={{ position: 'relative', width: '100%', height: '100%' }} 
@@ -39,50 +39,54 @@ function CustomControls() {
          />
       </div>
 
-      <div className="flex gap-2 items-end">
-          {/* Zoom Controls */}
+      <div className="flex gap-3 items-end">
+          {/* Zoom Controls - Larger touch targets on mobile */}
           <div className="flex flex-col bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-10 w-10 md:h-8 md:w-8 rounded-none border-b border-slate-100 hover:bg-slate-50 text-slate-600"
+              className="h-12 w-12 md:h-8 md:w-8 rounded-none border-b border-slate-100 hover:bg-slate-50 text-slate-600"
               onClick={() => zoomIn()}
               title="Zoom In"
             >
-              <Plus size={20} className="md:w-4 md:h-4" />
+              <Plus size={24} className="md:w-4 md:h-4 md:hidden" />
+              <Plus size={20} className="hidden md:block" />
             </Button>
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-10 w-10 md:h-8 md:w-8 rounded-none border-b border-slate-100 hover:bg-slate-50 text-slate-600"
+              className="h-12 w-12 md:h-8 md:w-8 rounded-none border-b border-slate-100 hover:bg-slate-50 text-slate-600"
               onClick={() => zoomOut()}
               title="Zoom Out"
             >
-              <Minus size={20} className="md:w-4 md:h-4" />
+              <Minus size={24} className="md:w-4 md:h-4 md:hidden" />
+              <Minus size={20} className="hidden md:block" />
             </Button>
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-10 w-10 md:h-8 md:w-8 rounded-none hover:bg-slate-50 text-slate-600"
+              className="h-12 w-12 md:h-8 md:w-8 rounded-none hover:bg-slate-50 text-slate-600"
               onClick={() => fitView()}
               title="Fit View"
             >
-              <Maximize size={18} className="md:w-3.5 md:h-3.5" />
+              <Maximize size={20} className="md:w-3.5 md:h-3.5 md:hidden" />
+              <Maximize size={18} className="hidden md:block" />
             </Button>
           </div>
           
           {/* Bottom Bar Controls Group */}
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-3 items-center">
              {/* Layout Button */}
              <div className="bg-white rounded-lg shadow-sm border border-slate-200">
                  <Button 
                    variant="ghost" 
                    size="icon" 
-                   className="h-9 w-9 md:h-9 md:w-9 rounded text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                   className="h-12 w-12 md:h-9 md:w-9 rounded text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                    onClick={layoutNodes}
                    title="Auto Align Pages"
                  >
-                    <LayoutTemplate size={18} />
+                    <LayoutTemplate size={24} className="md:w-[18px] md:h-[18px] md:hidden" />
+                    <LayoutTemplate size={18} className="hidden md:block" />
                  </Button>
              </div>
 
