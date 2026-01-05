@@ -14,18 +14,43 @@ import {
 } from 'reactflow';
 
 export type WireframeType = 
-  | 'hero' | 'features' | 'text' | 'gallery' | 'form' | 'video' | 'footer' | 'pricing'
-  | 'header' | 'cards' | 'cta' | 'map' | 'chart' | 'slider' | 'table' | 'testimonials'
-  | 'signup' | 'login' | 'faq' | 'team' | 'steps' | 'tabs' | 'timeline' | 'divider'
-  | 'hero_arrows' | 'text_image' | 'two_col_images' | 'article' | 'profile' | 'pagination';
+  // Blue Group (Content, Media, Generic)
+  | 'text_video' | 'two_col_images_text' | 'text_image' | 'vanilla_img_placeholder'
+  | 'left_text_on_image' | 'text' | 'slider_2_column' | 'two_col_images'
+  | 'text_image_blue' | 'images' | 'map' | 'slider'
+  
+  // Red Group (Features, CTA, Cards)
+  | 'features' | 'cta' | 'cta_image' | 'features_list' | 'cards' | 'buttons_left_aligned'
+  | 'slider_cards' | 'hero_arrows' | 'cards_red'
+
+  // Green Group (Headers, Navigation)
+  | 'title' | 'interface_header' | 'header' | 'footer_green'
+  | 'table' | 'bullets' | 'mobile_top_bar' | 'no_logo_navigation'
+  | 'articles' | 'profile' | 'features_green'
+  
+  // Purple Group (Dividers, Footer, Loading)
+  | 'divider' | 'footer' | 'loading' | 'audio' | 'post_thread'
+  
+  // Orange Group (Forms, Input)
+  | 'form' | 'sign_in' | 'text_sidebar_form' | 'upload_button' | 'next' 
+  | 'radiobuttons' | 'text_form' | 'toggles' | 'hamburger' | 'table_row'
+  
+  // Cyan/Light Blue (Maps, Charts, Steps)
+  | 'steps' | 'chart' | 'timeline' | 'pagination' | 'catalog' | 'accordion' | 'faq' 
+  | 'map_contacts' | 'table_of_contents' | 'invoice' | 'rating' | 'checklist'
+  | 'plans' | 'carousel';
+
+export type PageStatus = 'idea' | 'in_progress' | 'review' | 'done' | 'error';
 
 export interface BlockItem {
   id: string;
   type: WireframeType;
+  label?: string; // Ability to name each block
 }
 
 export interface BlockData {
   label: string;
+  status: PageStatus;
   blocks: BlockItem[];
   description?: string;
   icons?: string[]; // List of service names/icons
@@ -46,6 +71,7 @@ interface AppState {
   addNode: (position: { x: number, y: number }) => void;
   addBlockToNode: (nodeId: string, type: WireframeType) => void;
   removeBlockFromNode: (nodeId: string, blockId: string) => void;
+  updateBlockLabel: (nodeId: string, blockId: string, label: string) => void;
   updateNodeData: (id: string, data: Partial<BlockData>) => void;
   setViewMode: (mode: 'visual' | 'brief') => void;
   setSelectedNode: (id: string | null) => void;
@@ -61,12 +87,13 @@ export const useAppStore = create<AppState>((set, get) => ({
       position: { x: 250, y: 0 },
       data: { 
         label: 'Home Page', 
+        status: 'done',
         blocks: [
-          { id: 'b1', type: 'header' },
-          { id: 'b2', type: 'hero' },
-          { id: 'b3', type: 'features' },
-          { id: 'b4', type: 'cta' },
-          { id: 'b5', type: 'footer' }
+          { id: 'b1', type: 'interface_header', label: 'Main Nav' },
+          { id: 'b2', type: 'hero_arrows', label: 'Hero Section' },
+          { id: 'b3', type: 'features', label: 'Key Features' },
+          { id: 'b4', type: 'cta_image', label: 'Sign Up Call' },
+          { id: 'b5', type: 'footer', label: 'Footer' }
         ],
         description: 'Main landing page structure.',
         icons: ['React', 'Vite']
@@ -75,14 +102,15 @@ export const useAppStore = create<AppState>((set, get) => ({
     {
       id: '2',
       type: 'block',
-      position: { x: 100, y: 500 },
+      position: { x: 100, y: 600 },
       data: { 
         label: 'Pricing Page', 
+        status: 'in_progress',
         blocks: [
-           { id: 'b1', type: 'header' },
-           { id: 'b2', type: 'pricing' },
-           { id: 'b3', type: 'faq' },
-           { id: 'b4', type: 'footer' }
+           { id: 'b1', type: 'interface_header', label: 'Nav' },
+           { id: 'b2', type: 'plans', label: 'Pricing Tiers' },
+           { id: 'b3', type: 'faq', label: 'Common Questions' },
+           { id: 'b4', type: 'footer', label: 'Footer' }
         ],
         description: 'Pricing tiers and comparison.',
         icons: ['Stripe']
@@ -119,7 +147,8 @@ export const useAppStore = create<AppState>((set, get) => ({
       position,
       data: {
         label: 'New Page',
-        blocks: [{ id: Math.random().toString(36).substr(2, 9), type: 'header' }],
+        status: 'idea',
+        blocks: [{ id: Math.random().toString(36).substr(2, 9), type: 'interface_header', label: 'Header' }],
         description: 'New page description...',
         icons: []
       },
@@ -130,7 +159,11 @@ export const useAppStore = create<AppState>((set, get) => ({
   addBlockToNode: (nodeId, type) => {
     const node = get().nodes.find(n => n.id === nodeId);
     if (node) {
-      const newBlock: BlockItem = { id: Math.random().toString(36).substr(2, 9), type };
+      const newBlock: BlockItem = { 
+        id: Math.random().toString(36).substr(2, 9), 
+        type,
+        label: type.replace(/_/g, ' ') // Default label from type
+      };
       get().updateNodeData(nodeId, { blocks: [...node.data.blocks, newBlock] });
     }
   },
@@ -139,6 +172,16 @@ export const useAppStore = create<AppState>((set, get) => ({
     const node = get().nodes.find(n => n.id === nodeId);
     if (node) {
       get().updateNodeData(nodeId, { blocks: node.data.blocks.filter(b => b.id !== blockId) });
+    }
+  },
+
+  updateBlockLabel: (nodeId, blockId, label) => {
+    const node = get().nodes.find(n => n.id === nodeId);
+    if (node) {
+      const updatedBlocks = node.data.blocks.map(b => 
+        b.id === blockId ? { ...b, label } : b
+      );
+      get().updateNodeData(nodeId, { blocks: updatedBlocks });
     }
   },
 
