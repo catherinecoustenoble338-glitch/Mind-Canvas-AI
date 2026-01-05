@@ -33,7 +33,10 @@ import {
   Filter,
   Save,
   RotateCcw,
-  AlertTriangle
+  AlertTriangle,
+  Lock,
+  Globe,
+  Briefcase
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useAppStore, BlockItem } from '@/store/useAppStore';
@@ -113,9 +116,9 @@ export function SettingsDialog() {
 
   // Mock Data
   const projects = [
-    { id: 1, name: 'E-commerce Redesign', lastSaved: '2 mins ago' },
-    { id: 2, name: 'Landing Page v2', lastSaved: '2 hours ago' },
-    { id: 3, name: 'Admin Dashboard', lastSaved: '1 day ago' },
+    { id: 1, name: 'E-commerce Redesign', lastSaved: '2 mins ago', access: 'private' },
+    { id: 2, name: 'Landing Page v2', lastSaved: '2 hours ago', access: 'team' },
+    { id: 3, name: 'Admin Dashboard', lastSaved: '1 day ago', access: 'public' },
   ];
 
   const customBlocks = [
@@ -210,20 +213,35 @@ export function SettingsDialog() {
                <TabsContent value="projects" className="flex-1 m-0 p-4 sm:p-6 space-y-6 overflow-auto w-full">
                   <div className="space-y-1">
                      <h3 className="text-lg font-semibold text-slate-800">My Projects</h3>
-                     <p className="text-xs text-slate-500">Manage and switch between your projects.</p>
+                     <p className="text-xs text-slate-500">Manage your projects and their access levels.</p>
                   </div>
                   <div className="space-y-2">
                      {projects.map(project => (
                         <div key={project.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 border border-slate-100 rounded-lg hover:bg-slate-50 transition-colors gap-3 sm:gap-0">
                            <div className="flex flex-col gap-0.5">
                               <span className="font-medium text-sm text-slate-800">{project.name}</span>
-                              <span className="text-[10px] text-slate-400">Last saved {project.lastSaved}</span>
+                              <div className="flex items-center gap-2">
+                                  <span className="text-[10px] text-slate-400">Last saved {project.lastSaved}</span>
+                              </div>
                            </div>
-                           <div className="flex gap-2 w-full sm:w-auto">
-                              <Button variant="outline" size="sm" className="h-8 sm:h-7 text-xs gap-1 flex-1 sm:flex-none">
-                                 <LinkIcon size={12} /> Copy Link
-                              </Button>
-                              <Button variant="outline" size="sm" className="h-8 sm:h-7 text-xs flex-1 sm:flex-none">Open</Button>
+                           <div className="flex items-center gap-3 w-full sm:w-auto">
+                              {/* Access Level Selector */}
+                              <div className="flex items-center gap-2 flex-1 sm:flex-none">
+                                  {project.access === 'private' && <Lock size={12} className="text-slate-400" />}
+                                  {project.access === 'team' && <Briefcase size={12} className="text-blue-400" />}
+                                  {project.access === 'public' && <Globe size={12} className="text-emerald-400" />}
+                                  
+                                  <select 
+                                    className="h-7 text-xs rounded border border-slate-200 bg-white px-2 py-0 focus:outline-none focus:border-blue-300 w-full sm:w-28"
+                                    defaultValue={project.access}
+                                  >
+                                      <option value="private">Private (Me)</option>
+                                      <option value="team">Team Only</option>
+                                      <option value="public">Public</option>
+                                  </select>
+                              </div>
+
+                              <Button variant="outline" size="sm" className="h-7 text-xs flex-1 sm:flex-none">Open</Button>
                            </div>
                         </div>
                      ))}

@@ -64,7 +64,7 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
       {/* Sidebar */}
-      <aside className="w-full md:w-64 bg-slate-900 text-slate-300 flex flex-col h-auto md:h-screen sticky top-0">
+      <aside className="w-full md:w-64 bg-slate-900 text-slate-300 flex flex-col h-auto md:h-screen sticky top-0 hidden md:flex">
         <div className="p-6 border-b border-slate-800 flex items-center gap-3">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg shadow-blue-900/50">
             Of
@@ -106,7 +106,18 @@ export default function AdminDashboard() {
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
-        <header className="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 sticky top-0 z-10">
+        {/* Only show header on mobile since sidebar is hidden */}
+        <header className="bg-white border-b border-slate-200 h-16 flex md:hidden items-center justify-between px-6 sticky top-0 z-10">
+          <div className="flex items-center gap-3">
+             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">Of</div>
+             <h1 className="text-lg font-bold text-slate-800">Admin</h1>
+          </div>
+          <Button variant="ghost" size="sm" onClick={() => setLocation('/')}>
+             Back to App
+          </Button>
+        </header>
+
+        <header className="bg-white border-b border-slate-200 h-16 hidden md:flex items-center justify-between px-6 sticky top-0 z-10">
           <h1 className="text-xl font-bold text-slate-800">User Management</h1>
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" className="text-slate-500 hover:text-slate-700">

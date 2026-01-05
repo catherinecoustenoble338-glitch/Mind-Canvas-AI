@@ -85,6 +85,27 @@ export function NavigationPopup() {
             </div>
             
             <div className="p-2 space-y-1">
+                {/* Admin - Only visible to admins, at the top */}
+                <Button 
+                    variant="ghost" 
+                    className="w-full justify-between h-auto py-3 px-3 hover:bg-slate-50 text-slate-700 mb-2 border-b border-slate-100 rounded-none pb-3"
+                    onClick={() => {
+                        setLocation('/admin');
+                        setOpen(false);
+                    }}
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center">
+                            <ShieldCheck size={16} />
+                        </div>
+                        <div className="flex flex-col items-start">
+                            <span className="text-sm font-medium">Admin Dashboard</span>
+                            <span className="text-[10px] text-slate-400">User management</span>
+                        </div>
+                    </div>
+                    <ExternalLink size={14} className="text-slate-300" />
+                </Button>
+
                 {/* Roadmap */}
                 <Button 
                     variant="ghost" 
@@ -125,27 +146,6 @@ export function NavigationPopup() {
                         </div>
                     </div>
                     <ChevronRight size={14} className="text-slate-300" />
-                </Button>
-
-                {/* Admin */}
-                <Button 
-                    variant="ghost" 
-                    className="w-full justify-between h-auto py-3 px-3 hover:bg-slate-50 text-slate-700"
-                    onClick={() => {
-                        setLocation('/admin');
-                        setOpen(false);
-                    }}
-                >
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center">
-                            <ShieldCheck size={16} />
-                        </div>
-                        <div className="flex flex-col items-start">
-                            <span className="text-sm font-medium">Admin Dashboard</span>
-                            <span className="text-[10px] text-slate-400">User management</span>
-                        </div>
-                    </div>
-                    <ExternalLink size={14} className="text-slate-300" />
                 </Button>
 
                 {/* Chats */}
