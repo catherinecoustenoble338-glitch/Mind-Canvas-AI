@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { WireframeVisual } from './WireframeVisual';
 
 // Detailed Tool Mapping based on Octopus.do screenshot provided
 const TOOL_GROUPS: { name: string, tools: { type: WireframeType, label: string, color: string }[] }[] = [
@@ -274,23 +275,17 @@ export function Sidebar() {
                 {filteredGroups.map((group) => (
                     <div key={group.name} className="space-y-2">
                         <h4 className="text-[10px] font-semibold text-slate-500 pl-1 border-l-2 border-slate-200">{group.name}</h4>
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-2 gap-3">
                             {group.tools.map((tool) => (
                                 <button
                                     key={tool.type}
                                     onClick={() => handleToolClick(tool.type)}
-                                    className={`
-                                      flex flex-col items-start gap-2 p-2 rounded border border-slate-200 bg-white 
-                                      hover:border-primary/50 hover:shadow-md transition-all group text-left relative overflow-hidden h-[60px]
-                                      ${tool.color.replace('bg-', 'hover:bg-').replace('400', '50').replace('500', '50').replace('300', '50')}
-                                    `}
+                                    className="relative group transition-all transform hover:scale-105 hover:shadow-lg rounded-sm overflow-hidden"
                                 >
-                                    <div className={`absolute top-0 left-0 w-1 h-full ${tool.color}`}></div>
-                                    <span className="text-[11px] font-medium text-slate-600 group-hover:text-slate-900 ml-2 z-10 leading-tight">
-                                      {tool.label}
-                                    </span>
-                                    {/* Abstract representation background */}
-                                    <div className={`absolute -right-2 -bottom-2 w-12 h-12 ${tool.color} opacity-10 rounded-full group-hover:scale-150 transition-transform`}></div>
+                                   {/* Scale down the visual for the sidebar preview */}
+                                   <div className="pointer-events-none origin-top-left transform scale-[0.45] w-[220%]">
+                                      <WireframeVisual type={tool.type} label={tool.label} />
+                                   </div>
                                 </button>
                             ))}
                         </div>
