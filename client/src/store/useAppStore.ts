@@ -193,7 +193,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   onConnect: (connection: Connection) => {
     set({
-      edges: addEdge({ ...connection, animated: true, style: { stroke: 'var(--color-border)' } }, get().edges),
+      edges: addEdge({ ...connection, animated: true, style: { stroke: '#CACACA', strokeWidth: 2 }, markerEnd: { type: 'arrowclosed' as any, color: '#CACACA' } }, get().edges),
     });
   },
 
