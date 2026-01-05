@@ -192,10 +192,29 @@ export const useAppStore = create<AppState>((set, get) => ({
         label: 'Home Page', 
         status: 'done',
         blocks: [
-          { id: 'b1', type: 'interface_header', label: 'Main Nav', description: 'Main navigation header with logo and links' },
+          { 
+            id: 'b1', 
+            type: 'interface_header', 
+            label: 'Main Nav', 
+            description: 'Main navigation header with logo and links',
+            chatMessages: [
+                { id: 'cm1', text: 'Can we make the logo bigger?', sender: 'user', timestamp: Date.now() - 86400000 },
+                { id: 'cm2', text: 'Sure, I have updated it to 32px height.', sender: 'system', timestamp: Date.now() - 86000000 },
+                { id: 'cm3', text: 'Looks great now!', sender: 'user', timestamp: Date.now() - 85000000 }
+            ]
+          },
           { id: 'b2', type: 'hero_arrows', label: 'Hero Section', description: 'Hero section with carousel and call to action' },
           { id: 'b3', type: 'features', label: 'Key Features', description: 'Grid of 3 key product features' },
-          { id: 'b4', type: 'cta_image', label: 'Sign Up Call', description: 'Large image with sign up form side-by-side' },
+          { 
+              id: 'b4', 
+              type: 'cta_image', 
+              label: 'Sign Up Call', 
+              description: 'Large image with sign up form side-by-side',
+              chatMessages: [
+                  { id: 'cm4', text: 'Should we change the button color to orange?', sender: 'user', timestamp: Date.now() - 120000 },
+                  { id: 'cm5', text: 'Orange might conflict with the error state. What about a darker blue?', sender: 'system', timestamp: Date.now() - 60000 }
+              ]
+          },
           { id: 'b5', type: 'footer', label: 'Footer', description: 'Standard footer with sitemap links' }
         ],
         description: 'Main landing page structure.',

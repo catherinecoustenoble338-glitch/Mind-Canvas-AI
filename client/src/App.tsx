@@ -8,6 +8,7 @@ import Board from "@/pages/Board";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import AdminDashboard from "@/pages/AdminDashboard";
+import Chats from "@/pages/Chats";
 
 function Router() {
   return (
@@ -16,6 +17,7 @@ function Router() {
       <Route path="/login" component={Login}/>
       <Route path="/register" component={Register}/>
       <Route path="/admin" component={AdminDashboard}/>
+      <Route path="/chats" component={Chats}/>
       <Route component={NotFound} />
     </Switch>
   );

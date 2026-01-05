@@ -120,37 +120,6 @@ export default function AdminDashboard() {
         </header>
 
         <div className="p-6 max-w-7xl mx-auto">
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-500">Total Users</p>
-                <h3 className="text-3xl font-bold text-slate-800 mt-1">{adminUsers.length}</h3>
-              </div>
-              <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-blue-600">
-                <Users size={24} />
-              </div>
-            </div>
-            <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-500">Active Now</p>
-                <h3 className="text-3xl font-bold text-slate-800 mt-1">{Math.floor(adminUsers.length * 0.7)}</h3>
-              </div>
-              <div className="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600">
-                <CheckCircle2 size={24} />
-              </div>
-            </div>
-            <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-500">Pending Invites</p>
-                <h3 className="text-3xl font-bold text-slate-800 mt-1">2</h3>
-              </div>
-              <div className="w-12 h-12 bg-amber-50 rounded-full flex items-center justify-center text-amber-600">
-                <Mail size={24} />
-              </div>
-            </div>
-          </div>
-
           {/* User Table */}
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="p-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">

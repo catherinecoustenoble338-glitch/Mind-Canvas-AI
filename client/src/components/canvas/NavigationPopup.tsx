@@ -147,53 +147,34 @@ export function NavigationPopup() {
                     </div>
                     <ExternalLink size={14} className="text-slate-300" />
                 </Button>
-            </div>
 
-            <div className="border-t border-slate-100 p-2">
-                <div className="px-2 py-1.5 flex items-center justify-between">
-                    <span className="text-xs font-semibold text-slate-500">Recent Chats</span>
-                    <Badge variant="secondary" className="text-[10px] px-1.5 h-4 bg-blue-50 text-blue-600">
-                        {blocksWithChats.length}
-                    </Badge>
-                </div>
-                
-                <div className="space-y-1 mt-1 max-h-[200px] overflow-y-auto pr-1">
-                    {blocksWithChats.length === 0 ? (
-                        <div className="text-center py-4 text-xs text-slate-400 border border-dashed border-slate-100 rounded">
-                            No active chats
+                {/* Chats */}
+                <Button 
+                    variant="ghost" 
+                    className="w-full justify-between h-auto py-3 px-3 hover:bg-slate-50 text-slate-700"
+                    onClick={() => {
+                        setLocation('/chats');
+                        setOpen(false);
+                    }}
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+                            <MessageSquare size={16} />
                         </div>
-                    ) : (
-                        blocksWithChats.slice(0, 3).map((chat) => (
-                            <div 
-                                key={chat.blockId}
-                                className="flex items-start gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer transition-colors group"
-                                onClick={() => handleChatClick(chat.blockId)}
-                            >
-                                <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-[9px] font-bold text-blue-600 shrink-0 mt-0.5">
-                                    {chat.sender === 'user' ? 'ME' : 'AI'}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex justify-between items-baseline">
-                                        <span className="text-xs font-medium text-slate-700 truncate max-w-[120px]">
-                                            {chat.blockLabel}
-                                        </span>
-                                        <span className="text-[9px] text-slate-400 shrink-0">
-                                            {formatDistanceToNow(chat.timestamp, { addSuffix: false }).replace('about ', '')}
-                                        </span>
-                                    </div>
-                                    <p className="text-[10px] text-slate-500 line-clamp-1 group-hover:text-slate-700">
-                                        {chat.lastMessage}
-                                    </p>
-                                </div>
-                            </div>
-                        ))
-                    )}
-                    {blocksWithChats.length > 3 && (
-                        <Button variant="link" size="sm" className="w-full h-6 text-[10px] text-slate-400">
-                            View all {blocksWithChats.length} chats
-                        </Button>
-                    )}
-                </div>
+                        <div className="flex flex-col items-start">
+                            <span className="text-sm font-medium">Chats</span>
+                            <span className="text-[10px] text-slate-400">Team conversations</span>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        {blocksWithChats.length > 0 && (
+                            <Badge variant="secondary" className="h-5 px-1.5 text-[10px] bg-blue-100 text-blue-700 hover:bg-blue-100">
+                                {blocksWithChats.length}
+                            </Badge>
+                        )}
+                        <ChevronRight size={14} className="text-slate-300" />
+                    </div>
+                </Button>
             </div>
         </div>
       </PopoverContent>
