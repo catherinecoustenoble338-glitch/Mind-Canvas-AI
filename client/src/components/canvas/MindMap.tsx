@@ -8,15 +8,59 @@ import ReactFlow, {
   useNodesState,
   useEdgesState,
   Panel,
-  OnSelectionChangeParams
+  OnSelectionChangeParams,
+  useReactFlow
 } from 'reactflow';
 import { useAppStore } from '@/store/useAppStore';
 import CustomBlockNode from './BlockNode';
+import { SettingsDialog } from './SettingsDialog';
+import { Button } from '@/components/ui/button';
+import { Plus, Minus, Maximize, ZoomIn, ZoomOut } from 'lucide-react';
 import 'reactflow/dist/style.css';
 
 const nodeTypes = {
   block: CustomBlockNode,
 };
+
+function CustomControls() {
+  const { zoomIn, zoomOut, fitView } = useReactFlow();
+
+  return (
+    <Panel position="bottom-left" className="flex flex-col gap-2 ml-4 mb-4">
+      <div className="flex flex-col bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="h-8 w-8 rounded-none border-b border-slate-100 hover:bg-slate-50 text-slate-600"
+          onClick={() => zoomIn()}
+        >
+          <Plus size={16} />
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="h-8 w-8 rounded-none border-b border-slate-100 hover:bg-slate-50 text-slate-600"
+          onClick={() => zoomOut()}
+        >
+          <Minus size={16} />
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="h-8 w-8 rounded-none hover:bg-slate-50 text-slate-600"
+          onClick={() => fitView()}
+        >
+          <Maximize size={14} />
+        </Button>
+      </div>
+      
+      {/* Settings Button */}
+      <div className="bg-white rounded-lg shadow-sm">
+         <SettingsDialog />
+      </div>
+    </Panel>
+  );
+}
 
 function MindMapContent() {
   const { 
@@ -58,7 +102,7 @@ function MindMapContent() {
           size={2} 
           color="hsl(215.4 16.3% 85%)" 
         />
-        <Controls showInteractive={false} className="!bg-white !shadow-lg !border-slate-100 !rounded-xl overflow-hidden" />
+        <CustomControls />
       </ReactFlow>
     </div>
   );
