@@ -98,7 +98,7 @@ export function SettingsDialog() {
                          </div>
                       </TabsTrigger>
                    </TabsList>
-               </ScrollArea>
+               </div>
             </div>
 
             {/* Content Area */}
