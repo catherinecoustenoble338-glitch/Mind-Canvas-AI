@@ -104,9 +104,9 @@ function MindMapContent() {
      setSidebarOpen(false);
   }, [setSidebarOpen]);
 
-  // Using the requested gray background color #818181
+  // Using a soft gray background color with dots for a technical drawing feel
   return (
-    <div className="w-full h-full bg-[#818181]">
+    <div className="w-full h-full bg-slate-50">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -117,7 +117,7 @@ function MindMapContent() {
         onSelectionChange={handleSelectionChange}
         onPaneClick={onPaneClick}
         fitView
-        className="bg-[#818181]"
+        className="bg-slate-50"
         minZoom={0.2}
         maxZoom={2}
       >
@@ -125,7 +125,7 @@ function MindMapContent() {
           variant={BackgroundVariant.Dots} 
           gap={24} 
           size={2} 
-          color="#9ca3af" // slate-400 slightly lighter than bg for visibility
+          color="hsl(215.4 16.3% 85%)" 
         />
         <CustomControls />
       </ReactFlow>
