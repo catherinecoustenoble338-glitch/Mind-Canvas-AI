@@ -94,25 +94,26 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
 
       {/* PAGE CONTAINER */}
       <div className={cn(
-         "w-full bg-white rounded-sm overflow-hidden shadow-sm border transition-colors",
-         selected ? "border-primary ring-1 ring-primary shadow-md" : "border-slate-200 hover:border-slate-300"
+         "w-full bg-white rounded-[4px] overflow-hidden shadow-sm border-[1.5px] transition-colors",
+         // Match the blue outline from the reference for selected/default state
+         selected ? "border-[#3B82F6] shadow-md" : "border-[#3B82F6]/60 hover:border-[#3B82F6]" 
       )}>
          
-         {/* HEADER (Just Title, Left Aligned) */}
-         <div className="bg-white border-b border-slate-100 px-2 py-1.5 text-left">
-            <span className="text-xs font-bold text-slate-800 block truncate">{data.label}</span>
+         {/* HEADER (Just Title, Left Aligned) - Reference has a white header with blue text */}
+         <div className="bg-white border-b border-slate-100 px-2 py-2 text-left">
+            <span className="text-[13px] font-bold text-[#3B82F6] block truncate">{data.label}</span>
          </div>
 
-         {/* BLOCKS STACK */}
-         <div className="flex flex-col w-full bg-slate-50 min-h-[40px] gap-px border-t border-slate-100">
+         {/* BLOCKS STACK - Padding matching reference */}
+         <div className="flex flex-col w-full bg-white p-1 gap-1 min-h-[40px]">
             {data.blocks.map((block) => (
-               <div key={block.id} className="w-full relative group/block">
-                  {/* Block Label Bar (Always visible) */}
-                  <div className="w-full bg-slate-100/50 border-b border-slate-100/50 px-2 py-0.5 flex justify-between items-center group-hover/block:bg-slate-100 transition-colors">
-                     {editingBlockId === block.id ? (
+               <div key={block.id} className="w-full relative group/block rounded-[3px] overflow-hidden">
+                  {/* EDIT OVERLAY - Only show input when editing */}
+                   {editingBlockId === block.id && (
+                      <div className="absolute inset-0 z-20 bg-black/50 flex items-center justify-center p-1">
                         <Input 
                            autoFocus
-                           className="h-4 text-[10px] bg-white text-black px-1 py-0 w-full border-slate-200"
+                           className="h-5 text-[10px] bg-white text-black px-1 py-0 w-full border-slate-200 shadow-lg"
                            defaultValue={block.label || block.type}
                            onBlur={(e) => {
                               updateBlockLabel(id, block.id, e.target.value);
@@ -126,49 +127,51 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                            }}
                            onClick={(e) => e.stopPropagation()}
                         />
-                     ) : (
-                        <span 
-                           className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider truncate cursor-pointer hover:text-primary"
-                           onClick={(e) => {
-                              e.stopPropagation();
-                              setEditingBlockId(block.id);
-                           }}
-                        >
-                           {block.label || block.type.replace(/_/g, ' ')}
-                        </span>
-                     )}
+                      </div>
+                   )}
 
-                     {/* Delete Action (Visible on Hover) */}
-                     {selected && (
-                        <button 
-                           className="opacity-0 group-hover/block:opacity-100 text-slate-400 hover:text-red-500 transition-opacity"
-                           onClick={(e) => {
-                              e.stopPropagation();
-                              removeBlockFromNode(id, block.id);
-                           }}
-                        >
-                           <Trash2 size={10} />
-                        </button>
-                     )}
+                  {/* Visual Component - Pass label down */}
+                  <div 
+                    onClick={(e) => {
+                       e.stopPropagation();
+                       setEditingBlockId(block.id);
+                    }}
+                    className="cursor-pointer hover:brightness-95 transition-all"
+                  >
+                     <WireframeVisual type={block.type} label={block.label} />
                   </div>
-
-                  <WireframeVisual type={block.type} />
                   
-                  {/* Connection Handles (Visible on Hover) */}
-                  <div className="absolute top-1/2 -translate-y-1/2 -left-1 opacity-0 group-hover/block:opacity-100 transition-opacity z-10">
-                     <Handle type="target" position={Position.Left} id={`t-${block.id}`} className="!w-2 !h-2 !bg-blue-400 !border-white shadow-sm" />
+                  {/* Delete Action (Visible on Hover) - Top Right overlay */}
+                  {selected && (
+                    <button 
+                        className="absolute top-1 right-1 opacity-0 group-hover/block:opacity-100 text-white/80 hover:text-white hover:bg-red-500/80 p-0.5 rounded transition-all z-10"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeBlockFromNode(id, block.id);
+                        }}
+                    >
+                        <Trash2 size={10} />
+                    </button>
+                  )}
+                  
+                  {/* Connection Handles (Visible on Hover) - Floating outside */}
+                  <div className="absolute top-1/2 -translate-y-1/2 -left-1.5 opacity-0 group-hover/block:opacity-100 transition-opacity z-10">
+                     <Handle type="target" position={Position.Left} id={`t-${block.id}`} className="!w-2.5 !h-2.5 !bg-blue-500 !border-2 !border-white shadow-sm" />
                   </div>
-                  <div className="absolute top-1/2 -translate-y-1/2 -right-1 opacity-0 group-hover/block:opacity-100 transition-opacity z-10">
-                     <Handle type="source" position={Position.Right} id={`s-${block.id}`} className="!w-2 !h-2 !bg-blue-400 !border-white shadow-sm" />
+                  <div className="absolute top-1/2 -translate-y-1/2 -right-1.5 opacity-0 group-hover/block:opacity-100 transition-opacity z-10">
+                     <Handle type="source" position={Position.Right} id={`s-${block.id}`} className="!w-2.5 !h-2.5 !bg-blue-500 !border-2 !border-white shadow-sm" />
                   </div>
                </div>
             ))}
             {data.blocks.length === 0 && (
-               <div className="py-8 text-center text-[10px] text-slate-400 italic">
+               <div className="py-8 text-center text-[10px] text-slate-300 italic">
                   Drop blocks here
                </div>
             )}
          </div>
+         
+         {/* Footer/Bottom bar of the card (Reference has a footer-like area sometimes, or just rounded bottom) */}
+         <div className="h-1 bg-slate-50"></div>
       </div>
     </div>
   );
