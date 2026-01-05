@@ -126,6 +126,7 @@ interface AppState {
   reorderBlocks: (nodeId: string, newBlocks: BlockItem[]) => void;
   updateNodeData: (id: string, data: Partial<BlockData>) => void;
   addChildNode: (parentId: string) => void;
+  removeNode: (nodeId: string) => void;
   setViewMode: (mode: 'visual' | 'brief') => void;
   setSelectedNode: (id: string | null) => void;
   addIconToNode: (nodeId: string, icon: string) => void;
@@ -361,4 +362,11 @@ export const useAppStore = create<AppState>((set, get) => ({
       get().updateNodeData(nodeId, { icons: currentIcons.filter(i => i !== icon) });
     }
   },
+
+  removeNode: (nodeId: string) => {
+      set({
+          nodes: get().nodes.filter(n => n.id !== nodeId),
+          edges: get().edges.filter(e => e.source !== nodeId && e.target !== nodeId)
+      });
+  }
 }));

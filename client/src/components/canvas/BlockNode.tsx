@@ -16,8 +16,9 @@ import { BlockDetailsDialog } from './BlockDetailsDialog';
 import { Button } from '@/components/ui/button';
 
 const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
-  const { viewMode, removeIconFromNode, removeBlockFromNode, updateNodeData, updateBlockLabel, reorderBlocks, addChildNode } = useAppStore();
+  const { viewMode, removeIconFromNode, removeBlockFromNode, updateNodeData, updateBlockLabel, reorderBlocks, addChildNode, removeNode } = useAppStore();
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [selectedBlockForDetails, setSelectedBlockForDetails] = useState<BlockItem | null>(null);
 
@@ -112,9 +113,51 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
          selected ? "border-[#3B82F6] shadow-md" : "border-[#3B82F6]/60 hover:border-[#3B82F6]" 
       )}>
          
-         {/* HEADER (Just Title, Left Aligned) */}
-         <div className="bg-white border-b border-slate-100 px-2 py-2 text-left">
-            <span className="text-[13px] font-bold text-[#3B82F6] block truncate">{data.label}</span>
+         {/* HEADER (Title and Delete) */}
+         <div className="bg-white border-b border-slate-100 px-2 py-2 flex justify-between items-center group/header">
+            {isEditingTitle ? (
+               <Input 
+                  autoFocus
+                  className="h-5 text-[13px] font-bold text-[#3B82F6] px-1 py-0 w-full border-slate-200"
+                  defaultValue={data.label}
+                  onBlur={(e) => {
+                     updateNodeData(id, { label: e.target.value });
+                     setIsEditingTitle(false);
+                  }}
+                  onKeyDown={(e) => {
+                     if (e.key === 'Enter') {
+                        updateNodeData(id, { label: e.currentTarget.value });
+                        setIsEditingTitle(false);
+                     }
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+               />
+            ) : (
+               <span 
+                  className="text-[13px] font-bold text-[#3B82F6] block truncate cursor-pointer hover:bg-slate-50 px-1 rounded transition-colors flex-1 mr-2"
+                  onClick={(e) => {
+                     e.stopPropagation();
+                     setIsEditingTitle(true);
+                  }}
+                  title="Click to rename"
+               >
+                  {data.label}
+               </span>
+            )}
+            
+            {/* Delete Page Button */}
+            <Button 
+               size="icon" 
+               variant="ghost" 
+               className="h-5 w-5 text-slate-300 hover:text-red-500 opacity-0 group-hover/header:opacity-100 transition-opacity"
+               onClick={(e) => {
+                  e.stopPropagation();
+                  removeNode(id);
+               }}
+               title="Delete Page"
+            >
+               <Trash2 size={12} />
+            </Button>
          </div>
 
          {/* BLOCKS STACK */}
