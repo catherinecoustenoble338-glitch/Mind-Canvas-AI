@@ -15,14 +15,14 @@ import {
 } from 'reactflow';
 
 // Helper for Auto Layout using Dagre
-const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => {
+const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB', showDetails = false) => {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
   const nodeWidth = 240; // Block width (200px) + reduced spacing
-  const nodeHeight = 600; // Average block height + spacing
+  const nodeHeight = showDetails ? 1200 : 600; // Increased height when details are shown
 
-  dagreGraph.setGraph({ rankdir: direction, align: 'DL', ranksep: 30, nodesep: 10 });
+  dagreGraph.setGraph({ rankdir: direction, align: 'DL', ranksep: 50, nodesep: 20 }); // Increased spacing for details view
 
   nodes.forEach((node) => {
     dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
@@ -37,9 +37,6 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
   const layoutedNodes = nodes.map((node) => {
     const nodeWithPosition = dagreGraph.node(node.id);
     
-    // Slight randomization or adjustment could be added here if needed, but dagre gives absolute pos
-    // We want to preserve the reference to avoid full React re-renders if pos hasn't changed much, 
-    // but simplified for now:
     return {
       ...node,
       position: {
@@ -496,7 +493,8 @@ export const useAppStore = create<AppState>((set, get) => ({
       },
     };
     
-    const { nodes: layoutedNodes } = getLayoutedElements([...get().nodes, newNode], get().edges);
+    const { showDetails } = get();
+    const { nodes: layoutedNodes } = getLayoutedElements([...get().nodes, newNode], get().edges, 'TB', showDetails);
     set({ nodes: layoutedNodes });
   },
 
@@ -522,7 +520,8 @@ export const useAppStore = create<AppState>((set, get) => ({
       // But user requested "When creating a new block or changing another... arrange automatically"
       // If adding a block makes the node taller, we might want to adjust layout if we were calculating height dynamically.
       // For now, let's trigger layout just in case we switch to dynamic height later.
-      const { nodes: layoutedNodes } = getLayoutedElements(updatedNodes, get().edges);
+      const { showDetails } = get();
+      const { nodes: layoutedNodes } = getLayoutedElements(updatedNodes, get().edges, 'TB', showDetails);
       
       set({ nodes: layoutedNodes });
     }
@@ -661,7 +660,8 @@ export const useAppStore = create<AppState>((set, get) => ({
     const updatedEdges = [...get().edges, newEdge];
     
     // Apply Auto Layout
-    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(updatedNodes, updatedEdges);
+    const { showDetails } = get();
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(updatedNodes, updatedEdges, 'TB', showDetails);
 
     set({
       nodes: layoutedNodes,
@@ -670,7 +670,14 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   setViewMode: (mode) => set({ viewMode: mode }),
-  toggleDetails: () => set((state) => ({ showDetails: !state.showDetails })),
+  toggleDetails: () => {
+    const newShowDetails = !get().showDetails;
+    set({ showDetails: newShowDetails });
+    // Re-layout when toggling details
+    const { nodes, edges } = get();
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(nodes, edges, 'TB', newShowDetails);
+    set({ nodes: layoutedNodes, edges: layoutedEdges });
+  },
   setSelectedNode: (id) => set({ selectedNodeId: id }),
 
   addIconToNode: (nodeId, icon) => {
@@ -709,8 +716,8 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   layoutNodes: () => {
     get().pushToHistory('Auto Layout');
-    const { nodes, edges } = get();
-    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(nodes, edges);
+    const { nodes, edges, showDetails } = get();
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(nodes, edges, 'TB', showDetails);
     set({ nodes: layoutedNodes, edges: layoutedEdges });
   }
 }));
