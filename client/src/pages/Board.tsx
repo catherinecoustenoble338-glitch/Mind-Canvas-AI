@@ -20,18 +20,6 @@ export default function Board() {
             onClick={() => setSidebarOpen(false)}
         />
 
-        {/* Toggle Button - hidden when sidebar is open on mobile to avoid overlap */}
-        <div className={`absolute top-4 left-4 z-50 transition-opacity duration-300 ${sidebarOpen ? 'opacity-0 md:opacity-100 pointer-events-none md:pointer-events-auto' : 'opacity-100'}`}>
-            <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-12 w-12 md:h-9 md:w-9 bg-white shadow-sm border border-slate-200 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-50"
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-            >
-                {sidebarOpen ? <PanelLeftClose size={18} /> : <Menu size={18} />}
-            </Button>
-        </div>
-
         {/* Sidebar with Drawer behavior on mobile, Push behavior on desktop */}
         <div 
             className={`

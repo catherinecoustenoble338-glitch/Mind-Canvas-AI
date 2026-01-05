@@ -4,7 +4,7 @@ import { useAppStore, BlockData, PageStatus, BlockItem } from '@/store/useAppSto
 import WireframeVisual from './WireframeVisual';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { X, MoreHorizontal, ChevronDown, Trash2, GripVertical, MessageSquare, Info, PlusCircle, Lightbulb, Loader2, Eye, CheckCircle2, AlertCircle, AlertTriangle, FileText, Target, List, User } from 'lucide-react';
+import { X, MoreHorizontal, ChevronDown, Trash2, GripVertical, MessageSquare, Info, PlusCircle, Lightbulb, Loader2, Eye, CheckCircle2, AlertCircle, AlertTriangle, FileText, Target, List, User, Plus, Edit } from 'lucide-react';
 import { Reorder, useDragControls } from 'framer-motion';
 import {
   DropdownMenu,

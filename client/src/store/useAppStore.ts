@@ -131,7 +131,7 @@ interface AppState {
   onConnect: OnConnect;
   
   addNode: (position: { x: number, y: number }) => void;
-  addBlockToNode: (nodeId: string, type: WireframeType) => void;
+  addBlockToNode: (nodeId: string, type: WireframeType, insertAfterBlockId?: string | null) => void;
   removeBlockFromNode: (nodeId: string, blockId: string) => void;
   updateBlockLabel: (nodeId: string, blockId: string, label: string) => void;
   updateBlockDescription: (nodeId: string, blockId: string, description: string) => void;
@@ -152,6 +152,8 @@ interface AppState {
   
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
+  insertAfterBlockId: string | null;
+  setInsertAfterBlockId: (id: string | null) => void;
   layoutNodes: () => void;
 
   // History & Logging
@@ -500,7 +502,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ nodes: layoutedNodes });
   },
 
-  addBlockToNode: (nodeId, type) => {
+  addBlockToNode: (nodeId, type, insertAfterBlockId = null) => {
     get().pushToHistory(`Added Block: ${type}`);
     const node = get().nodes.find(n => n.id === nodeId);
     if (node) {
@@ -513,9 +515,23 @@ export const useAppStore = create<AppState>((set, get) => ({
       };
       
       // Update blocks first
-      const updatedNodes = get().nodes.map(n => 
-        n.id === nodeId ? { ...n, data: { ...n.data, blocks: [...n.data.blocks, newBlock] } } : n
-      );
+      const updatedNodes = get().nodes.map(n => {
+        if (n.id === nodeId) {
+          let updatedBlocks = [...n.data.blocks];
+          if (insertAfterBlockId) {
+            const index = updatedBlocks.findIndex(b => b.id === insertAfterBlockId);
+            if (index !== -1) {
+              updatedBlocks.splice(index + 1, 0, newBlock);
+            } else {
+              updatedBlocks.push(newBlock);
+            }
+          } else {
+            updatedBlocks.push(newBlock);
+          }
+          return { ...n, data: { ...n.data, blocks: updatedBlocks } };
+        }
+        return n;
+      });
       
       // Then re-layout because block height might change effective size (though we use fixed size for dagre for now to keep it simple)
       // Actually, dagre uses fixed size in my config above, so just adding a block INSIDE a node doesn't change graph topology
@@ -712,6 +728,8 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   sidebarOpen: true,
   setSidebarOpen: (open) => set({ sidebarOpen: open }),
+  insertAfterBlockId: null,
+  setInsertAfterBlockId: (id) => set({ insertAfterBlockId: id }),
 
   activeBlockId: null,
   setActiveBlockId: (id) => set({ activeBlockId: id }),

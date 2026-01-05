@@ -124,7 +124,9 @@ export function Sidebar() {
     addIconToNode, 
     removeIconFromNode,
     removeBlockFromNode,
-    setSidebarOpen
+    setSidebarOpen,
+    insertAfterBlockId,
+    setInsertAfterBlockId
   } = useAppStore();
   
   const selectedNode = nodes.find(n => n.id === selectedNodeId);
@@ -132,7 +134,9 @@ export function Sidebar() {
 
   const handleToolClick = (type: WireframeType) => {
     if (selectedNodeId) {
-      addBlockToNode(selectedNodeId, type);
+      addBlockToNode(selectedNodeId, type, insertAfterBlockId);
+      // Reset insertion point after adding
+      setInsertAfterBlockId(null);
     } else {
       addNode({ x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 });
     }
