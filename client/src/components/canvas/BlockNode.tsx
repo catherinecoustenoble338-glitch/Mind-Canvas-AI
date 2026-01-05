@@ -105,7 +105,10 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
     <div 
       className={cn(
         "relative rounded-sm transition-all duration-200 group bg-transparent flex flex-col items-center",
-        viewMode === 'visual' ? "w-[200px]" : "w-[200px]" // Consistent width for both modes to accommodate text
+        // Width adjustment based on showDetails
+        // Visual mode: 200px
+        // Details mode: 200px + 16px (gap) + 160px (details) + 16px (padding) ~= 400px
+        viewMode === 'visual' ? (showDetails ? "w-[400px]" : "w-[200px]") : "w-[200px]" 
       )}
     >
       {/* Handles */}
@@ -407,26 +410,26 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                            openDetails(block);
                        }
                     }}
-                    className="cursor-pointer hover:brightness-95 transition-all relative"
+                    className="cursor-pointer hover:brightness-95 transition-all relative flex gap-4 items-start"
                   >
-                     <WireframeVisual type={block.type} label={block.label} />
+                     {/* LEFT SIDE: Visual */}
+                     <div className="w-full flex-1 min-w-0">
+                         <WireframeVisual type={block.type} label={block.label} />
+                     </div>
                      
-                     {/* DETAILS OVERLAY (VFP & Features) - Placed to the RIGHT */}
-                     {showDetails && (block.vfp || block.features) && (
-                        <div className="absolute left-[105%] top-0 w-[160px] bg-white/95 backdrop-blur-sm rounded-md shadow-md border border-slate-200 p-2 flex flex-col gap-1.5 z-50 text-left">
-                             {/* Arrow pointing left */}
-                             <div className="absolute top-3 -left-1.5 w-3 h-3 bg-white border-l border-b border-slate-200 transform rotate-45"></div>
-                             
+                     {/* RIGHT SIDE: DETAILS (Within Flow) */}
+                     {showDetails && (
+                        <div className="w-[160px] shrink-0 pt-2 flex flex-col gap-1.5 text-left border-l border-dashed border-slate-200 pl-4 min-h-[40px]">
                              {/* VFP */}
                              {(block.vfp) && (
-                                <div className="text-[10px] font-medium text-slate-700 leading-tight relative z-10">
+                                <div className="text-[10px] font-medium text-slate-700 leading-tight">
                                    {block.vfp}
                                 </div>
                              )}
                              
                              {/* Features */}
                              {(block.features) && (
-                                <div className="text-[9px] text-slate-500 leading-tight relative z-10">
+                                <div className="text-[9px] text-slate-500 leading-tight">
                                    <div className="flex flex-col gap-0.5">
                                      {block.features.split('\n').slice(0, 5).map((line, i) => (
                                        <div key={i} className="flex gap-1 items-start">
@@ -437,6 +440,10 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                                      {block.features.split('\n').length > 5 && <span className="text-[8px] text-slate-400 pl-1.5 italic">more...</span>}
                                    </div>
                                 </div>
+                             )}
+                             
+                             {!block.vfp && !block.features && (
+                                <span className="text-[9px] text-slate-300 italic">No details...</span>
                              )}
                         </div>
                      )}

@@ -19,10 +19,10 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB', sho
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-  const nodeWidth = 240; // Block width (200px) + reduced spacing
+  const nodeWidth = showDetails ? 440 : 240; // Block width (200px or 400px) + reduced spacing
   const nodeHeight = showDetails ? 1200 : 600; // Increased height when details are shown
 
-  dagreGraph.setGraph({ rankdir: direction, align: 'DL', ranksep: 50, nodesep: 20 }); // Increased spacing for details view
+  dagreGraph.setGraph({ rankdir: direction, align: 'DL', ranksep: 50, nodesep: showDetails ? 40 : 20 }); // Increased spacing for details view
 
   nodes.forEach((node) => {
     dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
