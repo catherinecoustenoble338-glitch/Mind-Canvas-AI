@@ -145,7 +145,7 @@ export function Sidebar() {
   return (
     <div className="h-full flex flex-col bg-white border-r border-slate-200 w-[320px] shadow-xl z-10 font-sans">
       {/* Header Logo */}
-      <div className="p-4 border-b border-slate-100 flex items-center gap-3 bg-white">
+      <div className="p-4 pl-14 border-b border-slate-100 flex items-center gap-3 bg-white">
         <div className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center text-white shadow-md">
            <Grid size={18} />
         </div>

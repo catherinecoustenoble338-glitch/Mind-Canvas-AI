@@ -197,36 +197,61 @@ export function SettingsDialog() {
                   </div>
                </TabsContent>
 
-               {/* Services Tab */}
+               {/* Services Tab - Renamed to Page Tags/Services Management */}
                <TabsContent value="services" className="flex-1 m-0 p-6 space-y-6 overflow-auto">
                   <div className="flex items-center justify-between">
                      <div className="space-y-1">
-                        <h3 className="text-lg font-semibold text-slate-800">Services</h3>
-                        <p className="text-xs text-slate-500">Connected integrations and APIs.</p>
+                        <h3 className="text-lg font-semibold text-slate-800">Page Tags & Services</h3>
+                        <p className="text-xs text-slate-500">Manage the list of technologies and services available to tag your pages.</p>
                      </div>
                      <Button size="sm" variant="outline" className="h-8 gap-1">
-                        <Plus size={12} /> Add Service
+                        <Plus size={12} /> Add Tag
                      </Button>
                   </div>
-                  <div className="space-y-2">
-                     {services.map(service => (
-                        <div key={service.id} className="flex items-center justify-between p-3 border border-slate-100 rounded-lg">
-                           <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded bg-slate-50 flex items-center justify-center border border-slate-200">
-                                 <Zap size={16} className="text-slate-400" />
+                  
+                  <div className="grid gap-2">
+                     <div className="p-3 border border-slate-100 rounded-lg bg-blue-50/50">
+                        <p className="text-xs text-blue-600">
+                           These tags appear in the "Page Properties" panel when you select a page. Use them to indicate which services or technologies are used on a specific page.
+                        </p>
+                     </div>
+
+                     <div className="space-y-2 mt-2">
+                        {[
+                           { name: 'Stripe', category: 'Payments' },
+                           { name: 'Supabase', category: 'Database' },
+                           { name: 'React', category: 'Frontend' },
+                           { name: 'Vite', category: 'Build Tool' },
+                           { name: 'Tailwind', category: 'Styling' },
+                           { name: 'Firebase', category: 'Backend' },
+                           { name: 'AWS', category: 'Infrastructure' },
+                        ].map((tag, i) => (
+                           <div key={i} className="flex items-center justify-between p-3 border border-slate-100 rounded-lg hover:bg-slate-50 transition-colors group">
+                              <div className="flex items-center gap-3">
+                                 <div className="w-8 h-8 rounded bg-white flex items-center justify-center border border-slate-200">
+                                    <img 
+                                       src={`https://cdn.simpleicons.org/${tag.name.toLowerCase().replace(/\s+/g, '')}`} 
+                                       className="w-4 h-4 opacity-70" 
+                                       alt={tag.name}
+                                       onError={(e) => { (e.target as HTMLImageElement).src = 'https://cdn.simpleicons.org/juejin'; }} // Fallback
+                                    />
+                                 </div>
+                                 <div className="flex flex-col">
+                                     <span className="font-medium text-sm text-slate-700">{tag.name}</span>
+                                     <span className="text-[10px] text-slate-400">{tag.category}</span>
+                                 </div>
                               </div>
-                              <span className="font-medium text-sm text-slate-700">{service.name}</span>
+                              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                 <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-blue-500">
+                                    <MoreHorizontal size={14} />
+                                 </Button>
+                                 <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-red-500">
+                                    <Trash2 size={14} />
+                                 </Button>
+                              </div>
                            </div>
-                           <div className="flex items-center gap-3">
-                              <Badge variant={service.status === 'Connected' ? 'default' : 'outline'} className={service.status === 'Connected' ? "bg-emerald-500 hover:bg-emerald-600 text-[10px]" : "text-slate-400 text-[10px]"}>
-                                 {service.status}
-                              </Badge>
-                              <Button variant="ghost" size="icon" className="h-6 w-6 text-slate-400">
-                                 <MoreHorizontal size={14} />
-                              </Button>
-                           </div>
-                        </div>
-                     ))}
+                        ))}
+                     </div>
                   </div>
                </TabsContent>
 
