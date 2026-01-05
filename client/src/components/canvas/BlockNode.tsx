@@ -129,7 +129,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
       )}>
          
          {/* HEADER (Title and Delete) */}
-         <div className="bg-white border-b border-slate-100 px-[4px] py-2 flex justify-between items-center group/header">
+         <div className="bg-white border-b border-slate-100 px-[8px] py-2 flex justify-between items-center group/header">
             {isEditingTitle ? (
                <Input 
                   autoFocus
@@ -176,7 +176,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
          </div>
 
          {/* BLOCKS STACK */}
-         <Reorder.Group axis="y" values={data.blocks} onReorder={handleReorder} className="flex flex-col w-full bg-white p-[4px] gap-1 min-h-[40px]">
+         <Reorder.Group axis="y" values={data.blocks} onReorder={handleReorder} className="flex flex-col w-full bg-white p-[8px] gap-1 min-h-[40px]">
             {data.blocks.map((block) => (
                <Reorder.Item 
                   key={block.id} 
