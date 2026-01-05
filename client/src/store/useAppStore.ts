@@ -368,5 +368,14 @@ export const useAppStore = create<AppState>((set, get) => ({
           nodes: get().nodes.filter(n => n.id !== nodeId),
           edges: get().edges.filter(e => e.source !== nodeId && e.target !== nodeId)
       });
+  },
+
+  sidebarOpen: true,
+  setSidebarOpen: (open) => set({ sidebarOpen: open }),
+
+  layoutNodes: () => {
+    const { nodes, edges } = get();
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(nodes, edges);
+    set({ nodes: layoutedNodes, edges: layoutedEdges });
   }
 }));

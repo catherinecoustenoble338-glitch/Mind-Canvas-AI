@@ -4,9 +4,10 @@ import { Sidebar } from '@/components/canvas/Sidebar';
 import { ReactFlowProvider } from 'reactflow';
 import { Button } from '@/components/ui/button';
 import { Menu, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { useAppStore } from '@/store/useAppStore';
 
 export default function Board() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { sidebarOpen, setSidebarOpen } = useAppStore();
 
   return (
     <ReactFlowProvider>
