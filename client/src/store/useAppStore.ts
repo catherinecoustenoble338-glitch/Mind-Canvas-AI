@@ -19,10 +19,10 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-  const nodeWidth = 300; // Block width + spacing
+  const nodeWidth = 240; // Block width (200px) + reduced spacing
   const nodeHeight = 600; // Average block height + spacing
 
-  dagreGraph.setGraph({ rankdir: direction, align: 'DL', ranksep: 30, nodesep: 15 });
+  dagreGraph.setGraph({ rankdir: direction, align: 'DL', ranksep: 30, nodesep: 10 });
 
   nodes.forEach((node) => {
     dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
