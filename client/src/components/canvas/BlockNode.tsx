@@ -41,7 +41,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
 
   const statusIcons: Record<PageStatus, React.ReactNode> = {
     idea: <Lightbulb size={12} />,
-    in_progress: <Loader2 size={12} className="animate-spin" />,
+    in_progress: <Loader2 size={12} />, // Static loader icon
     review: <Eye size={12} />,
     done: <CheckCircle2 size={12} />,
     error: <AlertCircle size={12} />
