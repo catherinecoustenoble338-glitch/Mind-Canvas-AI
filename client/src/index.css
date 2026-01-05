@@ -45,8 +45,10 @@
   --color-chart-4: hsl(43 74% 66%);
   --color-chart-5: hsl(27 87% 67%);
 
-  --font-sans: 'Inter', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  /* Apple System Font Stack */
+  --font-apple-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --font-sans: var(--font-apple-system);
+  --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
 }
 
 @layer base {
@@ -55,6 +57,7 @@
   }
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    font-family: var(--font-apple-system); /* Enforce at body level */
   }
 }
 
