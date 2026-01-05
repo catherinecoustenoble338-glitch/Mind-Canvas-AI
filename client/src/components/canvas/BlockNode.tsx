@@ -162,7 +162,6 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                         // BRIEF VIEW: Description Text
                         <div className="w-full bg-slate-50 border border-slate-200 rounded-sm p-3 min-h-[60px] flex flex-col gap-1">
                             <div className="flex items-center gap-2">
-                                <span className="bg-slate-200 text-slate-600 px-1 py-0.5 rounded-[2px] text-[9px] font-bold uppercase tracking-wider">{block.type.replace(/_/g, ' ')}</span>
                                 <span className="text-[11px] font-bold text-slate-800 truncate">{block.label}</span>
                             </div>
                             <p className="text-[10px] text-slate-500 leading-relaxed line-clamp-3">
