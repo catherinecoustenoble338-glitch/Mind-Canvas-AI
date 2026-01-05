@@ -116,8 +116,8 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                <Reorder.Item 
                   key={block.id} 
                   value={block} 
-                  className="w-full relative group/block rounded-[3px] overflow-hidden nopan"
-                  // Prevent drag propagation to ReactFlow canvas
+                  className="w-full relative group/block rounded-[3px] overflow-hidden nodrag"
+                  // Prevent drag propagation to ReactFlow canvas - this is key for Framer Motion drag to work without dragging the node
                   onPointerDown={(e) => e.stopPropagation()} 
                >
                   {/* EDIT OVERLAY - Only show input when editing */}
