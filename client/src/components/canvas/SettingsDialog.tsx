@@ -64,13 +64,11 @@ export function SettingsDialog() {
             <div className="w-full sm:w-[200px] border-b sm:border-b-0 sm:border-r border-slate-100 bg-slate-50/50 p-2 flex flex-col gap-1 shrink-0">
                <div className="px-3 py-2 mb-2 flex justify-between items-center sm:block">
                   <h2 className="text-sm font-bold text-slate-800">Settings</h2>
-                  <Button variant="ghost" size="icon" onClick={() => setOpen(false)} className="sm:hidden h-8 w-8 -mr-2 text-slate-400">
-                    <span className="text-xl leading-none">&times;</span>
-                  </Button>
+                  {/* Close button is handled by DialogContent automatically */}
                </div>
                
                {/* Scrollable horizontal nav on mobile, Vertical on desktop */}
-               <ScrollArea className="w-full sm:h-auto whitespace-nowrap sm:whitespace-normal pb-2 sm:pb-0">
+               <div className="w-full sm:h-auto overflow-x-auto pb-2 sm:pb-0 no-scrollbar">
                    <TabsList className="flex flex-row sm:flex-col h-auto bg-transparent gap-1 items-stretch p-0 w-max sm:w-full justify-start px-2 sm:px-0">
                       <TabsTrigger value="profile" className="justify-start gap-2 px-3 py-2 h-9 text-xs data-[state=active]:bg-white data-[state=active]:shadow-sm border border-transparent data-[state=active]:border-slate-200/60 shrink-0">
                          <User size={14} /> Profile
