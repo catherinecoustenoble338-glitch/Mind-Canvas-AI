@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppStore, BlockItem } from '@/store/useAppStore';
 import { 
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
+  DialogFooter
 } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageSquare, Paperclip, Send, FileText } from 'lucide-react';
+import { MessageSquare, Paperclip, Send, FileText, Check } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface BlockDetailsDialogProps {
@@ -22,8 +23,74 @@ interface BlockDetailsDialogProps {
 }
 
 export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockDetailsDialogProps) {
-  const { updateBlockDescription, addBlockChatMessage } = useAppStore();
+  const { updateBlockDescription, updateBlockLabel, addBlockChatMessage } = useAppStore();
   const [messageText, setMessageText] = useState('');
+  
+  // Local state for editing to allow "Save" action
+  const [tempLabel, setTempLabel] = useState(block.label || '');
+  const [tempDescription, setTempDescription] = useState(block.description || '');
+
+  // Sync state when dialog opens or block changes
+  useEffect(() => {
+      if (open) {
+          setTempLabel(block.label || '');
+          setTempDescription(block.description || '');
+      }
+  }, [open, block]);
+
+  const handleSave = () => {
+      updateBlockLabel(nodeId, block.id, tempLabel);
+      updateBlockDescription(nodeId, block.id, tempDescription);
+      onOpenChange(false);
+  };
+
+  const handleDescriptionKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Enter') {
+          e.preventDefault();
+          
+          const textarea = e.currentTarget;
+          const { selectionStart, selectionEnd, value } = textarea;
+          
+          // Find the current line
+          const lastNewline = value.lastIndexOf('\n', selectionStart - 1);
+          const currentLineStart = lastNewline === -1 ? 0 : lastNewline + 1;
+          const currentLine = value.substring(currentLineStart, selectionStart);
+          
+          // Check if current line starts with a bullet
+          const bulletMatch = currentLine.match(/^(\s*)([-*•]\s?)(.*)/);
+          
+          let newValue = value;
+          let newCursorPos = selectionStart + 1; // Default is just newline
+
+          if (bulletMatch) {
+              const [_, indent, bullet, content] = bulletMatch;
+              
+              if (content.trim() === '') {
+                  // Empty bullet line -> remove bullet (exit list mode)
+                  const lineEnd = value.indexOf('\n', selectionStart);
+                  const afterCursor = lineEnd === -1 ? '' : value.substring(lineEnd); // Keep rest of text if any
+                  
+                  newValue = value.substring(0, currentLineStart) + afterCursor.replace(/^\n/, ''); // Remove the line entirely effectively
+                  newCursorPos = currentLineStart;
+              } else {
+                  // Content exists -> continue list
+                  const nextBullet = `\n${indent}${bullet}`;
+                  newValue = value.substring(0, selectionStart) + nextBullet + value.substring(selectionEnd);
+                  newCursorPos = selectionStart + nextBullet.length;
+              }
+          } else {
+              // Normal newline
+              newValue = value.substring(0, selectionStart) + '\n' + value.substring(selectionEnd);
+          }
+
+          setTempDescription(newValue);
+          
+          // Need to manually set cursor position after render cycle
+          setTimeout(() => {
+              textarea.selectionStart = textarea.selectionEnd = newCursorPos;
+          }, 0);
+      }
+  };
 
   const handleSendMessage = () => {
     if (!messageText.trim()) return;
@@ -54,12 +121,19 @@ export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockD
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] h-[600px] flex flex-col p-0 gap-0 overflow-hidden">
-        <DialogHeader className="p-4 border-b border-slate-100 bg-slate-50/50">
-          <DialogTitle className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-             <span className="bg-slate-200 px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wider text-slate-500 font-bold">{block.type.replace(/_/g, ' ')}</span>
-             {block.label || 'Block Details'}
-          </DialogTitle>
+      <DialogContent className="sm:max-w-[500px] h-[600px] flex flex-col p-0 gap-0 overflow-hidden bg-white">
+        <DialogHeader className="p-4 border-b border-slate-100 bg-slate-50/50 flex flex-row items-center justify-between space-y-0">
+          <div className="flex-1 mr-4">
+             <div className="flex items-center gap-2 mb-1">
+                 <span className="bg-slate-200 px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wider text-slate-500 font-bold shrink-0">{block.type.replace(/_/g, ' ')}</span>
+             </div>
+             <Input 
+                value={tempLabel}
+                onChange={(e) => setTempLabel(e.target.value)}
+                className="h-8 font-semibold text-slate-700 border-transparent hover:border-slate-200 focus:border-blue-500 px-1 -ml-1 text-base bg-transparent shadow-none"
+                placeholder="Block Name"
+             />
+          </div>
         </DialogHeader>
 
         <Tabs defaultValue="description" className="flex-1 flex flex-col overflow-hidden">
@@ -72,26 +146,25 @@ export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockD
 
             <TabsContent value="description" className="flex-1 p-4 m-0 overflow-hidden flex flex-col gap-2">
                 <div className="space-y-1 flex-1 flex flex-col">
-                    <div className="flex justify-between items-center">
-                        <label className="text-xs font-medium text-slate-500">Block Description (Visible in Brief Mode)</label>
-                        <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="h-6 text-[10px] text-blue-500 px-2"
-                            onClick={() => {
-                                const newDesc = block.description ? block.description + '\n• ' : '• ';
-                                updateBlockDescription(nodeId, block.id, newDesc);
-                            }}
-                        >
-                            + Add Bullet
-                        </Button>
+                    <div className="flex justify-between items-center mb-1">
+                        <label className="text-xs font-medium text-slate-500">Block Requirements</label>
+                        <span className="text-[10px] text-slate-400">Press Enter for new bullet</span>
                     </div>
                     <Textarea 
-                        placeholder="Describe the functionality and content of this block... Use - or • for bullets."
-                        className="flex-1 resize-none text-sm leading-relaxed p-3 focus-visible:ring-1 bg-slate-50 border-slate-200"
-                        value={block.description || ''}
-                        onChange={(e) => updateBlockDescription(nodeId, block.id, e.target.value)}
+                        placeholder="Describe what this block should do...
+- Start with a dash for lists
+- Press Enter to continue list"
+                        className="flex-1 resize-none text-sm leading-relaxed p-3 focus-visible:ring-1 bg-slate-50/50 border-slate-200 focus:bg-white transition-colors"
+                        value={tempDescription}
+                        onChange={(e) => setTempDescription(e.target.value)}
+                        onKeyDown={handleDescriptionKeyDown}
                     />
+                </div>
+                <div className="flex justify-end pt-2">
+                    <Button size="sm" onClick={handleSave} className="gap-1 bg-blue-600 hover:bg-blue-700">
+                        <Check size={14} />
+                        Save Changes
+                    </Button>
                 </div>
             </TabsContent>
 

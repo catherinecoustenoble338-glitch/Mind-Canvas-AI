@@ -129,50 +129,55 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
       )}>
          
          {/* HEADER (Title and Delete) */}
-         <div className="bg-white border-b border-slate-100 px-[8px] py-2 flex justify-between items-center group/header">
-            {isEditingTitle ? (
-               <Input 
-                  autoFocus
-                  className="h-5 text-[13px] font-bold text-[#3B82F6] px-1 py-0 w-full border-slate-200 text-center"
-                  defaultValue={data.label}
-                  onBlur={(e) => {
-                     updateNodeData(id, { label: e.target.value });
-                     setIsEditingTitle(false);
-                  }}
-                  onKeyDown={(e) => {
-                     if (e.key === 'Enter') {
-                        updateNodeData(id, { label: e.currentTarget.value });
-                        setIsEditingTitle(false);
-                     }
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-               />
-            ) : (
-               <span 
-                  className="text-[13px] font-bold text-[#3B82F6] block truncate cursor-pointer hover:bg-slate-50 px-1 rounded transition-colors flex-1 mr-2 text-center"
-                  onClick={(e) => {
-                     e.stopPropagation();
-                     setIsEditingTitle(true);
-                  }}
-                  title="Click to rename"
-               >
-                  {data.label}
-               </span>
-            )}
+         <div className="bg-white border-b border-slate-100 px-[8px] py-2 flex justify-center items-center relative group/header min-h-[36px]">
+            {/* Title Input/Display - Centered */}
+            <div className="w-full px-6 flex justify-center">
+                {isEditingTitle ? (
+                   <Input 
+                      autoFocus
+                      className="h-5 text-[13px] font-bold text-[#3B82F6] px-1 py-0 w-full border-slate-200 text-center"
+                      defaultValue={data.label}
+                      onBlur={(e) => {
+                         updateNodeData(id, { label: e.target.value });
+                         setIsEditingTitle(false);
+                      }}
+                      onKeyDown={(e) => {
+                         if (e.key === 'Enter') {
+                            updateNodeData(id, { label: e.currentTarget.value });
+                            setIsEditingTitle(false);
+                         }
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                   />
+                ) : (
+                   <span 
+                      className="text-[13px] font-bold text-[#3B82F6] block truncate cursor-pointer hover:bg-slate-50 px-1 rounded transition-colors w-full text-center"
+                      onClick={(e) => {
+                         e.stopPropagation();
+                         setIsEditingTitle(true);
+                      }}
+                      title="Click to rename"
+                   >
+                      {data.label}
+                   </span>
+                )}
+            </div>
             
-            {/* Delete Page Button */}
-            <Button 
-               size="icon" 
-               variant="ghost" 
-               className="h-5 w-5 text-slate-300 hover:text-red-500 opacity-0 group-hover/header:opacity-100 transition-opacity"
-               onClick={(e) => {
-                  e.stopPropagation();
-                  removeNode(id);
-               }}
-               title="Delete Page"
-            >
-               <Trash2 size={12} />
-            </Button>
+            {/* Delete Page Button - Absolute Right Overlay */}
+            <div className="absolute right-1 top-1/2 -translate-y-1/2 z-10">
+                <Button 
+                   size="icon" 
+                   variant="ghost" 
+                   className="h-5 w-5 text-slate-300 hover:text-red-500 opacity-0 group-hover/header:opacity-100 transition-opacity"
+                   onClick={(e) => {
+                      e.stopPropagation();
+                      removeNode(id);
+                   }}
+                   title="Delete Page"
+                >
+                   <Trash2 size={12} />
+                </Button>
+            </div>
          </div>
 
          {/* BLOCKS STACK */}

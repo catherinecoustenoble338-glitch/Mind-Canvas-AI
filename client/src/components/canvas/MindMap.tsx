@@ -15,8 +15,9 @@ import { useAppStore } from '@/store/useAppStore';
 import CustomBlockNode from './BlockNode';
 import { SettingsDialog } from './SettingsDialog';
 import { Button } from '@/components/ui/button';
-import { Plus, Minus, Maximize, ZoomIn, ZoomOut, LayoutTemplate } from 'lucide-react';
+import { Plus, Minus, Maximize, ZoomIn, ZoomOut, LayoutTemplate, FileText, Layers } from 'lucide-react';
 import 'reactflow/dist/style.css';
+import { cn } from '@/lib/utils';
 
 const nodeTypes = {
   block: CustomBlockNode,
@@ -24,10 +25,11 @@ const nodeTypes = {
 
 function CustomControls() {
   const { zoomIn, zoomOut, fitView } = useReactFlow();
-  const { layoutNodes } = useAppStore();
+  const { layoutNodes, viewMode, setViewMode } = useAppStore();
 
   return (
     <Panel position="bottom-left" className="flex flex-col gap-2 ml-4 mb-4 md:mb-4 mb-20">
+      {/* Zoom Controls */}
       <div className="flex flex-col bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
         <Button 
           variant="ghost" 
@@ -58,23 +60,52 @@ function CustomControls() {
         </Button>
       </div>
       
-      <div className="flex gap-2">
-         {/* Settings Button */}
-         <div className="bg-white rounded-lg shadow-sm">
-            <SettingsDialog />
+      {/* Bottom Bar Controls Group */}
+      <div className="flex gap-2 items-center">
+         {/* View Mode Toggle */}
+         <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-0.5 flex">
+            <Button
+               variant="ghost"
+               size="sm"
+               onClick={() => setViewMode('visual')}
+               className={cn(
+                  "h-8 px-2 text-xs gap-1.5 rounded-md transition-all",
+                  viewMode === 'visual' ? "bg-slate-100 text-slate-900 font-medium shadow-sm" : "text-slate-500 hover:text-slate-700"
+               )}
+            >
+               <Layers size={14} />
+               <span className="hidden md:inline">Visual</span>
+            </Button>
+            <Button
+               variant="ghost"
+               size="sm"
+               onClick={() => setViewMode('brief')}
+               className={cn(
+                  "h-8 px-2 text-xs gap-1.5 rounded-md transition-all",
+                  viewMode === 'brief' ? "bg-slate-100 text-slate-900 font-medium shadow-sm" : "text-slate-500 hover:text-slate-700"
+               )}
+            >
+               <FileText size={14} />
+               <span className="hidden md:inline">Brief</span>
+            </Button>
          </div>
 
          {/* Layout Button */}
-         <div className="bg-white rounded-lg shadow-sm">
+         <div className="bg-white rounded-lg shadow-sm border border-slate-200">
              <Button 
                variant="ghost" 
                size="icon" 
-               className="h-10 w-10 md:h-8 md:w-8 rounded bg-white border border-slate-200 shadow-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+               className="h-9 w-9 md:h-9 md:w-9 rounded text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                onClick={layoutNodes}
                title="Auto Align Pages"
              >
-                <LayoutTemplate size={20} className="md:w-4 md:h-4" />
+                <LayoutTemplate size={18} />
              </Button>
+         </div>
+
+         {/* Settings Button */}
+         <div className="bg-white rounded-lg shadow-sm border border-slate-200">
+            <SettingsDialog />
          </div>
       </div>
     </Panel>
