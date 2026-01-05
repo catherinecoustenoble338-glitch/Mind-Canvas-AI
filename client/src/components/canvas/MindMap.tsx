@@ -29,16 +29,6 @@ function CustomControls() {
 
   return (
     <Panel position="bottom-right" className="flex flex-col gap-3 mr-4 mb-4 md:mb-4 mb-20 items-end">
-      {/* MiniMap Placeholder - Hidden on mobile, visible on desktop */}
-      <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden w-[200px] h-[150px] mb-2 hidden md:block">
-         <MiniMap 
-            style={{ position: 'relative', width: '100%', height: '100%' }} 
-            nodeStrokeColor="#e2e8f0"
-            nodeColor="#f1f5f9"
-            maskColor="rgba(240, 242, 245, 0.6)"
-         />
-      </div>
-
       <div className="flex flex-col gap-3 items-end">
           {/* History Controls */}
           <div className="flex flex-col bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
