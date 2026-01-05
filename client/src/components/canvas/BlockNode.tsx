@@ -3,7 +3,7 @@ import { Handle, Position, NodeProps, useReactFlow } from 'reactflow';
 import { useAppStore, BlockData, PageStatus, BlockItem } from '@/store/useAppStore';
 import WireframeVisual from './WireframeVisual';
 import { cn } from '@/lib/utils';
-import { X, MoreHorizontal, ChevronDown, Trash2, GripVertical, MessageSquare, Info, PlusCircle } from 'lucide-react';
+import { X, MoreHorizontal, ChevronDown, Trash2, GripVertical, MessageSquare, Info, PlusCircle, Lightbulb, Loader2, Eye, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Reorder, useDragControls } from 'framer-motion';
 import {
   DropdownMenu,
@@ -39,6 +39,14 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
     error: 'Error'
   };
 
+  const statusIcons: Record<PageStatus, React.ReactNode> = {
+    idea: <Lightbulb size={12} />,
+    in_progress: <Loader2 size={12} className="animate-spin" />,
+    review: <Eye size={12} />,
+    done: <CheckCircle2 size={12} />,
+    error: <AlertCircle size={12} />
+  };
+
   const handleStatusChange = (status: PageStatus) => {
     updateNodeData(id, { status });
   };
@@ -68,14 +76,21 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
           {/* Status Dropdown (Left aligned) */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className={cn("text-[9px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider hover:opacity-80 flex items-center gap-1 transition-colors border shadow-sm", statusColors[data.status])}>
-                {statusLabels[data.status]}
-                <ChevronDown size={8} />
+              <button 
+                  className={cn(
+                      "text-[9px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider hover:opacity-80 flex items-center gap-1 transition-colors border shadow-sm h-[20px]", 
+                      statusColors[data.status]
+                  )}
+                  title={statusLabels[data.status]} // Tooltip for accessibility/usability
+              >
+                {/* Only icon is visible in collapsed state as requested */}
+                {statusIcons[data.status]}
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-24">
+            <DropdownMenuContent className="w-32">
               {(Object.keys(statusLabels) as PageStatus[]).map((status) => (
-                <DropdownMenuItem key={status} onClick={() => handleStatusChange(status)} className="text-xs">
+                <DropdownMenuItem key={status} onClick={() => handleStatusChange(status)} className="text-xs gap-2 cursor-pointer">
+                  {statusIcons[status]}
                   {statusLabels[status]}
                 </DropdownMenuItem>
               ))}
