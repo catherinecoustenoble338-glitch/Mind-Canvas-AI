@@ -275,15 +275,15 @@ export function Sidebar() {
                 {filteredGroups.map((group) => (
                     <div key={group.name} className="space-y-2">
                         <h4 className="text-[10px] font-semibold text-slate-500 pl-1 border-l-2 border-slate-200">{group.name}</h4>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 gap-3">
                             {group.tools.map((tool) => (
                                 <button
                                     key={tool.type}
                                     onClick={() => handleToolClick(tool.type)}
-                                    className="relative group transition-all transform hover:scale-105 hover:shadow-lg rounded-sm overflow-hidden"
+                                    className="relative group transition-all transform hover:scale-[1.02] hover:shadow-lg rounded-sm overflow-hidden"
                                 >
-                                   {/* Scale down the visual for the sidebar preview */}
-                                   <div className="pointer-events-none origin-top-left transform scale-[0.45] w-[220%]">
+                                   {/* Scale adjusted for single column visibility */}
+                                   <div className="pointer-events-none origin-top-left transform scale-[0.90] w-[111%]">
                                       <WireframeVisual type={tool.type} label={tool.label} />
                                    </div>
                                 </button>
