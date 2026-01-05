@@ -78,7 +78,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
             <DropdownMenuTrigger asChild>
               <button 
                   className={cn(
-                      "text-[9px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider hover:opacity-80 flex items-center gap-1 transition-colors border shadow-sm h-[20px]", 
+                      "text-[9px] font-bold px-0.5 rounded-sm uppercase tracking-wider hover:opacity-80 flex items-center justify-center transition-colors border shadow-sm w-[20px] h-[20px]", 
                       statusColors[data.status]
                   )}
                   title={statusLabels[data.status]} // Tooltip for accessibility/usability
@@ -100,11 +100,11 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
           {/* Tech Stack Icons (Right aligned) */}
           <div className="flex gap-1 justify-end flex-wrap max-w-[120px]">
             {data.icons && data.icons.map((icon, i) => (
-                <div key={i} className="group/icon relative bg-white rounded-sm shadow-sm border border-slate-100 p-0.5">
+                <div key={i} className="group/icon relative bg-white rounded-sm shadow-sm border border-slate-100 flex items-center justify-center w-[20px] h-[20px]">
                     <img 
                       src={`https://cdn.simpleicons.org/${icon.toLowerCase().replace(/\s+/g, '')}`} 
                       alt={icon} 
-                      className="w-4 h-4 opacity-80"
+                      className="w-3.5 h-3.5 opacity-80"
                     />
                     {selected && (
                       <div 
