@@ -125,11 +125,11 @@ export function PageDetailsDialog({ nodeId, data, open, onOpenChange }: PageDeta
                     <div className="space-y-2">
                        <div className="flex items-center gap-2">
                            <Target size={14} className="text-emerald-600" />
-                           <label className="text-sm font-semibold text-slate-800">Page VFP (Valuable Final Product)</label>
+                           <label className="text-sm font-semibold text-slate-800">ЦКП Страницы (Ценный Конечный Продукт)</label>
                        </div>
-                       <p className="text-xs text-slate-500 mb-2">What is the specific outcome or value this entire page delivers?</p>
+                       <p className="text-xs text-slate-500 mb-2">Каков конкретный результат или ценность этой страницы?</p>
                        <Textarea 
-                           placeholder="e.g. User completes the checkout process"
+                           placeholder="например: Пользователь успешно завершает оформление заказа"
                            className="resize-none text-sm p-3 focus-visible:ring-1 bg-emerald-50/30 border-emerald-100 focus:bg-white focus:border-emerald-500 transition-colors min-h-[60px]"
                            value={tempVFP}
                            onChange={(e) => setTempVFP(e.target.value)}
@@ -140,15 +140,15 @@ export function PageDetailsDialog({ nodeId, data, open, onOpenChange }: PageDeta
                     <div className="space-y-2">
                        <div className="flex items-center gap-2">
                            <List size={14} className="text-blue-600" />
-                           <label className="text-sm font-semibold text-slate-800">Page Features</label>
+                           <label className="text-sm font-semibold text-slate-800">Фичи Страницы</label>
                        </div>
                        <div className="flex justify-between items-center mb-1">
-                           <p className="text-xs text-slate-500">Key functional requirements for this page.</p>
-                           <span className="text-[10px] text-slate-400">Enter for new bullet</span>
+                           <p className="text-xs text-slate-500">Ключевые функциональные требования.</p>
+                           <span className="text-[10px] text-slate-400">Enter для новой строки</span>
                        </div>
                        <Textarea 
-                           placeholder="- Feature 1
-- Feature 2"
+                           placeholder="- Фича 1
+- Фича 2"
                            className="resize-none text-sm p-3 focus-visible:ring-1 bg-blue-50/30 border-blue-100 focus:bg-white focus:border-blue-500 transition-colors min-h-[120px]"
                            value={tempFeatures}
                            onChange={(e) => setTempFeatures(e.target.value)}
@@ -160,10 +160,10 @@ export function PageDetailsDialog({ nodeId, data, open, onOpenChange }: PageDeta
                     <div className="space-y-2">
                        <div className="flex items-center gap-2">
                            <FileText size={14} className="text-slate-600" />
-                           <label className="text-sm font-semibold text-slate-800">General Notes</label>
+                           <label className="text-sm font-semibold text-slate-800">Общие Заметки</label>
                        </div>
                        <Textarea 
-                           placeholder="Any general notes about this page..."
+                           placeholder="Любые общие заметки об этой странице..."
                            className="resize-none text-sm p-3 focus-visible:ring-1 bg-slate-50/50 border-slate-200 focus:bg-white transition-colors min-h-[80px]"
                            value={tempDescription}
                            onChange={(e) => setTempDescription(e.target.value)}

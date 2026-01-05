@@ -284,10 +284,10 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                  <div className="bg-emerald-50 rounded p-1.5 border border-emerald-100 relative">
                     <div className="flex items-center gap-1 mb-1">
                        <Target size={10} className="text-emerald-600" />
-                       <span className="text-[9px] font-bold uppercase text-emerald-700 tracking-wider">Product Goal (VFP)</span>
+                       <span className="text-[9px] font-bold uppercase text-emerald-700 tracking-wider">ЦКП</span>
                     </div>
                     <div className="text-[10px] text-slate-700 leading-tight">
-                       {data.vfp || <span className="text-emerald-400 italic">Click to define page VFP...</span>}
+                       {data.vfp || <span className="text-emerald-400 italic">Нажмите, чтобы определить ЦКП...</span>}
                     </div>
                  </div>
                  
@@ -295,7 +295,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                  <div className="bg-blue-50 rounded p-1.5 border border-blue-100 relative">
                     <div className="flex items-center gap-1 mb-1">
                        <List size={10} className="text-blue-600" />
-                       <span className="text-[9px] font-bold uppercase text-blue-700 tracking-wider">Features</span>
+                       <span className="text-[9px] font-bold uppercase text-blue-700 tracking-wider">Фичи</span>
                     </div>
                     <div className="text-[10px] text-slate-700 leading-tight">
                        {data.features ? (
@@ -308,7 +308,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                             ))}
                           </div>
                        ) : (
-                          <span className="text-blue-400 italic">Click to list features...</span>
+                          <span className="text-blue-400 italic">Нажмите, чтобы добавить фичи...</span>
                        )}
                     </div>
                  </div>
@@ -317,7 +317,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/vfp:opacity-100 transition-opacity pointer-events-none">
                     <div className="bg-white/90 shadow-sm border border-slate-200 rounded px-2 py-1 text-[10px] font-medium text-slate-600 flex items-center gap-1">
                         <FileText size={10} />
-                        Edit Specs
+                        Редактировать
                     </div>
                  </div>
               </div>

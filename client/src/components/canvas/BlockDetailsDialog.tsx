@@ -172,11 +172,11 @@ export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockD
                         <div className="space-y-2">
                            <div className="flex items-center gap-2">
                                <Target size={14} className="text-emerald-600" />
-                               <label className="text-sm font-semibold text-slate-800">Valuable Final Product (VFP)</label>
+                               <label className="text-sm font-semibold text-slate-800">Ценный Конечный Продукт (ЦКП)</label>
                            </div>
-                           <p className="text-xs text-slate-500 mb-2">What is the specific outcome or value this block provides to the user?</p>
+                           <p className="text-xs text-slate-500 mb-2">Каков конкретный результат или ценность этого блока?</p>
                            <Textarea 
-                               placeholder="e.g. User successfully subscribes to newsletter"
+                               placeholder="например: Пользователь подписывается на рассылку"
                                className="resize-none text-sm p-3 focus-visible:ring-1 bg-emerald-50/30 border-emerald-100 focus:bg-white focus:border-emerald-500 transition-colors min-h-[60px]"
                                value={tempVFP}
                                onChange={(e) => setTempVFP(e.target.value)}
@@ -187,15 +187,15 @@ export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockD
                         <div className="space-y-2">
                            <div className="flex items-center gap-2">
                                <List size={14} className="text-blue-600" />
-                               <label className="text-sm font-semibold text-slate-800">Features List</label>
+                               <label className="text-sm font-semibold text-slate-800">Список Фич</label>
                            </div>
                            <div className="flex justify-between items-center mb-1">
-                               <p className="text-xs text-slate-500">Key functional requirements.</p>
-                               <span className="text-[10px] text-slate-400">Enter for new bullet</span>
+                               <p className="text-xs text-slate-500">Ключевые функциональные требования.</p>
+                               <span className="text-[10px] text-slate-400">Enter для новой строки</span>
                            </div>
                            <Textarea 
-                               placeholder="- Feature 1
-- Feature 2"
+                               placeholder="- Фича 1
+- Фича 2"
                                className="resize-none text-sm p-3 focus-visible:ring-1 bg-blue-50/30 border-blue-100 focus:bg-white focus:border-blue-500 transition-colors min-h-[120px]"
                                value={tempFeatures}
                                onChange={(e) => setTempFeatures(e.target.value)}
@@ -207,10 +207,10 @@ export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockD
                         <div className="space-y-2">
                            <div className="flex items-center gap-2">
                                <FileText size={14} className="text-slate-600" />
-                               <label className="text-sm font-semibold text-slate-800">Additional Notes</label>
+                               <label className="text-sm font-semibold text-slate-800">Дополнительные Заметки</label>
                            </div>
                            <Textarea 
-                               placeholder="Any extra technical notes or descriptions..."
+                               placeholder="Любые дополнительные технические заметки..."
                                className="resize-none text-sm p-3 focus-visible:ring-1 bg-slate-50/50 border-slate-200 focus:bg-white transition-colors min-h-[80px]"
                                value={tempDescription}
                                onChange={(e) => setTempDescription(e.target.value)}
@@ -223,7 +223,7 @@ export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockD
                 <div className="p-4 border-t border-slate-100 bg-white">
                     <Button onClick={handleSave} className="w-full gap-2 bg-blue-600 hover:bg-blue-700">
                         <Check size={16} />
-                        Save Specifications
+                        Сохранить спецификации
                     </Button>
                 </div>
             </TabsContent>
