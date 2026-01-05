@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import dagre from 'dagre';
 import { 
   Connection, 
   Edge, 
@@ -12,6 +13,44 @@ import {
   applyNodeChanges,
   applyEdgeChanges
 } from 'reactflow';
+
+// Helper for Auto Layout using Dagre
+const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => {
+  const dagreGraph = new dagre.graphlib.Graph();
+  dagreGraph.setDefaultEdgeLabel(() => ({}));
+
+  const nodeWidth = 220; // Block width + spacing
+  const nodeHeight = 300; // Average block height + spacing
+
+  dagreGraph.setGraph({ rankdir: direction, align: 'DL', ranksep: 100, nodesep: 50 });
+
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+  });
+
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(dagreGraph);
+
+  const layoutedNodes = nodes.map((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    
+    // Slight randomization or adjustment could be added here if needed, but dagre gives absolute pos
+    // We want to preserve the reference to avoid full React re-renders if pos hasn't changed much, 
+    // but simplified for now:
+    return {
+      ...node,
+      position: {
+        x: nodeWithPosition.x - nodeWidth / 2,
+        y: nodeWithPosition.y - nodeHeight / 2,
+      },
+    };
+  });
+
+  return { nodes: layoutedNodes, edges };
+};
 
 export type WireframeType = 
   // Blue Group (Content, Media, Generic)
@@ -167,7 +206,9 @@ export const useAppStore = create<AppState>((set, get) => ({
         icons: []
       },
     };
-    set({ nodes: [...get().nodes, newNode] });
+    
+    const { nodes: layoutedNodes } = getLayoutedElements([...get().nodes, newNode], get().edges);
+    set({ nodes: layoutedNodes });
   },
 
   addBlockToNode: (nodeId, type) => {
@@ -180,7 +221,20 @@ export const useAppStore = create<AppState>((set, get) => ({
         description: '',
         chatMessages: []
       };
-      get().updateNodeData(nodeId, { blocks: [...node.data.blocks, newBlock] });
+      
+      // Update blocks first
+      const updatedNodes = get().nodes.map(n => 
+        n.id === nodeId ? { ...n, data: { ...n.data, blocks: [...n.data.blocks, newBlock] } } : n
+      );
+      
+      // Then re-layout because block height might change effective size (though we use fixed size for dagre for now to keep it simple)
+      // Actually, dagre uses fixed size in my config above, so just adding a block INSIDE a node doesn't change graph topology
+      // But user requested "When creating a new block or changing another... arrange automatically"
+      // If adding a block makes the node taller, we might want to adjust layout if we were calculating height dynamically.
+      // For now, let's trigger layout just in case we switch to dynamic height later.
+      const { nodes: layoutedNodes } = getLayoutedElements(updatedNodes, get().edges);
+      
+      set({ nodes: layoutedNodes });
     }
   },
 
@@ -246,10 +300,10 @@ export const useAppStore = create<AppState>((set, get) => ({
     if (!parentNode) return;
 
     const newId = Math.random().toString(36).substr(2, 9);
-    // Position below the parent node
+    // Initial position (will be fixed by layout)
     const position = {
       x: parentNode.position.x,
-      y: parentNode.position.y + 400 // Vertical spacing
+      y: parentNode.position.y + 400 
     };
 
     const newNode: BlockNode = {
@@ -269,15 +323,21 @@ export const useAppStore = create<AppState>((set, get) => ({
       id: `e${parentId}-${newId}`,
       source: parentId,
       target: newId,
-      animated: false, // Static arrow as requested
+      animated: false,
       type: 'default',
-      markerEnd: { type: 'arrowclosed' as any }, // Ensure it's an arrow
-      style: { stroke: '#475569', strokeWidth: 2 } // Darker slate (slate-600) and slightly thicker
+      markerEnd: { type: 'arrowclosed' as any },
+      style: { stroke: '#475569', strokeWidth: 2 } 
     };
 
+    const updatedNodes = [...get().nodes, newNode];
+    const updatedEdges = [...get().edges, newEdge];
+    
+    // Apply Auto Layout
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(updatedNodes, updatedEdges);
+
     set({
-      nodes: [...get().nodes, newNode],
-      edges: [...get().edges, newEdge]
+      nodes: layoutedNodes,
+      edges: layoutedEdges
     });
   },
 

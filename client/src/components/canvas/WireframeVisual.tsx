@@ -10,13 +10,13 @@ interface WireframeVisualProps {
 
 export function WireframeVisual({ type, className, label }: WireframeVisualProps) {
   // Base classes
-  // Using slate-500 by default for graphite look
-  const base = "w-full overflow-hidden relative flex flex-col p-3 min-h-[48px] justify-start items-start transition-all bg-slate-500 rounded-sm";
+  // Using slate-300 for a lighter graphite look (approx 2x lighter than slate-500)
+  const base = "w-full overflow-hidden relative flex flex-col p-3 min-h-[48px] justify-start items-start transition-all bg-slate-300 rounded-sm";
   
-  // Helper for text label inside the block (white text) - ALWAYS Top-Left
+  // Helper for text label inside the block (darker text for contrast on lighter bg) - ALWAYS Top-Left
   const BlockLabel = () => (
     <span className={cn(
-      "absolute top-2 left-2 z-20 text-white text-[10px] font-medium leading-tight mb-2 truncate block opacity-90 shadow-sm text-left max-w-[90%] tracking-wide font-apple-system"
+      "absolute top-2 left-2 z-20 text-slate-700 text-[10px] font-medium leading-tight mb-2 truncate block opacity-90 shadow-sm text-left max-w-[90%] tracking-wide font-apple-system"
     )} style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
       {label || type.replace(/_/g, ' ')}
     </span>
@@ -29,13 +29,13 @@ export function WireframeVisual({ type, className, label }: WireframeVisualProps
     </div>
   );
 
-  // Helper for generic lines
-  const Line = ({ w, h = "h-1", bg = "bg-transparent border border-white/50", rounded = "rounded-sm", className = "" }: any) => (
+  // Helper for generic lines - darker for visibility on light bg
+  const Line = ({ w, h = "h-1", bg = "bg-transparent border border-slate-500/50", rounded = "rounded-sm", className = "" }: any) => (
     <div className={`${w} ${h} ${bg} ${rounded} ${className}`}></div>
   );
   
   // Helper for generic box
-  const Box = ({ w, h, bg = "bg-transparent", border = "border border-white/50", rounded = "rounded-sm", className = "" }: any) => (
+  const Box = ({ w, h, bg = "bg-transparent", border = "border border-slate-500/50", rounded = "rounded-sm", className = "" }: any) => (
     <div className={`${w} ${h} ${bg} ${border} ${rounded} ${className}`}></div>
   );
 
