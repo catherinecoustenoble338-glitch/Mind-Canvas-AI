@@ -1,3 +1,14 @@
+/**
+ * BlockNode Component
+ * 
+ * Spacing Roadmap (Details Mode):
+ * - Block Spacing (Gap): 24px (gap-6)
+ * - Text Alignment: Top-aligned with illustration (pt-0)
+ * - Detail Column Width: 160px
+ * - Separator: 1px line + 4px vertical margin
+ * - Horizontal Padding: 16px (pl-4)
+ */
+
 import React, { memo, useCallback, useState, useEffect } from 'react';
 import { Handle, Position, NodeProps, useReactFlow } from 'reactflow';
 import { useAppStore, BlockData, PageStatus, BlockItem } from '@/store/useAppStore';
