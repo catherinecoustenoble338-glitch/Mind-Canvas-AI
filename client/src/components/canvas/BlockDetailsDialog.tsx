@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageSquare, Paperclip, Send, FileText, Check } from 'lucide-react';
+import { MessageSquare, Paperclip, Send, FileText, Check, X } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface BlockDetailsDialogProps {
