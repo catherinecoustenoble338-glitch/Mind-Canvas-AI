@@ -133,7 +133,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
             {isEditingTitle ? (
                <Input 
                   autoFocus
-                  className="h-5 text-[13px] font-bold text-[#3B82F6] px-1 py-0 w-full border-slate-200"
+                  className="h-5 text-[13px] font-bold text-[#3B82F6] px-1 py-0 w-full border-slate-200 text-center"
                   defaultValue={data.label}
                   onBlur={(e) => {
                      updateNodeData(id, { label: e.target.value });
@@ -149,7 +149,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                />
             ) : (
                <span 
-                  className="text-[13px] font-bold text-[#3B82F6] block truncate cursor-pointer hover:bg-slate-50 px-1 rounded transition-colors flex-1 mr-2"
+                  className="text-[13px] font-bold text-[#3B82F6] block truncate cursor-pointer hover:bg-slate-50 px-1 rounded transition-colors flex-1 mr-2 text-center"
                   onClick={(e) => {
                      e.stopPropagation();
                      setIsEditingTitle(true);
@@ -210,7 +210,12 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                   <div 
                     onClick={(e) => {
                        e.stopPropagation();
-                       setEditingBlockId(block.id);
+                       // In Brief mode, clicking opens details. In Visual, it allows renaming.
+                       if (viewMode === 'visual') {
+                           setEditingBlockId(block.id);
+                       } else {
+                           openDetails(block);
+                       }
                     }}
                     className="cursor-pointer hover:brightness-95 transition-all relative"
                   >

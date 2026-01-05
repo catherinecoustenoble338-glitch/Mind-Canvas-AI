@@ -72,9 +72,22 @@ export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockD
 
             <TabsContent value="description" className="flex-1 p-4 m-0 overflow-hidden flex flex-col gap-2">
                 <div className="space-y-1 flex-1 flex flex-col">
-                    <label className="text-xs font-medium text-slate-500">Block Description (Visible in Brief Mode)</label>
+                    <div className="flex justify-between items-center">
+                        <label className="text-xs font-medium text-slate-500">Block Description (Visible in Brief Mode)</label>
+                        <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-6 text-[10px] text-blue-500 px-2"
+                            onClick={() => {
+                                const newDesc = block.description ? block.description + '\n• ' : '• ';
+                                updateBlockDescription(nodeId, block.id, newDesc);
+                            }}
+                        >
+                            + Add Bullet
+                        </Button>
+                    </div>
                     <Textarea 
-                        placeholder="Describe the functionality and content of this block..."
+                        placeholder="Describe the functionality and content of this block... Use - or • for bullets."
                         className="flex-1 resize-none text-sm leading-relaxed p-3 focus-visible:ring-1 bg-slate-50 border-slate-200"
                         value={block.description || ''}
                         onChange={(e) => updateBlockDescription(nodeId, block.id, e.target.value)}
