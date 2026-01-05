@@ -3,7 +3,7 @@ import { Handle, Position, NodeProps, useReactFlow } from 'reactflow';
 import { useAppStore, BlockData, PageStatus, BlockItem } from '@/store/useAppStore';
 import WireframeVisual from './WireframeVisual';
 import { cn } from '@/lib/utils';
-import { X, MoreHorizontal, ChevronDown, Trash2, GripVertical, MessageSquare, Info, PlusCircle, Lightbulb, Loader2, Eye, CheckCircle2, AlertCircle, FileText, Target, List } from 'lucide-react';
+import { X, MoreHorizontal, ChevronDown, Trash2, GripVertical, MessageSquare, Info, PlusCircle, Lightbulb, Loader2, Eye, CheckCircle2, AlertCircle, AlertTriangle, FileText, Target, List } from 'lucide-react';
 import { Reorder, useDragControls } from 'framer-motion';
 import {
   DropdownMenu,
@@ -11,6 +11,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Input } from '@/components/ui/input';
 import { BlockDetailsDialog } from './BlockDetailsDialog';
 import { PageDetailsDialog } from './PageDetailsDialog';
@@ -249,18 +260,43 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                 </Button>
 
                 {/* Delete Button */}
-                <Button 
-                   size="icon" 
-                   variant="ghost" 
-                   className="h-5 w-5 text-slate-300 hover:text-red-500 opacity-0 group-hover/header:opacity-100 transition-opacity"
-                   onClick={(e) => {
-                      e.stopPropagation();
-                      removeNode(id);
-                   }}
-                   title="Delete Page"
-                >
-                   <Trash2 size={12} />
-                </Button>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button 
+                           size="icon" 
+                           variant="ghost" 
+                           className="h-5 w-5 text-slate-300 hover:text-red-500 opacity-0 group-hover/header:opacity-100 transition-opacity"
+                           onClick={(e) => e.stopPropagation()} // Prevent opening details
+                           title="Delete Page"
+                        >
+                           <Trash2 size={12} />
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle className="flex items-center gap-2">
+                                <AlertTriangle className="text-red-500" size={20} />
+                                Delete Page?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Are you sure you want to delete <strong>"{data.label}"</strong>?<br/>
+                                <span className="text-red-500 font-medium">All blocks, content, and data inside this page will be permanently lost.</span>
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Cancel</AlertDialogCancel>
+                            <AlertDialogAction 
+                                className="bg-red-600 hover:bg-red-700"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    removeNode(id);
+                                }}
+                            >
+                                Delete Permanently
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
          </div>
 

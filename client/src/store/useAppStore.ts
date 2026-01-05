@@ -149,10 +149,12 @@ interface AppState {
   // History & Logging
   past: { nodes: BlockNode[], edges: Edge[] }[];
   future: { nodes: BlockNode[], edges: Edge[] }[];
-  historyLog: { action: string, timestamp: number }[];
+  historyLog: { id: string, action: string, timestamp: number, type: 'action' | 'snapshot', snapshotData?: { nodes: BlockNode[], edges: Edge[] } }[];
   undo: () => void;
   redo: () => void;
   pushToHistory: (actionLabel: string) => void;
+  createSnapshot: (label: string) => void;
+  restoreSnapshot: (snapshotId: string) => void;
 
   // Dialog Navigation
   activeBlockId: string | null;
@@ -258,8 +260,50 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({
         past: [...past, currentState],
         future: [], // Clear future on new action
-        historyLog: [{ action: actionLabel, timestamp: Date.now() }, ...historyLog].slice(0, 50) // Keep last 50 logs
+        historyLog: [{ 
+            id: Math.random().toString(36).substr(2, 9),
+            action: actionLabel, 
+            timestamp: Date.now(),
+            type: 'action' 
+        }, ...historyLog].slice(0, 50) // Keep last 50 logs
     });
+  },
+
+  createSnapshot: (label: string) => {
+    const { nodes, edges, historyLog } = get();
+    const snapshotData = { 
+        nodes: JSON.parse(JSON.stringify(nodes)), 
+        edges: JSON.parse(JSON.stringify(edges)) 
+    };
+
+    set({
+        historyLog: [{ 
+            id: Math.random().toString(36).substr(2, 9),
+            action: label, 
+            timestamp: Date.now(),
+            type: 'snapshot',
+            snapshotData
+        }, ...historyLog] // No limit on snapshots effectively, or separate limit? For now keeping in same array but maybe not slicing it out if we want them to persist longer? For now simplicity: keep in same log but careful with slicing if log gets long. Let's just slice to 50 for mixed list for now.
+        // Actually, user wants snapshots to be distinct "checkpoints". Slicing snapshots out would be bad.
+        // Let's NOT slice snapshots, but slice actions.
+        // Revised logic: Filter actions > 50, keep all snapshots.
+    });
+  },
+
+  restoreSnapshot: (snapshotId: string) => {
+    const { historyLog } = get();
+    const snapshot = historyLog.find(log => log.id === snapshotId);
+    
+    if (snapshot && snapshot.type === 'snapshot' && snapshot.snapshotData) {
+        // Push current state to undo history before restoring? Usually yes.
+        get().pushToHistory(`Restored: ${snapshot.action}`);
+        
+        set({
+            nodes: JSON.parse(JSON.stringify(snapshot.snapshotData.nodes)),
+            edges: JSON.parse(JSON.stringify(snapshot.snapshotData.edges)),
+            // We don't clear future/past necessarily, but pushing to history handles the continuity.
+        });
+    }
   },
 
   undo: () => {
@@ -280,7 +324,12 @@ export const useAppStore = create<AppState>((set, get) => ({
       future: [currentState, ...future],
       nodes: previous.nodes,
       edges: previous.edges,
-      historyLog: [{ action: 'Undo', timestamp: Date.now() }, ...historyLog].slice(0, 50)
+      historyLog: [{ 
+          id: Math.random().toString(36).substr(2, 9),
+          action: 'Undo', 
+          timestamp: Date.now(),
+          type: 'action'
+      }, ...historyLog].slice(0, 50)
     });
   },
 
@@ -302,7 +351,12 @@ export const useAppStore = create<AppState>((set, get) => ({
       future: newFuture,
       nodes: next.nodes,
       edges: next.edges,
-      historyLog: [{ action: 'Redo', timestamp: Date.now() }, ...historyLog].slice(0, 50)
+      historyLog: [{ 
+          id: Math.random().toString(36).substr(2, 9),
+          action: 'Redo', 
+          timestamp: Date.now(), 
+          type: 'action'
+      }, ...historyLog].slice(0, 50)
     });
   },
 

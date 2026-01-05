@@ -29,15 +29,41 @@ import {
   Undo2,
   Redo2,
   FileText,
-  ChevronRight
+  Filter,
+  Save,
+  RotateCcw,
+  AlertTriangle
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useAppStore, BlockItem } from '@/store/useAppStore';
 import { formatDistanceToNow } from 'date-fns';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export function SettingsDialog() {
   const [open, setOpen] = useState(false);
-  const { historyLog, nodes, setActiveBlockId } = useAppStore();
+  const { historyLog, nodes, setActiveBlockId, createSnapshot, restoreSnapshot } = useAppStore();
+  const [showSnapshotsOnly, setShowSnapshotsOnly] = useState(false);
+  const [snapshotLabel, setSnapshotLabel] = useState('');
+
+  const filteredHistory = showSnapshotsOnly 
+    ? historyLog.filter(log => log.type === 'snapshot') 
+    : historyLog;
+
+  const handleCreateSnapshot = () => {
+      const label = snapshotLabel.trim() || `Snapshot ${new Date().toLocaleTimeString()}`;
+      createSnapshot(label);
+      setSnapshotLabel('');
+  };
 
   // Aggregate all blocks with chat messages
   const blocksWithChats = useMemo(() => {
@@ -378,32 +404,107 @@ export function SettingsDialog() {
 
                {/* History Tab */}
                <TabsContent value="history" className="flex-1 m-0 p-4 sm:p-6 space-y-6 overflow-auto w-full">
-                  <div className="space-y-1">
-                     <h3 className="text-lg font-semibold text-slate-800">Action History</h3>
-                     <p className="text-xs text-slate-500">Log of recent changes and actions.</p>
+                  <div className="flex flex-col gap-4">
+                      <div className="flex items-center justify-between">
+                         <div className="space-y-1">
+                            <h3 className="text-lg font-semibold text-slate-800">Action History</h3>
+                            <p className="text-xs text-slate-500">Track changes and manage version snapshots.</p>
+                         </div>
+                         <Button 
+                            variant={showSnapshotsOnly ? "secondary" : "outline"}
+                            size="sm" 
+                            onClick={() => setShowSnapshotsOnly(!showSnapshotsOnly)}
+                            className="gap-2"
+                         >
+                            <Filter size={14} />
+                            {showSnapshotsOnly ? 'All Actions' : 'Snapshots Only'}
+                         </Button>
+                      </div>
+
+                      {/* Create Snapshot Controls */}
+                      <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 flex gap-2">
+                          <Input 
+                             placeholder="Snapshot name (e.g., 'Before big refactor')" 
+                             className="h-9 text-xs bg-white"
+                             value={snapshotLabel}
+                             onChange={(e) => setSnapshotLabel(e.target.value)}
+                          />
+                          <Button size="sm" onClick={handleCreateSnapshot} className="h-9 bg-slate-800 hover:bg-slate-900 gap-2 shrink-0">
+                              <Save size={14} /> Save Snapshot
+                          </Button>
+                      </div>
                   </div>
 
-                  <div className="space-y-2 mt-4">
-                     {historyLog.length === 0 ? (
+                  <div className="space-y-2 mt-2">
+                     {filteredHistory.length === 0 ? (
                         <div className="text-center py-10 text-slate-400 text-sm border border-dashed border-slate-200 rounded-lg">
-                           No actions recorded yet.
+                           {showSnapshotsOnly ? "No snapshots saved yet." : "No actions recorded yet."}
                         </div>
                      ) : (
-                        historyLog.map((log, index) => (
-                           <div key={index} className="flex items-center justify-between p-3 border border-slate-100 rounded-lg bg-white hover:bg-slate-50 transition-colors">
+                        filteredHistory.map((log) => (
+                           <div key={log.id} className={`flex items-center justify-between p-3 border rounded-lg transition-colors ${log.type === 'snapshot' ? 'bg-amber-50/50 border-amber-100 hover:bg-amber-50' : 'bg-white border-slate-100 hover:bg-slate-50'}`}>
                               <div className="flex items-center gap-3">
-                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${log.action === 'Undo' ? 'bg-orange-100 text-orange-600' : log.action === 'Redo' ? 'bg-green-100 text-green-600' : 'bg-blue-100 text-blue-600'}`}>
-                                    {log.action === 'Undo' ? <Undo2 size={14} /> : log.action === 'Redo' ? <Redo2 size={14} /> : <History size={14} />}
+                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                                     log.type === 'snapshot' ? 'bg-amber-100 text-amber-600' :
+                                     log.action === 'Undo' ? 'bg-orange-100 text-orange-600' : 
+                                     log.action === 'Redo' ? 'bg-green-100 text-green-600' : 
+                                     'bg-blue-100 text-blue-600'
+                                 }`}>
+                                    {log.type === 'snapshot' ? <Save size={14} /> :
+                                     log.action === 'Undo' ? <Undo2 size={14} /> : 
+                                     log.action === 'Redo' ? <Redo2 size={14} /> : 
+                                     <History size={14} />}
                                  </div>
                                  <div className="flex flex-col">
-                                    <span className="font-medium text-sm text-slate-800">{log.action}</span>
+                                    <span className={`font-medium text-sm ${log.type === 'snapshot' ? 'text-amber-900' : 'text-slate-800'}`}>
+                                        {log.action}
+                                        {log.type === 'snapshot' && <Badge variant="outline" className="ml-2 h-4 text-[9px] bg-amber-100 text-amber-700 border-amber-200">SNAPSHOT</Badge>}
+                                    </span>
                                     <span className="text-[10px] text-slate-400">
                                        {formatDistanceToNow(log.timestamp, { addSuffix: true })}
                                     </span>
                                  </div>
                               </div>
-                              <div className="text-[10px] font-mono text-slate-300">
-                                 {new Date(log.timestamp).toLocaleTimeString()}
+                              
+                              <div className="flex items-center gap-3">
+                                  <div className="text-[10px] font-mono text-slate-300 hidden sm:block">
+                                     {new Date(log.timestamp).toLocaleTimeString()}
+                                  </div>
+                                  
+                                  {log.type === 'snapshot' && (
+                                      <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-slate-500 hover:text-amber-700 hover:bg-amber-100/50">
+                                                <RotateCcw size={12} /> Restore
+                                            </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle className="flex items-center gap-2">
+                                                    <AlertTriangle className="text-amber-500" size={20} />
+                                                    Restore Snapshot?
+                                                </AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    Are you sure you want to restore <strong>"{log.action}"</strong>?<br/><br/>
+                                                    <span className="text-red-500 font-medium">Warning: Current unsaved changes will be lost.</span><br/>
+                                                    This action will revert your entire board to this state.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction 
+                                                    className="bg-amber-600 hover:bg-amber-700"
+                                                    onClick={() => {
+                                                        restoreSnapshot(log.id);
+                                                        setOpen(false);
+                                                    }}
+                                                >
+                                                    Yes, Restore Version
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                      </AlertDialog>
+                                  )}
                               </div>
                            </div>
                         ))
