@@ -95,6 +95,8 @@ export interface BlockItem {
   label?: string; // Ability to name each block
   description?: string;
   chatMessages?: ChatMessage[];
+  vfp?: string; // Valuable Final Product
+  features?: string; // Bullet list of features
 }
 
 export interface BlockData {
@@ -103,6 +105,8 @@ export interface BlockData {
   blocks: BlockItem[];
   description?: string;
   icons?: string[]; // List of service names/icons
+  vfp?: string; // Valuable Final Product for Page
+  features?: string; // Bullet list of features for Page
 }
 
 export type BlockNode = Node<BlockData>;
@@ -111,6 +115,7 @@ interface AppState {
   nodes: BlockNode[];
   edges: Edge[];
   viewMode: 'visual' | 'brief';
+  showDetails: boolean; // Toggle for "Caps Lock" details mode
   selectedNodeId: string | null;
 
   onNodesChange: OnNodesChange;
@@ -122,12 +127,17 @@ interface AppState {
   removeBlockFromNode: (nodeId: string, blockId: string) => void;
   updateBlockLabel: (nodeId: string, blockId: string, label: string) => void;
   updateBlockDescription: (nodeId: string, blockId: string, description: string) => void;
+  updateBlockVFP: (nodeId: string, blockId: string, vfp: string) => void;
+  updateBlockFeatures: (nodeId: string, blockId: string, features: string) => void;
+  updatePageVFP: (nodeId: string, vfp: string) => void;
+  updatePageFeatures: (nodeId: string, features: string) => void;
   addBlockChatMessage: (nodeId: string, blockId: string, message: Omit<ChatMessage, 'id' | 'timestamp'>) => void;
   reorderBlocks: (nodeId: string, newBlocks: BlockItem[]) => void;
   updateNodeData: (id: string, data: Partial<BlockData>) => void;
   addChildNode: (parentId: string) => void;
   removeNode: (nodeId: string) => void;
   setViewMode: (mode: 'visual' | 'brief') => void;
+  toggleDetails: () => void;
   setSelectedNode: (id: string | null) => void;
   addIconToNode: (nodeId: string, icon: string) => void;
   removeIconFromNode: (nodeId: string, icon: string) => void;
@@ -187,6 +197,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     { id: 'e1-2', source: '1', target: '2', animated: false, style: { stroke: '#CACACA', strokeWidth: 2 }, markerEnd: { type: 'arrowclosed' as any, color: '#CACACA' } },
   ],
   viewMode: 'visual',
+  showDetails: false,
   selectedNodeId: null,
 
   // History State
@@ -348,6 +359,38 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
   },
 
+  updateBlockVFP: (nodeId, blockId, vfp) => {
+    get().pushToHistory('Updated Block VFP');
+    const node = get().nodes.find(n => n.id === nodeId);
+    if (node) {
+      const updatedBlocks = node.data.blocks.map(b => 
+        b.id === blockId ? { ...b, vfp } : b
+      );
+      get().updateNodeData(nodeId, { blocks: updatedBlocks });
+    }
+  },
+
+  updateBlockFeatures: (nodeId, blockId, features) => {
+    get().pushToHistory('Updated Block Features');
+    const node = get().nodes.find(n => n.id === nodeId);
+    if (node) {
+      const updatedBlocks = node.data.blocks.map(b => 
+        b.id === blockId ? { ...b, features } : b
+      );
+      get().updateNodeData(nodeId, { blocks: updatedBlocks });
+    }
+  },
+
+  updatePageVFP: (nodeId, vfp) => {
+    get().pushToHistory('Updated Page VFP');
+    get().updateNodeData(nodeId, { vfp });
+  },
+
+  updatePageFeatures: (nodeId, features) => {
+    get().pushToHistory('Updated Page Features');
+    get().updateNodeData(nodeId, { features });
+  },
+
   addBlockChatMessage: (nodeId, blockId, message) => {
     get().pushToHistory('Added Comment');
     const node = get().nodes.find(n => n.id === nodeId);
@@ -428,6 +471,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   setViewMode: (mode) => set({ viewMode: mode }),
+  toggleDetails: () => set((state) => ({ showDetails: !state.showDetails })),
   setSelectedNode: (id) => set({ selectedNodeId: id }),
 
   addIconToNode: (nodeId, icon) => {

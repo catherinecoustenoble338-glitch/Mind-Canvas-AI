@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageSquare, Paperclip, Send, FileText, Check, X } from 'lucide-react';
+import { MessageSquare, Paperclip, Send, FileText, Check, X, Target, List } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface BlockDetailsDialogProps {
@@ -23,33 +23,39 @@ interface BlockDetailsDialogProps {
 }
 
 export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockDetailsDialogProps) {
-  const { updateBlockDescription, updateBlockLabel, addBlockChatMessage } = useAppStore();
+  const { updateBlockDescription, updateBlockLabel, updateBlockVFP, updateBlockFeatures, addBlockChatMessage } = useAppStore();
   const [messageText, setMessageText] = useState('');
   
   // Local state for editing to allow "Save" action
   const [tempLabel, setTempLabel] = useState(block.label || '');
   const [tempDescription, setTempDescription] = useState(block.description || '');
+  const [tempVFP, setTempVFP] = useState(block.vfp || '');
+  const [tempFeatures, setTempFeatures] = useState(block.features || '');
 
   // Sync state when dialog opens or block changes
   useEffect(() => {
       if (open) {
           setTempLabel(block.label || '');
           setTempDescription(block.description || '');
+          setTempVFP(block.vfp || '');
+          setTempFeatures(block.features || '');
       }
   }, [open, block]);
 
   const handleSave = () => {
       updateBlockLabel(nodeId, block.id, tempLabel);
       updateBlockDescription(nodeId, block.id, tempDescription);
+      updateBlockVFP(nodeId, block.id, tempVFP);
+      updateBlockFeatures(nodeId, block.id, tempFeatures);
       onOpenChange(false);
   };
 
-  const handleDescriptionKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleBulletListKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>, setter: React.Dispatch<React.SetStateAction<string>>, value: string) => {
       if (e.key === 'Enter') {
           e.preventDefault();
           
           const textarea = e.currentTarget;
-          const { selectionStart, selectionEnd, value } = textarea;
+          const { selectionStart, selectionEnd } = textarea;
           
           // Find the current line
           const lastNewline = value.lastIndexOf('\n', selectionStart - 1);
@@ -83,7 +89,7 @@ export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockD
               newValue = value.substring(0, selectionStart) + '\n' + value.substring(selectionEnd);
           }
 
-          setTempDescription(newValue);
+          setter(newValue);
           
           // Need to manually set cursor position after render cycle
           setTimeout(() => {
@@ -121,7 +127,7 @@ export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockD
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full h-full sm:h-[600px] sm:max-w-[500px] flex flex-col p-0 gap-0 overflow-hidden bg-white sm:rounded-lg rounded-none border-none sm:border">
+      <DialogContent className="w-full h-full sm:h-[700px] sm:max-w-[500px] flex flex-col p-0 gap-0 overflow-hidden bg-white sm:rounded-lg rounded-none border-none sm:border">
         <DialogHeader className="p-4 border-b border-slate-100 bg-slate-50/50 flex flex-row items-center justify-between space-y-0">
           <div className="flex-1 mr-4">
              <div className="flex items-center gap-2 mb-1">
@@ -139,34 +145,73 @@ export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockD
           </Button>
         </DialogHeader>
 
-        <Tabs defaultValue="description" className="flex-1 flex flex-col overflow-hidden">
+        <Tabs defaultValue="specs" className="flex-1 flex flex-col overflow-hidden">
             <div className="px-4 pt-2 border-b border-slate-100 bg-white">
                 <TabsList className="grid w-full grid-cols-2 h-8">
-                    <TabsTrigger value="description" className="text-xs">Description</TabsTrigger>
+                    <TabsTrigger value="specs" className="text-xs">Specs & VFP</TabsTrigger>
                     <TabsTrigger value="chat" className="text-xs">Chat & Files</TabsTrigger>
                 </TabsList>
             </div>
 
-            <TabsContent value="description" className="flex-1 p-4 m-0 overflow-hidden flex flex-col gap-2">
-                <div className="space-y-1 flex-1 flex flex-col">
-                    <div className="flex justify-between items-center mb-1">
-                        <label className="text-xs font-medium text-slate-500">Block Requirements</label>
-                        <span className="text-[10px] text-slate-400">Press Enter for new bullet</span>
+            <TabsContent value="specs" className="flex-1 p-0 m-0 overflow-hidden flex flex-col">
+                <ScrollArea className="flex-1">
+                    <div className="p-4 space-y-4">
+                        {/* Valuable Final Product Section */}
+                        <div className="space-y-2">
+                           <div className="flex items-center gap-2">
+                               <Target size={14} className="text-emerald-600" />
+                               <label className="text-sm font-semibold text-slate-800">Valuable Final Product (VFP)</label>
+                           </div>
+                           <p className="text-xs text-slate-500 mb-2">What is the specific outcome or value this block provides to the user?</p>
+                           <Textarea 
+                               placeholder="e.g. User successfully subscribes to newsletter"
+                               className="resize-none text-sm p-3 focus-visible:ring-1 bg-emerald-50/30 border-emerald-100 focus:bg-white focus:border-emerald-500 transition-colors min-h-[60px]"
+                               value={tempVFP}
+                               onChange={(e) => setTempVFP(e.target.value)}
+                           />
+                        </div>
+
+                        {/* Features List Section */}
+                        <div className="space-y-2">
+                           <div className="flex items-center gap-2">
+                               <List size={14} className="text-blue-600" />
+                               <label className="text-sm font-semibold text-slate-800">Features List</label>
+                           </div>
+                           <div className="flex justify-between items-center mb-1">
+                               <p className="text-xs text-slate-500">Key functional requirements.</p>
+                               <span className="text-[10px] text-slate-400">Enter for new bullet</span>
+                           </div>
+                           <Textarea 
+                               placeholder="- Feature 1
+- Feature 2"
+                               className="resize-none text-sm p-3 focus-visible:ring-1 bg-blue-50/30 border-blue-100 focus:bg-white focus:border-blue-500 transition-colors min-h-[120px]"
+                               value={tempFeatures}
+                               onChange={(e) => setTempFeatures(e.target.value)}
+                               onKeyDown={(e) => handleBulletListKeyDown(e, setTempFeatures, tempFeatures)}
+                           />
+                        </div>
+
+                        {/* Description / Notes Section */}
+                        <div className="space-y-2">
+                           <div className="flex items-center gap-2">
+                               <FileText size={14} className="text-slate-600" />
+                               <label className="text-sm font-semibold text-slate-800">Additional Notes</label>
+                           </div>
+                           <Textarea 
+                               placeholder="Any extra technical notes or descriptions..."
+                               className="resize-none text-sm p-3 focus-visible:ring-1 bg-slate-50/50 border-slate-200 focus:bg-white transition-colors min-h-[80px]"
+                               value={tempDescription}
+                               onChange={(e) => setTempDescription(e.target.value)}
+                               onKeyDown={(e) => handleBulletListKeyDown(e, setTempDescription, tempDescription)}
+                           />
+                        </div>
                     </div>
-                    <Textarea 
-                        placeholder="Describe what this block should do...
-- Start with a dash for lists
-- Press Enter to continue list"
-                        className="flex-1 resize-none text-sm leading-relaxed p-3 focus-visible:ring-1 bg-slate-50/50 border-slate-200 focus:bg-white transition-colors"
-                        value={tempDescription}
-                        onChange={(e) => setTempDescription(e.target.value)}
-                        onKeyDown={handleDescriptionKeyDown}
-                    />
-                </div>
-                <div className="flex justify-end pt-2">
-                    <Button size="sm" onClick={handleSave} className="gap-1 bg-blue-600 hover:bg-blue-700">
-                        <Check size={14} />
-                        Save Changes
+                </ScrollArea>
+                
+                <div className="p-4 border-t border-slate-100 bg-white">
+                    <Button onClick={handleSave} className="w-full gap-2 bg-blue-600 hover:bg-blue-700">
+                        <Check size={16} />
+                        Save Specifications
                     </Button>
                 </div>
             </TabsContent>

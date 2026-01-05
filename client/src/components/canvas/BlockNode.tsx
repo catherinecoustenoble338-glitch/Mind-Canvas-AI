@@ -3,7 +3,7 @@ import { Handle, Position, NodeProps, useReactFlow } from 'reactflow';
 import { useAppStore, BlockData, PageStatus, BlockItem } from '@/store/useAppStore';
 import WireframeVisual from './WireframeVisual';
 import { cn } from '@/lib/utils';
-import { X, MoreHorizontal, ChevronDown, Trash2, GripVertical, MessageSquare, Info, PlusCircle, Lightbulb, Loader2, Eye, CheckCircle2, AlertCircle } from 'lucide-react';
+import { X, MoreHorizontal, ChevronDown, Trash2, GripVertical, MessageSquare, Info, PlusCircle, Lightbulb, Loader2, Eye, CheckCircle2, AlertCircle, FileText, Target, List } from 'lucide-react';
 import { Reorder, useDragControls } from 'framer-motion';
 import {
   DropdownMenu,
@@ -13,13 +13,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from '@/components/ui/input';
 import { BlockDetailsDialog } from './BlockDetailsDialog';
+import { PageDetailsDialog } from './PageDetailsDialog';
 import { Button } from '@/components/ui/button';
 
 const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
-  const { viewMode, removeIconFromNode, removeBlockFromNode, updateNodeData, updateBlockLabel, reorderBlocks, addChildNode, removeNode } = useAppStore();
+  const { viewMode, showDetails, removeIconFromNode, removeBlockFromNode, updateNodeData, updateBlockLabel, reorderBlocks, addChildNode, removeNode } = useAppStore();
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
+  
+  // Dialog States
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [pageDetailsDialogOpen, setPageDetailsDialogOpen] = useState(false);
   const [selectedBlockForDetails, setSelectedBlockForDetails] = useState<BlockItem | null>(null);
 
   // Status Colors
@@ -129,7 +133,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
       )}>
          
          {/* HEADER (Title and Delete) */}
-         <div className="bg-white border-b border-slate-100 px-[8px] py-2 flex justify-center items-center relative group/header min-h-[36px]">
+         <div className="bg-white border-b border-slate-100 px-[8px] py-2 flex flex-col items-center relative group/header min-h-[36px]">
             {/* Title Input/Display - Centered */}
             <div className="w-full px-6 flex justify-center">
                 {isEditingTitle ? (
@@ -163,8 +167,76 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                 )}
             </div>
             
-            {/* Delete Page Button - Absolute Right Overlay */}
-            <div className="absolute right-1 top-1/2 -translate-y-1/2 z-10">
+            {/* VFP & Features for PAGE (Visible in Details Mode) */}
+            {showDetails && (
+              <div 
+                  className="w-full mt-2 pt-2 border-t border-dashed border-slate-100 flex flex-col gap-2 cursor-pointer hover:bg-slate-50/50 p-1 rounded transition-colors group/vfp"
+                  onClick={(e) => {
+                      e.stopPropagation();
+                      setPageDetailsDialogOpen(true);
+                  }}
+                  title="Click to edit Page Specs"
+              >
+                 {/* VFP */}
+                 <div className="bg-emerald-50 rounded p-1.5 border border-emerald-100 relative">
+                    <div className="flex items-center gap-1 mb-1">
+                       <Target size={10} className="text-emerald-600" />
+                       <span className="text-[9px] font-bold uppercase text-emerald-700 tracking-wider">Product Goal (VFP)</span>
+                    </div>
+                    <div className="text-[10px] text-slate-700 leading-tight">
+                       {data.vfp || <span className="text-emerald-400 italic">Click to define page VFP...</span>}
+                    </div>
+                 </div>
+                 
+                 {/* Features */}
+                 <div className="bg-blue-50 rounded p-1.5 border border-blue-100 relative">
+                    <div className="flex items-center gap-1 mb-1">
+                       <List size={10} className="text-blue-600" />
+                       <span className="text-[9px] font-bold uppercase text-blue-700 tracking-wider">Features</span>
+                    </div>
+                    <div className="text-[10px] text-slate-700 leading-tight">
+                       {data.features ? (
+                          <div className="flex flex-col gap-0.5">
+                            {data.features.split('\n').map((line, i) => (
+                              <div key={i} className="flex gap-1 items-start">
+                                 <span className="mt-1 w-1 h-1 rounded-full bg-blue-400 shrink-0"></span>
+                                 <span>{line.replace(/^[-*•]\s?/, '')}</span>
+                              </div>
+                            ))}
+                          </div>
+                       ) : (
+                          <span className="text-blue-400 italic">Click to list features...</span>
+                       )}
+                    </div>
+                 </div>
+                 
+                 {/* Edit Hint Overlay */}
+                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/vfp:opacity-100 transition-opacity pointer-events-none">
+                    <div className="bg-white/90 shadow-sm border border-slate-200 rounded px-2 py-1 text-[10px] font-medium text-slate-600 flex items-center gap-1">
+                        <FileText size={10} />
+                        Edit Specs
+                    </div>
+                 </div>
+              </div>
+            )}
+            
+            {/* Page Header Actions - Absolute Right Overlay */}
+            <div className="absolute right-1 top-2 z-10 flex items-center gap-0.5">
+                {/* Details/Specs Trigger (Always visible on hover or if Details are hidden but user wants to edit) */}
+                <Button 
+                   size="icon" 
+                   variant="ghost" 
+                   className="h-5 w-5 text-slate-300 hover:text-blue-500 opacity-0 group-hover/header:opacity-100 transition-opacity"
+                   onClick={(e) => {
+                      e.stopPropagation();
+                      setPageDetailsDialogOpen(true);
+                   }}
+                   title="Page Specs & VFP"
+                >
+                   <FileText size={12} />
+                </Button>
+
+                {/* Delete Button */}
                 <Button 
                    size="icon" 
                    variant="ghost" 
@@ -215,44 +287,53 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                   <div 
                     onClick={(e) => {
                        e.stopPropagation();
-                       // In Brief mode, clicking opens details. In Visual, it allows renaming.
-                       if (viewMode === 'visual') {
+                       // In Visual, click allows renaming. Details are toggled globally.
+                       if (!showDetails) {
                            setEditingBlockId(block.id);
                        } else {
                            openDetails(block);
                        }
                     }}
-                    className="cursor-pointer hover:brightness-95 transition-all relative"
+                    className="cursor-pointer hover:brightness-95 transition-all relative flex flex-col"
                   >
-                     {viewMode === 'visual' ? (
-                        <WireframeVisual type={block.type} label={block.label} />
-                     ) : (
-                        // BRIEF VIEW: Description Text
-                        <div className="w-full bg-slate-50 border border-slate-200 rounded-sm p-3 min-h-[60px] flex flex-col gap-1">
-                            <div className="flex items-center gap-2">
-                                <span className="text-[11px] font-bold text-slate-800 truncate">{block.label}</span>
-                            </div>
-                            <div className="text-[10px] text-slate-500 leading-relaxed">
-                               {block.description ? (
-                                  block.description.split('\n').map((line, i) => {
-                                     const trimmed = line.trim();
-                                     const isBullet = trimmed.startsWith('-') || trimmed.startsWith('*') || trimmed.startsWith('•');
-                                     
-                                     if (isBullet) {
-                                        return (
-                                           <div key={i} className="flex gap-1.5 ml-1 items-start">
-                                              <span className="mt-1 w-1 h-1 rounded-full bg-slate-400 shrink-0 block"></span>
-                                              <span className="leading-tight">{trimmed.replace(/^[-*•]\s?/, '')}</span>
-                                           </div>
-                                        );
-                                     }
-                                     
-                                     return <div key={i} className={cn("leading-tight", i > 0 && "mt-1")}>{line}</div>;
-                                  })
-                               ) : (
-                                  <span className="italic opacity-50">No description provided. Click to add details.</span>
-                               )}
-                            </div>
+                     <WireframeVisual type={block.type} label={block.label} />
+                     
+                     {/* DETAILS OVERLAY (VFP & Features) */}
+                     {showDetails && (
+                        <div className="bg-white/95 backdrop-blur-sm border-t border-slate-100 p-2 flex flex-col gap-2 mt-[-1px] relative z-10">
+                             {/* VFP */}
+                             <div className="bg-emerald-50/50 rounded p-1.5 border border-emerald-100/50">
+                                <div className="flex items-center gap-1 mb-0.5">
+                                   <Target size={8} className="text-emerald-600" />
+                                   <span className="text-[8px] font-bold uppercase text-emerald-700 tracking-wider">VFP</span>
+                                </div>
+                                <div className="text-[9px] text-slate-600 leading-tight line-clamp-2">
+                                   {block.vfp || "Define block goal..."}
+                                </div>
+                             </div>
+                             
+                             {/* Features */}
+                             <div className="bg-blue-50/50 rounded p-1.5 border border-blue-100/50">
+                                <div className="flex items-center gap-1 mb-0.5">
+                                   <List size={8} className="text-blue-600" />
+                                   <span className="text-[8px] font-bold uppercase text-blue-700 tracking-wider">Feat.</span>
+                                </div>
+                                <div className="text-[9px] text-slate-600 leading-tight">
+                                   {block.features ? (
+                                      <div className="flex flex-col gap-0.5">
+                                        {block.features.split('\n').slice(0, 3).map((line, i) => (
+                                          <div key={i} className="flex gap-1 items-start truncate">
+                                             <span className="mt-1 w-0.5 h-0.5 rounded-full bg-blue-400 shrink-0"></span>
+                                             <span className="truncate">{line.replace(/^[-*•]\s?/, '')}</span>
+                                          </div>
+                                        ))}
+                                        {block.features.split('\n').length > 3 && <span className="text-[8px] text-slate-400 pl-1.5 italic">more...</span>}
+                                      </div>
+                                   ) : (
+                                      "List features..."
+                                   )}
+                                </div>
+                             </div>
                         </div>
                      )}
                   </div>
@@ -333,6 +414,14 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
              onOpenChange={setDetailsDialogOpen} 
           />
       )}
+
+      {/* Page Details Dialog */}
+      <PageDetailsDialog 
+         nodeId={id} 
+         data={data} 
+         open={pageDetailsDialogOpen} 
+         onOpenChange={setPageDetailsDialogOpen} 
+      />
     </div>
   );
 };

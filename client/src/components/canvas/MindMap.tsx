@@ -25,7 +25,7 @@ const nodeTypes = {
 
 function CustomControls() {
   const { zoomIn, zoomOut, fitView } = useReactFlow();
-  const { layoutNodes, undo, redo, past, future } = useAppStore();
+  const { layoutNodes, undo, redo, past, future, showDetails, toggleDetails } = useAppStore();
 
   return (
     <Panel position="bottom-right" className="flex flex-col gap-3 mr-4 mb-4 md:mb-4 mb-20 items-end">
@@ -113,6 +113,31 @@ function CustomControls() {
                  >
                     <LayoutTemplate size={24} className="md:w-[18px] md:h-[18px] md:hidden" />
                     <LayoutTemplate size={18} className="hidden md:block" />
+                 </Button>
+             </div>
+
+             {/* Details Toggle Button (Caps Lock Style) */}
+             <div className="bg-white rounded-lg shadow-sm border border-slate-200">
+                 <Button 
+                   variant="ghost" 
+                   size="icon" 
+                   className={cn(
+                     "h-12 w-12 md:h-9 md:w-9 rounded-lg transition-all relative",
+                     showDetails 
+                       ? "bg-slate-100 text-slate-900 ring-2 ring-emerald-500/50" 
+                       : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                   )}
+                   onClick={toggleDetails}
+                   title="Toggle Details View"
+                 >
+                    <FileText size={24} className="md:w-[18px] md:h-[18px] md:hidden" />
+                    <FileText size={18} className="hidden md:block" />
+                    
+                    {/* Green Indicator */}
+                    <span className={cn(
+                      "absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-500 shadow-sm transition-all duration-300",
+                      showDetails ? "opacity-100 scale-100" : "opacity-0 scale-0"
+                    )} />
                  </Button>
              </div>
 
