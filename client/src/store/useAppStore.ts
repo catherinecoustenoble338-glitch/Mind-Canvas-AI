@@ -192,9 +192,47 @@ export const useAppStore = create<AppState>((set, get) => ({
         icons: ['Stripe']
       },
     },
+    {
+      id: '3',
+      type: 'block',
+      position: { x: 600, y: 0 },
+      data: {
+        label: 'Chat Feature Roadmap',
+        status: 'idea',
+        vfp: 'Complete collaboration suite for team feedback',
+        features: '- Real-time messaging\n- File attachments\n- @mentions\n- Email notifications',
+        blocks: [
+          { 
+            id: 'r1', 
+            type: 'timeline', 
+            label: 'Q1: Core Messaging', 
+            description: 'Basic text exchange and UI',
+            vfp: 'Users can exchange text messages on blocks',
+            features: '- Message bubbles\n- Timestamps\n- Sender avatars\n- History persistence'
+          },
+          { 
+            id: 'r2', 
+            type: 'upload_button', 
+            label: 'Q2: Media Support', 
+            description: 'File upload and previews',
+            vfp: 'Contextual feedback via screenshots/files',
+            features: '- Drag & drop upload\n- Image previews\n- PDF viewer integration\n- File size limits'
+          },
+          { 
+            id: 'r3', 
+            type: 'profile', 
+            label: 'Q3: Team Features', 
+            description: 'Mentions and notifications',
+            vfp: 'Team members are notified of relevant feedback',
+            features: '- @mention autocomplete\n- In-app notification center\n- Email digests\n- Read receipts'
+          }
+        ]
+      }
+    },
   ],
   edges: [
     { id: 'e1-2', source: '1', target: '2', animated: false, style: { stroke: '#CACACA', strokeWidth: 2 }, markerEnd: { type: 'arrowclosed' as any, color: '#CACACA' } },
+    { id: 'e1-3', source: '1', target: '3', animated: true, style: { stroke: '#CACACA', strokeWidth: 2, strokeDasharray: '5,5' }, markerEnd: { type: 'arrowclosed' as any, color: '#CACACA' } },
   ],
   viewMode: 'visual',
   showDetails: false,
