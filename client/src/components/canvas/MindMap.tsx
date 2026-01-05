@@ -110,8 +110,6 @@ function MindMapContent() {
 
 export default function MindMap() {
   return (
-    <ReactFlowProvider>
-      <MindMapContent />
-    </ReactFlowProvider>
+    <MindMapContent />
   );
 }
