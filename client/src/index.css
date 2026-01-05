@@ -86,6 +86,6 @@
   display: none;
 }
 .react-flow__edge-path {
-  stroke: var(--color-block-stroke);
+  stroke: #74859A80;
   stroke-width: 2;
 }
