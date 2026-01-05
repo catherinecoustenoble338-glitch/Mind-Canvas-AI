@@ -53,8 +53,8 @@ export function SettingsDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-8 w-8 bg-white border border-slate-200 shadow-sm rounded text-slate-600 hover:text-slate-900 hover:bg-slate-50">
-          <Settings size={16} />
+        <Button variant="ghost" size="icon" className="h-12 w-12 md:h-9 md:w-9 bg-white border border-slate-200 shadow-sm rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50">
+          <Settings size={18} className="md:w-[18px] md:h-[18px]" />
         </Button>
       </DialogTrigger>
       <DialogContent className="w-full h-full sm:max-w-[800px] sm:h-[600px] p-0 flex flex-col overflow-hidden gap-0 bg-white sm:rounded-lg rounded-none border-none sm:border">

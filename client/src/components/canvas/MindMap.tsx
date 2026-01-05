@@ -45,31 +45,31 @@ function CustomControls() {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-12 w-12 md:h-8 md:w-8 rounded-none border-b border-slate-100 hover:bg-slate-50 text-slate-600"
+              className="h-12 w-12 md:h-9 md:w-9 rounded-none border-b border-slate-100 hover:bg-slate-50 text-slate-600"
               onClick={() => zoomIn()}
               title="Zoom In"
             >
               <Plus size={24} className="md:w-4 md:h-4 md:hidden" />
-              <Plus size={20} className="hidden md:block" />
+              <Plus size={18} className="hidden md:block" />
             </Button>
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-12 w-12 md:h-8 md:w-8 rounded-none border-b border-slate-100 hover:bg-slate-50 text-slate-600"
+              className="h-12 w-12 md:h-9 md:w-9 rounded-none border-b border-slate-100 hover:bg-slate-50 text-slate-600"
               onClick={() => zoomOut()}
               title="Zoom Out"
             >
               <Minus size={24} className="md:w-4 md:h-4 md:hidden" />
-              <Minus size={20} className="hidden md:block" />
+              <Minus size={18} className="hidden md:block" />
             </Button>
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-12 w-12 md:h-8 md:w-8 rounded-none hover:bg-slate-50 text-slate-600"
+              className="h-12 w-12 md:h-9 md:w-9 rounded-none hover:bg-slate-50 text-slate-600"
               onClick={() => fitView()}
               title="Fit View"
             >
-              <Maximize size={20} className="md:w-3.5 md:h-3.5 md:hidden" />
+              <Maximize size={20} className="md:w-4 md:h-4 md:hidden" />
               <Maximize size={18} className="hidden md:block" />
             </Button>
           </div>
@@ -81,7 +81,7 @@ function CustomControls() {
                  <Button 
                    variant="ghost" 
                    size="icon" 
-                   className="h-12 w-12 md:h-9 md:w-9 rounded text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                   className="h-12 w-12 md:h-9 md:w-9 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                    onClick={layoutNodes}
                    title="Auto Align Pages"
                  >
