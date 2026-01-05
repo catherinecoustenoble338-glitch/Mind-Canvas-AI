@@ -27,34 +27,34 @@ function CustomControls() {
   const { layoutNodes } = useAppStore();
 
   return (
-    <Panel position="bottom-left" className="flex flex-col gap-2 ml-4 mb-4">
+    <Panel position="bottom-left" className="flex flex-col gap-2 ml-4 mb-4 md:mb-4 mb-20">
       <div className="flex flex-col bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
         <Button 
           variant="ghost" 
           size="icon" 
-          className="h-8 w-8 rounded-none border-b border-slate-100 hover:bg-slate-50 text-slate-600"
+          className="h-10 w-10 md:h-8 md:w-8 rounded-none border-b border-slate-100 hover:bg-slate-50 text-slate-600"
           onClick={() => zoomIn()}
           title="Zoom In"
         >
-          <Plus size={16} />
+          <Plus size={20} className="md:w-4 md:h-4" />
         </Button>
         <Button 
           variant="ghost" 
           size="icon" 
-          className="h-8 w-8 rounded-none border-b border-slate-100 hover:bg-slate-50 text-slate-600"
+          className="h-10 w-10 md:h-8 md:w-8 rounded-none border-b border-slate-100 hover:bg-slate-50 text-slate-600"
           onClick={() => zoomOut()}
           title="Zoom Out"
         >
-          <Minus size={16} />
+          <Minus size={20} className="md:w-4 md:h-4" />
         </Button>
         <Button 
           variant="ghost" 
           size="icon" 
-          className="h-8 w-8 rounded-none hover:bg-slate-50 text-slate-600"
+          className="h-10 w-10 md:h-8 md:w-8 rounded-none hover:bg-slate-50 text-slate-600"
           onClick={() => fitView()}
           title="Fit View"
         >
-          <Maximize size={14} />
+          <Maximize size={18} className="md:w-3.5 md:h-3.5" />
         </Button>
       </div>
       
@@ -69,11 +69,11 @@ function CustomControls() {
              <Button 
                variant="ghost" 
                size="icon" 
-               className="h-8 w-8 rounded bg-white border border-slate-200 shadow-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+               className="h-10 w-10 md:h-8 md:w-8 rounded bg-white border border-slate-200 shadow-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                onClick={layoutNodes}
                title="Auto Align Pages"
              >
-                <LayoutTemplate size={16} />
+                <LayoutTemplate size={20} className="md:w-4 md:h-4" />
              </Button>
          </div>
       </div>

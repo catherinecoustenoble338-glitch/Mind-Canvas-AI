@@ -123,7 +123,8 @@ export function Sidebar() {
     updateNodeData, 
     addIconToNode, 
     removeIconFromNode,
-    removeBlockFromNode
+    removeBlockFromNode,
+    setSidebarOpen
   } = useAppStore();
   
   const selectedNode = nodes.find(n => n.id === selectedNodeId);
@@ -135,6 +136,8 @@ export function Sidebar() {
     } else {
       addNode({ x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 });
     }
+    // Optional: Close sidebar on mobile after selection if desired, but user might want to add multiple.
+    // Let's keep it open for now.
   };
 
   const filteredGroups = TOOL_GROUPS.map(group => ({
@@ -145,14 +148,26 @@ export function Sidebar() {
   return (
     <div className="h-full flex flex-col bg-white border-r border-slate-200 w-full md:w-[320px] shadow-xl z-10 font-sans">
       {/* Header Logo */}
-      <div className="p-4 pl-14 border-b border-slate-100 flex items-center gap-3 bg-white">
-        <div className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center text-white shadow-md">
-           <Grid size={18} />
+      <div className="p-4 pl-4 md:pl-14 border-b border-slate-100 flex items-center justify-between bg-white">
+        <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center text-white shadow-md">
+            <Grid size={18} />
+            </div>
+            <div className="flex flex-col">
+            <h1 className="font-bold text-slate-800 leading-none text-sm">OctoFlow</h1>
+            <span className="text-[10px] text-slate-400 font-medium">Sitemap & Wireframe</span>
+            </div>
         </div>
-        <div className="flex flex-col">
-           <h1 className="font-bold text-slate-800 leading-none text-sm">OctoFlow</h1>
-           <span className="text-[10px] text-slate-400 font-medium">Sitemap & Wireframe</span>
-        </div>
+        
+        {/* Mobile Close Button */}
+        <Button 
+            variant="ghost" 
+            size="icon" 
+            className="md:hidden text-slate-400 hover:text-slate-600"
+            onClick={() => setSidebarOpen(false)}
+        >
+            <X size={20} />
+        </Button>
       </div>
 
       {/* Main Content Area */}

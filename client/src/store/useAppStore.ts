@@ -131,6 +131,10 @@ interface AppState {
   setSelectedNode: (id: string | null) => void;
   addIconToNode: (nodeId: string, icon: string) => void;
   removeIconFromNode: (nodeId: string, icon: string) => void;
+  
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
+  layoutNodes: () => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({

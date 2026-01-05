@@ -12,15 +12,15 @@ export default function Board() {
   return (
     <ReactFlowProvider>
       <div className="w-screen h-screen overflow-hidden flex bg-slate-50 relative">
-        {/* Toggle Button */}
-        <div className="absolute top-4 left-4 z-50">
+        {/* Toggle Button - hidden when sidebar is open on mobile to avoid overlap with sidebar content */}
+        <div className={`absolute top-4 left-4 z-50 transition-opacity duration-300 ${sidebarOpen ? 'opacity-0 md:opacity-100 pointer-events-none md:pointer-events-auto' : 'opacity-100'}`}>
             <Button 
                 variant="outline" 
                 size="icon" 
-                className="h-8 w-8 bg-white shadow-sm border-slate-200 text-slate-600 hover:text-slate-900"
+                className="h-10 w-10 md:h-8 md:w-8 bg-white shadow-sm border-slate-200 text-slate-600 hover:text-slate-900"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
             >
-                {sidebarOpen ? <PanelLeftClose size={16} /> : <Menu size={16} />}
+                {sidebarOpen ? <PanelLeftClose size={18} /> : <Menu size={18} />}
             </Button>
         </div>
 
@@ -30,7 +30,7 @@ export default function Board() {
                 sidebarOpen ? 'w-full md:w-[320px] opacity-100 translate-x-0' : 'w-0 opacity-0 -translate-x-full'
             }`}
         >
-            <div className="w-full md:w-[320px] h-full">
+            <div className="w-screen md:w-[320px] h-full">
                 <Sidebar />
             </div>
         </div>
