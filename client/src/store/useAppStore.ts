@@ -172,7 +172,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     },
   ],
   edges: [
-    { id: 'e1-2', source: '1', target: '2', animated: true, style: { stroke: 'var(--color-border)' } },
+    { id: 'e1-2', source: '1', target: '2', animated: true, style: { stroke: '#CACACA' } },
   ],
   viewMode: 'visual',
   selectedNodeId: null,
@@ -327,7 +327,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       animated: false,
       type: 'default',
       markerEnd: { type: 'arrowclosed' as any },
-      style: { stroke: '#475569', strokeWidth: 2 } 
+      style: { stroke: '#CACACA', strokeWidth: 2 } 
     };
 
     const updatedNodes = [...get().nodes, newNode];

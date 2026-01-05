@@ -10,13 +10,13 @@ interface WireframeVisualProps {
 
 export function WireframeVisual({ type, className, label }: WireframeVisualProps) {
   // Base classes
-  // Using slate-300 for a lighter graphite look (approx 2x lighter than slate-500)
-  const base = "w-full overflow-hidden relative flex flex-col p-3 min-h-[48px] justify-start items-start transition-all bg-slate-300 rounded-sm";
+  // Using #818181 for block background
+  const base = "w-full overflow-hidden relative flex flex-col p-3 min-h-[48px] justify-start items-start transition-all bg-[#818181] rounded-sm";
   
-  // Helper for text label inside the block (darker text for contrast on lighter bg) - ALWAYS Top-Left
+  // Helper for text label inside the block - #FDFDFD
   const BlockLabel = () => (
     <span className={cn(
-      "absolute top-2 left-2 z-20 text-slate-700 text-[10px] font-medium leading-tight mb-2 truncate block opacity-90 shadow-sm text-left max-w-[90%] tracking-wide font-apple-system"
+      "absolute top-2 left-2 z-20 text-[#FDFDFD] text-[10px] font-medium leading-tight mb-2 truncate block opacity-90 shadow-sm text-left max-w-[90%] tracking-wide font-apple-system"
     )} style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
       {label || type.replace(/_/g, ' ')}
     </span>
@@ -29,13 +29,13 @@ export function WireframeVisual({ type, className, label }: WireframeVisualProps
     </div>
   );
 
-  // Helper for generic lines - darker for visibility on light bg
-  const Line = ({ w, h = "h-1", bg = "bg-transparent border border-slate-500/50", rounded = "rounded-sm", className = "" }: any) => (
+  // Helper for generic lines - #CACACA
+  const Line = ({ w, h = "h-1", bg = "bg-transparent border border-[#CACACA]", rounded = "rounded-sm", className = "" }: any) => (
     <div className={`${w} ${h} ${bg} ${rounded} ${className}`}></div>
   );
   
-  // Helper for generic box
-  const Box = ({ w, h, bg = "bg-transparent", border = "border border-slate-500/50", rounded = "rounded-sm", className = "" }: any) => (
+  // Helper for generic box - #CACACA
+  const Box = ({ w, h, bg = "bg-transparent", border = "border border-[#CACACA]", rounded = "rounded-sm", className = "" }: any) => (
     <div className={`${w} ${h} ${bg} ${border} ${rounded} ${className}`}></div>
   );
 
@@ -52,8 +52,8 @@ export function WireframeVisual({ type, className, label }: WireframeVisualProps
                     <Line w="w-full" h="h-1" />
                     <Line w="w-3/4" h="h-1" />
                  </div>
-                 <div className="w-10 h-8 bg-transparent rounded-sm flex items-center justify-center border border-white/50">
-                    <div className="w-0 h-0 border-t-[3px] border-t-transparent border-l-[5px] border-l-white/80 border-b-[3px] border-b-transparent ml-0.5"></div>
+                 <div className="w-10 h-8 bg-transparent rounded-sm flex items-center justify-center border border-[#CACACA]">
+                    <div className="w-0 h-0 border-t-[3px] border-t-transparent border-l-[5px] border-l-[#CACACA] border-b-[3px] border-b-transparent ml-0.5"></div>
                  </div>
               </div>
             </ContentWrapper>
@@ -91,11 +91,11 @@ export function WireframeVisual({ type, className, label }: WireframeVisualProps
               <BlockLabel />
               <ContentWrapper>
                 <div className="flex gap-2 h-full w-full">
-                   <div className="flex-1 rounded-sm p-1 flex flex-col justify-end border border-white/50 h-full">
+                   <div className="flex-1 rounded-sm p-1 flex flex-col justify-end border border-[#CACACA] h-full">
                       <Line w="w-full" h="h-1" />
                       <Line w="w-2/3" h="h-1" className="mt-1" />
                    </div>
-                   <div className="flex-1 rounded-sm p-1 flex flex-col justify-end border border-white/50 h-full">
+                   <div className="flex-1 rounded-sm p-1 flex flex-col justify-end border border-[#CACACA] h-full">
                       <Line w="w-full" h="h-1" />
                       <Line w="w-2/3" h="h-1" className="mt-1" />
                    </div>
@@ -121,12 +121,12 @@ export function WireframeVisual({ type, className, label }: WireframeVisualProps
          <div className={cn(base, "h-[80px]", className)}>
             <BlockLabel />
             <ContentWrapper>
-              <div className="flex-1 w-full relative rounded-sm overflow-hidden border border-white/50 h-full bg-slate-400/20">
+              <div className="flex-1 w-full relative rounded-sm overflow-hidden border border-[#CACACA] h-full bg-slate-400/20">
                  {/* Better Map Representation - Streets */}
                  <div className="absolute inset-0 flex flex-col gap-2 p-1 opacity-40">
-                    <div className="w-full h-1 bg-white/30 rotate-12 transform origin-top-left"></div>
-                    <div className="w-full h-1 bg-white/30 -rotate-6 transform origin-bottom-right mt-4"></div>
-                    <div className="absolute top-0 right-1/3 h-full w-1 bg-white/30"></div>
+                    <div className="w-full h-1 bg-[#CACACA]/50 rotate-12 transform origin-top-left"></div>
+                    <div className="w-full h-1 bg-[#CACACA]/50 -rotate-6 transform origin-bottom-right mt-4"></div>
+                    <div className="absolute top-0 right-1/3 h-full w-1 bg-[#CACACA]/50"></div>
                  </div>
                  {/* Map Pin */}
                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -144,9 +144,9 @@ export function WireframeVisual({ type, className, label }: WireframeVisualProps
          <div className={cn(base, "h-[80px]", className)}>
             <BlockLabel />
             <ContentWrapper>
-              <div className="flex-1 w-full rounded-sm flex items-center px-2 border border-white/50 relative overflow-hidden h-full">
+              <div className="flex-1 w-full rounded-sm flex items-center px-2 border border-[#CACACA] relative overflow-hidden h-full">
                  {/* Image background hint */}
-                 <div className="absolute inset-0 bg-white/5 z-0"></div>
+                 <div className="absolute inset-0 bg-[#CACACA]/10 z-0"></div>
                  <div className="space-y-1 w-1/2 z-10">
                    <Line w="w-full" h="h-1" />
                    <Line w="w-2/3" h="h-1" />
@@ -161,9 +161,9 @@ export function WireframeVisual({ type, className, label }: WireframeVisualProps
                <BlockLabel />
                <ContentWrapper>
                  <div className="flex flex-col items-center justify-center gap-2 w-full h-full flex-1">
-                     <div className="w-8 h-6 border border-white/50 rounded-sm relative overflow-hidden">
-                        <div className="absolute bottom-0 w-full h-2 bg-white/20 transform -rotate-6 scale-110"></div>
-                        <div className="absolute top-1 right-1 w-1 h-1 rounded-full bg-white/40"></div>
+                     <div className="w-8 h-6 border border-[#CACACA] rounded-sm relative overflow-hidden">
+                        <div className="absolute bottom-0 w-full h-2 bg-[#CACACA]/30 transform -rotate-6 scale-110"></div>
+                        <div className="absolute top-1 right-1 w-1 h-1 rounded-full bg-[#CACACA]/50"></div>
                      </div>
                  </div>
                </ContentWrapper>
@@ -175,15 +175,15 @@ export function WireframeVisual({ type, className, label }: WireframeVisualProps
               <BlockLabel />
               <ContentWrapper className="mt-4">
                 <div className="flex justify-between items-center w-full h-full">
-                   <div className="text-[8px] text-white/50 px-1">{'<'}</div>
+                   <div className="text-[8px] text-[#CACACA] px-1">{'<'}</div>
                    <div className="flex-1 flex flex-col justify-center">
                       <div className="flex gap-1 justify-center">
-                          <div className="w-1 h-1 bg-white/80 rounded-full"></div>
-                          <div className="w-1 h-1 border border-white/50 rounded-full"></div>
-                          <div className="w-1 h-1 border border-white/50 rounded-full"></div>
+                          <div className="w-1 h-1 bg-[#CACACA] rounded-full"></div>
+                          <div className="w-1 h-1 border border-[#CACACA] rounded-full"></div>
+                          <div className="w-1 h-1 border border-[#CACACA] rounded-full"></div>
                       </div>
                    </div>
-                   <div className="text-[8px] text-white/50 px-1">{'>'}</div>
+                   <div className="text-[8px] text-[#CACACA] px-1">{'>'}</div>
                 </div>
               </ContentWrapper>
            </div>
@@ -194,11 +194,11 @@ export function WireframeVisual({ type, className, label }: WireframeVisualProps
               <BlockLabel />
               <ContentWrapper>
                 <div className="flex gap-2 h-full w-full">
-                   <div className="flex-1 rounded-sm border border-white/50 flex items-center pl-1">
-                      <div className="text-[8px] text-white/50">{'<'}</div>
+                   <div className="flex-1 rounded-sm border border-[#CACACA] flex items-center pl-1">
+                      <div className="text-[8px] text-[#CACACA]">{'<'}</div>
                    </div>
-                   <div className="flex-1 rounded-sm border border-white/50 flex items-center justify-end pr-1">
-                      <div className="text-[8px] text-white/50">{'>'}</div>
+                   <div className="flex-1 rounded-sm border border-[#CACACA] flex items-center justify-end pr-1">
+                      <div className="text-[8px] text-[#CACACA]">{'>'}</div>
                    </div>
                 </div>
               </ContentWrapper>
@@ -213,17 +213,17 @@ export function WireframeVisual({ type, className, label }: WireframeVisualProps
           <ContentWrapper>
             <div className="flex gap-2 h-full items-end w-full">
               <div className="flex-1 flex flex-col gap-1 items-center">
-                  <div className="w-2 h-2 border border-white/60 rounded-full mb-1"></div>
+                  <div className="w-2 h-2 border border-[#CACACA] rounded-full mb-1"></div>
                   <Line w="w-full" h="h-px" />
                   <Line w="w-2/3" h="h-px" />
               </div>
               <div className="flex-1 flex flex-col gap-1 items-center">
-                  <div className="w-2 h-2 border border-white/60 rounded-full mb-1"></div>
+                  <div className="w-2 h-2 border border-[#CACACA] rounded-full mb-1"></div>
                   <Line w="w-full" h="h-px" />
                   <Line w="w-2/3" h="h-px" />
               </div>
               <div className="flex-1 flex flex-col gap-1 items-center">
-                  <div className="w-2 h-2 border border-white/60 rounded-full mb-1"></div>
+                  <div className="w-2 h-2 border border-[#CACACA] rounded-full mb-1"></div>
                   <Line w="w-full" h="h-px" />
                   <Line w="w-2/3" h="h-px" />
               </div>
@@ -238,7 +238,7 @@ export function WireframeVisual({ type, className, label }: WireframeVisualProps
            <ContentWrapper>
              <div className="flex flex-col items-center justify-center w-full h-full gap-1">
                 <Line w="w-1/2" h="h-1" />
-                <div className="w-1/3 h-2 border border-white/50 rounded-sm mt-1"></div>
+                <div className="w-1/3 h-2 border border-[#CACACA] rounded-sm mt-1"></div>
              </div>
            </ContentWrapper>
         </div>
