@@ -81,6 +81,15 @@ export type WireframeType =
 
 export type PageStatus = 'idea' | 'in_progress' | 'review' | 'done' | 'error';
 
+export interface TeamMember {
+  id: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'editor' | 'viewer';
+  avatar?: string;
+  status: 'active' | 'invited';
+}
+
 export interface ChatMessage {
   id: string;
   text: string;
@@ -155,6 +164,12 @@ interface AppState {
   pushToHistory: (actionLabel: string) => void;
   createSnapshot: (label: string) => void;
   restoreSnapshot: (snapshotId: string) => void;
+
+  // Team Management
+  teamMembers: TeamMember[];
+  addTeamMember: (member: Omit<TeamMember, 'id' | 'status'>) => void;
+  removeTeamMember: (id: string) => void;
+  updateTeamMemberRole: (id: string, role: 'admin' | 'editor' | 'viewer') => void;
 
   // Dialog Navigation
   activeBlockId: string | null;
@@ -248,6 +263,37 @@ export const useAppStore = create<AppState>((set, get) => ({
   past: [],
   future: [],
   historyLog: [],
+
+  // Team State
+  teamMembers: [
+      { id: 'tm1', name: 'Alex Designer', email: 'alex@octoflow.com', role: 'admin', status: 'active' },
+      { id: 'tm2', name: 'Sarah PM', email: 'sarah@client.com', role: 'editor', status: 'active' },
+      { id: 'tm3', name: 'Mike Dev', email: 'mike@agency.com', role: 'viewer', status: 'invited' },
+  ],
+
+  addTeamMember: (member) => {
+      get().pushToHistory(`Added Team Member: ${member.name}`);
+      const newMember: TeamMember = {
+          ...member,
+          id: Math.random().toString(36).substr(2, 9),
+          status: 'invited'
+      };
+      set({ teamMembers: [...get().teamMembers, newMember] });
+  },
+
+  removeTeamMember: (id) => {
+      get().pushToHistory('Removed Team Member');
+      set({ teamMembers: get().teamMembers.filter(m => m.id !== id) });
+  },
+
+  updateTeamMemberRole: (id, role) => {
+      get().pushToHistory(`Updated Role: ${role}`);
+      set({
+          teamMembers: get().teamMembers.map(m => 
+              m.id === id ? { ...m, role } : m
+          )
+      });
+  },
 
   pushToHistory: (actionLabel: string) => {
     const { nodes, edges, past, historyLog } = get();

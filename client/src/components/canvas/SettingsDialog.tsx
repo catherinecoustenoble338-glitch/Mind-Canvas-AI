@@ -17,6 +17,7 @@ import {
   User, 
   Folder, 
   LayoutGrid, 
+  Users,
   MessageSquare, 
   Zap, 
   Palette, 
@@ -51,9 +52,13 @@ import {
 
 export function SettingsDialog() {
   const [open, setOpen] = useState(false);
-  const { historyLog, nodes, setActiveBlockId, createSnapshot, restoreSnapshot } = useAppStore();
+  const { historyLog, nodes, setActiveBlockId, createSnapshot, restoreSnapshot, teamMembers, addTeamMember, removeTeamMember, updateTeamMemberRole } = useAppStore();
   const [showSnapshotsOnly, setShowSnapshotsOnly] = useState(false);
   const [snapshotLabel, setSnapshotLabel] = useState('');
+  
+  // Team State
+  const [newMemberEmail, setNewMemberEmail] = useState('');
+  const [newMemberRole, setNewMemberRole] = useState<'admin' | 'editor' | 'viewer'>('editor');
 
   const filteredHistory = showSnapshotsOnly 
     ? historyLog.filter(log => log.type === 'snapshot') 
@@ -151,6 +156,9 @@ export function SettingsDialog() {
                       <TabsTrigger value="projects" className="justify-start gap-2 px-3 py-2 h-9 text-xs data-[state=active]:bg-white data-[state=active]:shadow-sm border border-transparent data-[state=active]:border-slate-200/60 shrink-0">
                          <Folder size={14} /> Projects
                       </TabsTrigger>
+                      <TabsTrigger value="team" className="justify-start gap-2 px-3 py-2 h-9 text-xs data-[state=active]:bg-white data-[state=active]:shadow-sm border border-transparent data-[state=active]:border-slate-200/60 shrink-0">
+                         <Users size={14} /> Team
+                      </TabsTrigger>
                       <TabsTrigger value="library" className="justify-start gap-2 px-3 py-2 h-9 text-xs data-[state=active]:bg-white data-[state=active]:shadow-sm border border-transparent data-[state=active]:border-slate-200/60 shrink-0">
                          <LayoutGrid size={14} /> Library
                       </TabsTrigger>
@@ -226,6 +234,98 @@ export function SettingsDialog() {
                                  <LinkIcon size={12} /> Copy Link
                               </Button>
                               <Button variant="outline" size="sm" className="h-8 sm:h-7 text-xs flex-1 sm:flex-none">Open</Button>
+                           </div>
+                        </div>
+                     ))}
+                  </div>
+               </TabsContent>
+
+               {/* Team Tab */}
+               <TabsContent value="team" className="flex-1 m-0 p-4 sm:p-6 space-y-6 overflow-auto w-full">
+                  <div className="flex items-center justify-between">
+                     <div className="space-y-1">
+                        <h3 className="text-lg font-semibold text-slate-800">Team Members</h3>
+                        <p className="text-xs text-slate-500">Manage access and roles for your project.</p>
+                     </div>
+                  </div>
+
+                  {/* Add Member Form */}
+                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 flex flex-col sm:flex-row gap-3 items-end sm:items-center mt-4">
+                      <div className="grid gap-1.5 flex-1 w-full">
+                          <Label htmlFor="new-member-email" className="text-xs">Email Address</Label>
+                          <Input 
+                              id="new-member-email" 
+                              placeholder="colleague@example.com" 
+                              className="h-9 bg-white"
+                              value={newMemberEmail}
+                              onChange={(e) => setNewMemberEmail(e.target.value)}
+                          />
+                      </div>
+                      <div className="grid gap-1.5 w-full sm:w-[140px]">
+                           <Label htmlFor="new-member-role" className="text-xs">Role</Label>
+                           <select 
+                                id="new-member-role"
+                                className="h-9 w-full rounded-md border border-input bg-white px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                value={newMemberRole}
+                                onChange={(e) => setNewMemberRole(e.target.value as any)}
+                           >
+                               <option value="admin">Admin</option>
+                               <option value="editor">Editor</option>
+                               <option value="viewer">Viewer</option>
+                           </select>
+                      </div>
+                      <Button 
+                          className="h-9 bg-blue-600 hover:bg-blue-700 shrink-0 w-full sm:w-auto"
+                          onClick={() => {
+                              if (newMemberEmail) {
+                                  addTeamMember({
+                                      name: newMemberEmail.split('@')[0], // Simple name extraction
+                                      email: newMemberEmail,
+                                      role: newMemberRole
+                                  });
+                                  setNewMemberEmail('');
+                              }
+                          }}
+                      >
+                          Invite
+                      </Button>
+                  </div>
+
+                  <div className="space-y-3 mt-4">
+                     {teamMembers.map(member => (
+                        <div key={member.id} className="flex items-center justify-between p-3 border border-slate-100 rounded-lg hover:bg-slate-50 transition-colors group">
+                           <div className="flex items-center gap-3">
+                              <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs shrink-0 border border-blue-200 uppercase">
+                                 {member.name.substring(0, 2)}
+                              </div>
+                              <div className="flex flex-col">
+                                 <div className="flex items-center gap-2">
+                                     <span className="font-medium text-sm text-slate-800">{member.name}</span>
+                                     {member.status === 'invited' && <Badge variant="outline" className="text-[9px] h-4 px-1 bg-yellow-50 text-yellow-600 border-yellow-200">Pending</Badge>}
+                                 </div>
+                                 <span className="text-xs text-slate-400">{member.email}</span>
+                              </div>
+                           </div>
+                           
+                           <div className="flex items-center gap-3">
+                              <select 
+                                  className="h-7 text-xs rounded border border-slate-200 bg-white px-2 py-0 focus:outline-none focus:border-blue-300"
+                                  value={member.role}
+                                  onChange={(e) => updateTeamMemberRole(member.id, e.target.value as any)}
+                              >
+                                  <option value="admin">Admin</option>
+                                  <option value="editor">Editor</option>
+                                  <option value="viewer">Viewer</option>
+                              </select>
+                              
+                              <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="h-7 w-7 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  onClick={() => removeTeamMember(member.id)}
+                              >
+                                  <Trash2 size={14} />
+                              </Button>
                            </div>
                         </div>
                      ))}
