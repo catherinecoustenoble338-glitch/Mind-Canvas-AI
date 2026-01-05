@@ -71,7 +71,7 @@ export function SettingsDialog() {
                
                {/* Scrollable horizontal nav on mobile, Vertical on desktop */}
                <ScrollArea className="w-full sm:h-auto whitespace-nowrap sm:whitespace-normal pb-2 sm:pb-0">
-                   <TabsList className="flex flex-row sm:flex-col h-auto bg-transparent gap-1 items-stretch p-0 w-full justify-start">
+                   <TabsList className="flex flex-row sm:flex-col h-auto bg-transparent gap-1 items-stretch p-0 w-max sm:w-full justify-start px-2 sm:px-0">
                       <TabsTrigger value="profile" className="justify-start gap-2 px-3 py-2 h-9 text-xs data-[state=active]:bg-white data-[state=active]:shadow-sm border border-transparent data-[state=active]:border-slate-200/60 shrink-0">
                          <User size={14} /> Profile
                       </TabsTrigger>
