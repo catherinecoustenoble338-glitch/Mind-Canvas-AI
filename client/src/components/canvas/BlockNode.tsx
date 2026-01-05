@@ -3,7 +3,8 @@ import { Handle, Position, NodeProps, useReactFlow } from 'reactflow';
 import { useAppStore, BlockData, PageStatus } from '@/store/useAppStore';
 import WireframeVisual from './WireframeVisual';
 import { cn } from '@/lib/utils';
-import { X, MoreHorizontal, ChevronDown, Trash2 } from 'lucide-react';
+import { X, MoreHorizontal, ChevronDown, Trash2, GripVertical } from 'lucide-react';
+import { Reorder, useDragControls } from 'framer-motion';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 
 const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
-  const { viewMode, removeIconFromNode, removeBlockFromNode, updateNodeData, updateBlockLabel } = useAppStore();
+  const { viewMode, removeIconFromNode, removeBlockFromNode, updateNodeData, updateBlockLabel, reorderBlocks } = useAppStore();
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
 
   // Status Colors
@@ -35,6 +36,10 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
 
   const handleStatusChange = (status: PageStatus) => {
     updateNodeData(id, { status });
+  };
+
+  const handleReorder = (newOrder: any[]) => {
+    reorderBlocks(id, newOrder);
   };
 
   return (
@@ -105,9 +110,16 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
          </div>
 
          {/* BLOCKS STACK - Padding matching reference */}
-         <div className="flex flex-col w-full bg-white p-1 gap-1 min-h-[40px]">
+         {/* Using Reorder.Group for drag and drop */}
+         <Reorder.Group axis="y" values={data.blocks} onReorder={handleReorder} className="flex flex-col w-full bg-white p-1 gap-1 min-h-[40px]">
             {data.blocks.map((block) => (
-               <div key={block.id} className="w-full relative group/block rounded-[3px] overflow-hidden">
+               <Reorder.Item 
+                  key={block.id} 
+                  value={block} 
+                  className="w-full relative group/block rounded-[3px] overflow-hidden nopan"
+                  // Prevent drag propagation to ReactFlow canvas
+                  onPointerDown={(e) => e.stopPropagation()} 
+               >
                   {/* EDIT OVERLAY - Only show input when editing */}
                    {editingBlockId === block.id && (
                       <div className="absolute inset-0 z-20 bg-black/50 flex items-center justify-center p-1">
@@ -141,34 +153,37 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                      <WireframeVisual type={block.type} label={block.label} />
                   </div>
                   
+                  {/* Drag Handle (Visible on Hover) - Left side */}
+                  <div className="absolute top-1/2 -translate-y-1/2 left-1 opacity-0 group-hover/block:opacity-100 text-white/80 cursor-grab active:cursor-grabbing z-10 drop-shadow-md">
+                     <GripVertical size={12} />
+                  </div>
+
                   {/* Delete Action (Visible on Hover) - Top Right overlay */}
-                  {selected && (
-                    <button 
-                        className="absolute top-1 right-1 opacity-0 group-hover/block:opacity-100 text-white/80 hover:text-white hover:bg-red-500/80 p-0.5 rounded transition-all z-10"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeBlockFromNode(id, block.id);
-                        }}
-                    >
-                        <Trash2 size={10} />
-                    </button>
-                  )}
+                  <button 
+                      className="absolute top-1 right-1 opacity-0 group-hover/block:opacity-100 text-white/80 hover:text-white hover:bg-red-500/80 p-0.5 rounded transition-all z-10"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeBlockFromNode(id, block.id);
+                      }}
+                  >
+                      <Trash2 size={12} />
+                  </button>
                   
                   {/* Connection Handles (Visible on Hover) - Floating outside */}
-                  <div className="absolute top-1/2 -translate-y-1/2 -left-1.5 opacity-0 group-hover/block:opacity-100 transition-opacity z-10">
+                  <div className="absolute top-1/2 -translate-y-1/2 -left-2 opacity-0 group-hover/block:opacity-100 transition-opacity z-10">
                      <Handle type="target" position={Position.Left} id={`t-${block.id}`} className="!w-2.5 !h-2.5 !bg-blue-500 !border-2 !border-white shadow-sm" />
                   </div>
-                  <div className="absolute top-1/2 -translate-y-1/2 -right-1.5 opacity-0 group-hover/block:opacity-100 transition-opacity z-10">
+                  <div className="absolute top-1/2 -translate-y-1/2 -right-2 opacity-0 group-hover/block:opacity-100 transition-opacity z-10">
                      <Handle type="source" position={Position.Right} id={`s-${block.id}`} className="!w-2.5 !h-2.5 !bg-blue-500 !border-2 !border-white shadow-sm" />
                   </div>
-               </div>
+               </Reorder.Item>
             ))}
             {data.blocks.length === 0 && (
                <div className="py-8 text-center text-[10px] text-slate-300 italic">
                   Drop blocks here
                </div>
             )}
-         </div>
+         </Reorder.Group>
          
          {/* Footer/Bottom bar of the card (Reference has a footer-like area sometimes, or just rounded bottom) */}
          <div className="h-1 bg-slate-50"></div>

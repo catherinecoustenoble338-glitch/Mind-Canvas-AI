@@ -72,6 +72,7 @@ interface AppState {
   addBlockToNode: (nodeId: string, type: WireframeType) => void;
   removeBlockFromNode: (nodeId: string, blockId: string) => void;
   updateBlockLabel: (nodeId: string, blockId: string, label: string) => void;
+  reorderBlocks: (nodeId: string, newBlocks: BlockItem[]) => void;
   updateNodeData: (id: string, data: Partial<BlockData>) => void;
   setViewMode: (mode: 'visual' | 'brief') => void;
   setSelectedNode: (id: string | null) => void;
@@ -183,6 +184,10 @@ export const useAppStore = create<AppState>((set, get) => ({
       );
       get().updateNodeData(nodeId, { blocks: updatedBlocks });
     }
+  },
+
+  reorderBlocks: (nodeId, newBlocks) => {
+    get().updateNodeData(nodeId, { blocks: newBlocks });
   },
 
   updateNodeData: (id, data) => {
