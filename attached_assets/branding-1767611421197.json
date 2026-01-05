@@ -1,0 +1,97 @@
+{
+  "colorScheme": "light",
+  "fonts": [
+    {
+      "family": "SuisseIntl",
+      "count": 130
+    },
+    {
+      "family": "sans-serif",
+      "count": 129
+    },
+    {
+      "family": "Arial",
+      "count": 5
+    }
+  ],
+  "colors": {
+    "primary": "#AA5EEA",
+    "accent": "#2F7FEF",
+    "background": "#FFFFFF",
+    "textPrimary": "#2F7FEF",
+    "link": "#2F7FEF"
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "SuisseIntl",
+      "heading": "SuisseIntl"
+    },
+    "fontStacks": {
+      "body": [
+        "SuisseIntl",
+        "sans-serif"
+      ],
+      "heading": [
+        "SuisseIntl",
+        "sans-serif"
+      ],
+      "paragraph": [
+        "SuisseIntl",
+        "sans-serif"
+      ]
+    },
+    "fontSizes": {
+      "h1": "60px",
+      "h2": "48px",
+      "body": "24px"
+    }
+  },
+  "spacing": {
+    "baseUnit": 4,
+    "borderRadius": "6px"
+  },
+  "components": {
+    "input": {
+      "background": "#FFFFFF",
+      "textColor": "#627793",
+      "borderColor": null,
+      "borderRadius": "0px",
+      "borderRadiusCorners": {
+        "topLeft": "0px",
+        "topRight": "0px",
+        "bottomRight": "0px",
+        "bottomLeft": "0px"
+      },
+      "shadow": "none"
+    }
+  },
+  "images": {
+    "logo": "File saved at: attached_assets/logo.svg",
+    "favicon": "https://static.octopus.do/favicon.ico",
+    "ogImage": "https://static.octopus.do/og-image-03.png"
+  },
+  "__framework_hints": [],
+  "__llm_logo_reasoning": {
+    "selectedIndex": 0,
+    "reasoning": "Heuristic fallback: Moderate indicators: variant bonus (+8), in header, no link (brand logos usually link to homepage, penalty), header location, top-left position, highest logo on page, src contains logo, too small (likely icon, penalty), small square icon (likely UI icon, heavy penalty), not visible (penalty). Score: 35. May benefit from LLM validation.",
+    "confidence": 0.5
+  },
+  "__llm_button_reasoning": {
+    "primary": {
+      "index": -1,
+      "text": "N/A",
+      "reasoning": "LLM failed"
+    },
+    "secondary": {
+      "index": -1,
+      "text": "N/A",
+      "reasoning": "LLM failed"
+    },
+    "confidence": 0
+  },
+  "confidence": {
+    "buttons": 0,
+    "colors": 0,
+    "overall": 0
+  }
+}
