@@ -24,12 +24,18 @@ import {
   Link as LinkIcon,
   Trash2,
   Upload,
-  Plus
+  Plus,
+  History,
+  Undo2,
+  Redo2
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useAppStore } from '@/store/useAppStore';
+import { formatDistanceToNow } from 'date-fns';
 
 export function SettingsDialog() {
   const [open, setOpen] = useState(false);
+  const { historyLog } = useAppStore();
 
   // Mock Data
   const projects = [
@@ -95,6 +101,12 @@ export function SettingsDialog() {
                          <div className="flex justify-between items-center w-full gap-2">
                             <span className="flex items-center gap-2"><Palette size={14} /> Design</span>
                             <Badge variant="secondary" className="h-4 px-1 text-[9px] min-w-[16px] justify-center bg-blue-100 text-blue-700 hidden sm:flex">5</Badge>
+                         </div>
+                      </TabsTrigger>
+                      <TabsTrigger value="history" className="justify-start gap-2 px-3 py-2 h-9 text-xs data-[state=active]:bg-white data-[state=active]:shadow-sm border border-transparent data-[state=active]:border-slate-200/60 w-full shrink-0">
+                         <div className="flex justify-between items-center w-full gap-2">
+                            <span className="flex items-center gap-2"><History size={14} /> History</span>
+                            <Badge variant="secondary" className="h-4 px-1 text-[9px] min-w-[16px] justify-center bg-blue-100 text-blue-700 hidden sm:flex">{historyLog.length}</Badge>
                          </div>
                       </TabsTrigger>
                    </TabsList>
@@ -287,6 +299,41 @@ export function SettingsDialog() {
                            <div className="text-xs text-slate-500">Caption Text</div>
                         </div>
                      </div>
+                  </div>
+               </TabsContent>
+
+               {/* History Tab */}
+               <TabsContent value="history" className="flex-1 m-0 p-4 sm:p-6 space-y-6 overflow-auto w-full">
+                  <div className="space-y-1">
+                     <h3 className="text-lg font-semibold text-slate-800">Action History</h3>
+                     <p className="text-xs text-slate-500">Log of recent changes and actions.</p>
+                  </div>
+
+                  <div className="space-y-2 mt-4">
+                     {historyLog.length === 0 ? (
+                        <div className="text-center py-10 text-slate-400 text-sm border border-dashed border-slate-200 rounded-lg">
+                           No actions recorded yet.
+                        </div>
+                     ) : (
+                        historyLog.map((log, index) => (
+                           <div key={index} className="flex items-center justify-between p-3 border border-slate-100 rounded-lg bg-white hover:bg-slate-50 transition-colors">
+                              <div className="flex items-center gap-3">
+                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${log.action === 'Undo' ? 'bg-orange-100 text-orange-600' : log.action === 'Redo' ? 'bg-green-100 text-green-600' : 'bg-blue-100 text-blue-600'}`}>
+                                    {log.action === 'Undo' ? <Undo2 size={14} /> : log.action === 'Redo' ? <Redo2 size={14} /> : <History size={14} />}
+                                 </div>
+                                 <div className="flex flex-col">
+                                    <span className="font-medium text-sm text-slate-800">{log.action}</span>
+                                    <span className="text-[10px] text-slate-400">
+                                       {formatDistanceToNow(log.timestamp, { addSuffix: true })}
+                                    </span>
+                                 </div>
+                              </div>
+                              <div className="text-[10px] font-mono text-slate-300">
+                                 {new Date(log.timestamp).toLocaleTimeString()}
+                              </div>
+                           </div>
+                        ))
+                     )}
                   </div>
                </TabsContent>
 

@@ -15,7 +15,7 @@ import { useAppStore } from '@/store/useAppStore';
 import CustomBlockNode from './BlockNode';
 import { SettingsDialog } from './SettingsDialog';
 import { Button } from '@/components/ui/button';
-import { Plus, Minus, Maximize, ZoomIn, ZoomOut, LayoutTemplate, FileText, Layers } from 'lucide-react';
+import { Plus, Minus, Maximize, ZoomIn, ZoomOut, LayoutTemplate, FileText, Layers, Undo2, Redo2 } from 'lucide-react';
 import 'reactflow/dist/style.css';
 import { cn } from '@/lib/utils';
 
@@ -25,7 +25,7 @@ const nodeTypes = {
 
 function CustomControls() {
   const { zoomIn, zoomOut, fitView } = useReactFlow();
-  const { layoutNodes } = useAppStore();
+  const { layoutNodes, undo, redo, past, future } = useAppStore();
 
   return (
     <Panel position="bottom-right" className="flex flex-col gap-3 mr-4 mb-4 md:mb-4 mb-20 items-end">
@@ -40,6 +40,32 @@ function CustomControls() {
       </div>
 
       <div className="flex flex-col gap-3 items-end">
+          {/* History Controls */}
+          <div className="flex flex-col bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-12 w-12 md:h-9 md:w-9 rounded-none border-b border-slate-100 hover:bg-slate-50 text-slate-600 disabled:opacity-30"
+              onClick={undo}
+              disabled={past.length === 0}
+              title="Undo"
+            >
+              <Undo2 size={24} className="md:w-4 md:h-4 md:hidden" />
+              <Undo2 size={18} className="hidden md:block" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-12 w-12 md:h-9 md:w-9 rounded-none hover:bg-slate-50 text-slate-600 disabled:opacity-30"
+              onClick={redo}
+              disabled={future.length === 0}
+              title="Redo"
+            >
+              <Redo2 size={24} className="md:w-4 md:h-4 md:hidden" />
+              <Redo2 size={18} className="hidden md:block" />
+            </Button>
+          </div>
+
           {/* Zoom Controls - Larger touch targets on mobile */}
           <div className="flex flex-col bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
             <Button 

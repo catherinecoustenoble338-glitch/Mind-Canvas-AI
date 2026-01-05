@@ -135,6 +135,14 @@ interface AppState {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
   layoutNodes: () => void;
+
+  // History & Logging
+  past: { nodes: BlockNode[], edges: Edge[] }[];
+  future: { nodes: BlockNode[], edges: Edge[] }[];
+  historyLog: { action: string, timestamp: number }[];
+  undo: () => void;
+  redo: () => void;
+  pushToHistory: (actionLabel: string) => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -181,6 +189,70 @@ export const useAppStore = create<AppState>((set, get) => ({
   viewMode: 'visual',
   selectedNodeId: null,
 
+  // History State
+  past: [],
+  future: [],
+  historyLog: [],
+
+  pushToHistory: (actionLabel: string) => {
+    const { nodes, edges, past, historyLog } = get();
+    // Deep clone to avoid reference issues
+    const currentState = { 
+        nodes: JSON.parse(JSON.stringify(nodes)), 
+        edges: JSON.parse(JSON.stringify(edges)) 
+    };
+    
+    set({
+        past: [...past, currentState],
+        future: [], // Clear future on new action
+        historyLog: [{ action: actionLabel, timestamp: Date.now() }, ...historyLog].slice(0, 50) // Keep last 50 logs
+    });
+  },
+
+  undo: () => {
+    const { past, future, nodes, edges, historyLog } = get();
+    if (past.length === 0) return;
+
+    const previous = past[past.length - 1];
+    const newPast = past.slice(0, past.length - 1);
+    
+    // Current state becomes future
+    const currentState = { 
+        nodes: JSON.parse(JSON.stringify(nodes)), 
+        edges: JSON.parse(JSON.stringify(edges)) 
+    };
+
+    set({
+      past: newPast,
+      future: [currentState, ...future],
+      nodes: previous.nodes,
+      edges: previous.edges,
+      historyLog: [{ action: 'Undo', timestamp: Date.now() }, ...historyLog].slice(0, 50)
+    });
+  },
+
+  redo: () => {
+    const { past, future, nodes, edges, historyLog } = get();
+    if (future.length === 0) return;
+
+    const next = future[0];
+    const newFuture = future.slice(1);
+    
+    // Current state becomes past
+    const currentState = { 
+        nodes: JSON.parse(JSON.stringify(nodes)), 
+        edges: JSON.parse(JSON.stringify(edges)) 
+    };
+
+    set({
+      past: [...past, currentState],
+      future: newFuture,
+      nodes: next.nodes,
+      edges: next.edges,
+      historyLog: [{ action: 'Redo', timestamp: Date.now() }, ...historyLog].slice(0, 50)
+    });
+  },
+
   onNodesChange: (changes: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -192,12 +264,14 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
   },
   onConnect: (connection: Connection) => {
+    get().pushToHistory('Connected Nodes');
     set({
       edges: addEdge({ ...connection, animated: true, style: { stroke: '#CACACA', strokeWidth: 2 }, markerEnd: { type: 'arrowclosed' as any, color: '#CACACA' } }, get().edges),
     });
   },
 
   addNode: (position) => {
+    get().pushToHistory('Added Page');
     const id = Math.random().toString(36).substr(2, 9);
     const newNode: BlockNode = {
       id,
@@ -217,6 +291,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   addBlockToNode: (nodeId, type) => {
+    get().pushToHistory(`Added Block: ${type}`);
     const node = get().nodes.find(n => n.id === nodeId);
     if (node) {
       const newBlock: BlockItem = { 
@@ -244,6 +319,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   removeBlockFromNode: (nodeId, blockId) => {
+    get().pushToHistory('Removed Block');
     const node = get().nodes.find(n => n.id === nodeId);
     if (node) {
       get().updateNodeData(nodeId, { blocks: node.data.blocks.filter(b => b.id !== blockId) });
@@ -251,6 +327,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   updateBlockLabel: (nodeId, blockId, label) => {
+    get().pushToHistory('Updated Block Label');
     const node = get().nodes.find(n => n.id === nodeId);
     if (node) {
       const updatedBlocks = node.data.blocks.map(b => 
@@ -261,6 +338,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   updateBlockDescription: (nodeId, blockId, description) => {
+    get().pushToHistory('Updated Block Description');
     const node = get().nodes.find(n => n.id === nodeId);
     if (node) {
       const updatedBlocks = node.data.blocks.map(b => 
@@ -271,6 +349,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   addBlockChatMessage: (nodeId, blockId, message) => {
+    get().pushToHistory('Added Comment');
     const node = get().nodes.find(n => n.id === nodeId);
     if (node) {
       const updatedBlocks = node.data.blocks.map(b => {
@@ -289,6 +368,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   reorderBlocks: (nodeId, newBlocks) => {
+    get().pushToHistory('Reordered Blocks');
     get().updateNodeData(nodeId, { blocks: newBlocks });
   },
 
@@ -301,6 +381,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   addChildNode: (parentId) => {
+    get().pushToHistory('Added Child Page');
     const parentNode = get().nodes.find(n => n.id === parentId);
     if (!parentNode) return;
 
@@ -350,6 +431,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   setSelectedNode: (id) => set({ selectedNodeId: id }),
 
   addIconToNode: (nodeId, icon) => {
+    get().pushToHistory('Added Icon');
     const node = get().nodes.find(n => n.id === nodeId);
     if (node) {
       const currentIcons = node.data.icons || [];
@@ -360,6 +442,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   removeIconFromNode: (nodeId, icon) => {
+    get().pushToHistory('Removed Icon');
     const node = get().nodes.find(n => n.id === nodeId);
     if (node) {
       const currentIcons = node.data.icons || [];
@@ -368,6 +451,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   removeNode: (nodeId: string) => {
+      get().pushToHistory('Removed Page');
       set({
           nodes: get().nodes.filter(n => n.id !== nodeId),
           edges: get().edges.filter(e => e.source !== nodeId && e.target !== nodeId)
@@ -378,6 +462,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   setSidebarOpen: (open) => set({ sidebarOpen: open }),
 
   layoutNodes: () => {
+    get().pushToHistory('Auto Layout');
     const { nodes, edges } = get();
     const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(nodes, edges);
     set({ nodes: layoutedNodes, edges: layoutedEdges });
