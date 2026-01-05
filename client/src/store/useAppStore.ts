@@ -165,11 +165,17 @@ interface AppState {
   createSnapshot: (label: string) => void;
   restoreSnapshot: (snapshotId: string) => void;
 
-  // Team Management
+  // Team Management (Project Level)
   teamMembers: TeamMember[];
   addTeamMember: (member: Omit<TeamMember, 'id' | 'status'>) => void;
   removeTeamMember: (id: string) => void;
   updateTeamMemberRole: (id: string, role: 'admin' | 'editor' | 'viewer') => void;
+
+  // System Admin (Global Users)
+  adminUsers: TeamMember[];
+  addAdminUser: (user: Omit<TeamMember, 'id' | 'status'>) => void;
+  removeAdminUser: (id: string) => void;
+  updateAdminUser: (id: string, updates: Partial<TeamMember>) => void;
 
   // Dialog Navigation
   activeBlockId: string | null;
@@ -264,11 +270,19 @@ export const useAppStore = create<AppState>((set, get) => ({
   future: [],
   historyLog: [],
 
-  // Team State
+  // Team State (Project Level)
   teamMembers: [
       { id: 'tm1', name: 'Alex Designer', email: 'alex@octoflow.com', role: 'admin', status: 'active' },
       { id: 'tm2', name: 'Sarah PM', email: 'sarah@client.com', role: 'editor', status: 'active' },
       { id: 'tm3', name: 'Mike Dev', email: 'mike@agency.com', role: 'viewer', status: 'invited' },
+  ],
+
+  // Admin State (Global System)
+  adminUsers: [
+      { id: 'u1', name: 'Admin User', email: 'admin@octoflow.com', role: 'admin', status: 'active' },
+      { id: 'u2', name: 'John Employee', email: 'john@octoflow.com', role: 'editor', status: 'active' },
+      { id: 'u3', name: 'Jane Employee', email: 'jane@octoflow.com', role: 'editor', status: 'active' },
+      { id: 'u4', name: 'Guest User', email: 'guest@external.com', role: 'viewer', status: 'active' },
   ],
 
   addTeamMember: (member) => {
@@ -295,6 +309,30 @@ export const useAppStore = create<AppState>((set, get) => ({
       });
   },
 
+  addAdminUser: (user) => {
+      get().pushToHistory(`Admin: Added User ${user.name}`);
+      const newUser: TeamMember = {
+          ...user,
+          id: Math.random().toString(36).substr(2, 9),
+          status: 'active'
+      };
+      set({ adminUsers: [...get().adminUsers, newUser] });
+  },
+
+  removeAdminUser: (id) => {
+      get().pushToHistory('Admin: Removed User');
+      set({ adminUsers: get().adminUsers.filter(u => u.id !== id) });
+  },
+
+  updateAdminUser: (id, updates) => {
+      get().pushToHistory('Admin: Updated User');
+      set({
+          adminUsers: get().adminUsers.map(u => 
+              u.id === id ? { ...u, ...updates } : u
+          )
+      });
+  },
+
   pushToHistory: (actionLabel: string) => {
     const { nodes, edges, past, historyLog } = get();
     // Deep clone to avoid reference issues
@@ -310,7 +348,7 @@ export const useAppStore = create<AppState>((set, get) => ({
             id: Math.random().toString(36).substr(2, 9),
             action: actionLabel, 
             timestamp: Date.now(),
-            type: 'action' 
+            type: 'action' as const
         }, ...historyLog].slice(0, 50) // Keep last 50 logs
     });
   },
@@ -327,7 +365,7 @@ export const useAppStore = create<AppState>((set, get) => ({
             id: Math.random().toString(36).substr(2, 9),
             action: label, 
             timestamp: Date.now(),
-            type: 'snapshot',
+            type: 'snapshot' as const,
             snapshotData
         }, ...historyLog] // No limit on snapshots effectively, or separate limit? For now keeping in same array but maybe not slicing it out if we want them to persist longer? For now simplicity: keep in same log but careful with slicing if log gets long. Let's just slice to 50 for mixed list for now.
         // Actually, user wants snapshots to be distinct "checkpoints". Slicing snapshots out would be bad.
@@ -374,7 +412,7 @@ export const useAppStore = create<AppState>((set, get) => ({
           id: Math.random().toString(36).substr(2, 9),
           action: 'Undo', 
           timestamp: Date.now(),
-          type: 'action'
+          type: 'action' as const
       }, ...historyLog].slice(0, 50)
     });
   },
@@ -401,7 +439,7 @@ export const useAppStore = create<AppState>((set, get) => ({
           id: Math.random().toString(36).substr(2, 9),
           action: 'Redo', 
           timestamp: Date.now(), 
-          type: 'action'
+          type: 'action' as const
       }, ...historyLog].slice(0, 50)
     });
   },
