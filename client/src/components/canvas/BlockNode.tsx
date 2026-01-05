@@ -2,10 +2,11 @@
  * BlockNode Component
  * 
  * Spacing Roadmap (Details Mode):
- * - Block Spacing (Gap): 24px (gap-6)
- * - Text Alignment: Top-aligned with illustration (pt-0)
+ * - Block Spacing: Determined by Separator (my-3 = 12px*2 + 1px = 25px) or Container Padding (p-3 = 12px)
+ * - Container Padding: 12px (p-3) in Details Mode
+ * - Text Alignment: Top-aligned (pt-0)
  * - Detail Column Width: 160px
- * - Separator: 1px line + 4px vertical margin
+ * - Separator: Only between blocks
  * - Horizontal Padding: 16px (pl-4)
  */
 
@@ -380,8 +381,8 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
          </div>
 
          {/* BLOCKS STACK */}
-         <Reorder.Group axis="y" values={data.blocks} onReorder={handleReorder} className={cn("flex flex-col w-full bg-white p-[8px] min-h-[40px]", showDetails ? "gap-6" : "gap-1")}>
-            {data.blocks.map((block) => (
+         <Reorder.Group axis="y" values={data.blocks} onReorder={handleReorder} className={cn("flex flex-col w-full bg-white min-h-[40px]", showDetails ? "p-3 gap-0" : "p-2 gap-1")}>
+            {data.blocks.map((block, index) => (
                <Reorder.Item 
                   key={block.id} 
                   value={block} 
@@ -460,8 +461,8 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                      )}
                   </div>
                   
-                  {/* SEPARATOR (Only in Details Mode) */}
-                  {showDetails && <div className="w-full h-px bg-slate-100 my-1" />}
+                  {/* SEPARATOR (Only in Details Mode, and NOT for the last item) */}
+                  {showDetails && index < data.blocks.length - 1 && <div className="w-full h-px bg-slate-100 my-3" />}
                   
                   {/* HOVER CONTROLS LAYER */}
                   <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover/block:opacity-100 transition-opacity z-10">
