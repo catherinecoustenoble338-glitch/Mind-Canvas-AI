@@ -217,7 +217,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
 
       {/* PAGE CONTAINER */}
       <div className={cn(
-         "w-full bg-white rounded-[24px] shadow-lg border-2 border-[#74859A] ring-1 ring-black/5 transition-colors",
+         "w-full bg-white rounded-[24px] overflow-hidden shadow-lg border-2 border-[#74859A] ring-1 ring-black/5 transition-colors",
          selected ? "ring-2 ring-blue-500 ring-offset-2" : "hover:border-[#64748B]" 
       )}>
          
@@ -448,6 +448,9 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                         </div>
                      )}
                   </div>
+                  
+                  {/* SEPARATOR (Only in Details Mode) */}
+                  {showDetails && <div className="w-full h-px bg-slate-100 my-1" />}
                   
                   {/* HOVER CONTROLS LAYER */}
                   <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover/block:opacity-100 transition-opacity z-10">
