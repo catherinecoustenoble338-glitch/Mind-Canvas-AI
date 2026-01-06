@@ -13,9 +13,11 @@ interface BlockItemProps {
   nodeId: string;
   isLast: boolean;
   openDetails: (block: BlockItemType) => void;
+  isActive: boolean;
+  onActivate: () => void;
 }
 
-export const BlockItem: React.FC<BlockItemProps> = ({ block, nodeId, isLast, openDetails }) => {
+export const BlockItem: React.FC<BlockItemProps> = ({ block, nodeId, isLast, openDetails, isActive, onActivate }) => {
   const { updateBlockLabel, removeBlockFromNode, showDetails, viewMode } = useAppStore();
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
   const dragControls = useDragControls();
@@ -28,7 +30,10 @@ export const BlockItem: React.FC<BlockItemProps> = ({ block, nodeId, isLast, ope
   return (
     <Reorder.Item 
         value={block} 
-        className="w-full relative group/block rounded-md nodrag"
+        className={cn(
+            "w-full relative group/block rounded-md nodrag transition-colors",
+            isActive && "bg-slate-50 ring-1 ring-blue-100"
+        )}
         dragListener={false}
         dragControls={dragControls}
         onPointerDown={(e) => e.stopPropagation()} 
@@ -59,7 +64,19 @@ export const BlockItem: React.FC<BlockItemProps> = ({ block, nodeId, isLast, ope
         <div 
         onClick={(e) => {
             e.stopPropagation();
-            // In Visual, click allows renaming. Details are toggled globally.
+            
+            // Interaction Logic:
+            // 1. If not active, activate it (show controls).
+            // 2. If already active:
+            //    - If Visual Mode: Enable editing.
+            //    - If Details Mode: Open details.
+            
+            if (!isActive) {
+                onActivate();
+                return; 
+            }
+
+            // Only proceed to actions if already active
             if (!showDetails) {
                 setEditingBlockId(block.id);
             } else {
@@ -108,8 +125,11 @@ export const BlockItem: React.FC<BlockItemProps> = ({ block, nodeId, isLast, ope
         {/* SEPARATOR (Only in Details Mode, and NOT for the last item) */}
         {showDetails && !isLast && <div className="w-full h-px bg-slate-100 my-3" />}
         
-        {/* HOVER CONTROLS LAYER */}
-        <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover/block:opacity-100 transition-opacity z-10">
+        {/* HOVER CONTROLS LAYER - Visible on Hover OR when Active */}
+        <div className={cn(
+            "absolute top-1 right-1 flex gap-1 transition-opacity z-10",
+            isActive ? "opacity-100" : "opacity-0 group-hover/block:opacity-100"
+        )}>
             {/* Chat / Details Button */}
             <Button 
                 size="icon" 
@@ -136,19 +156,28 @@ export const BlockItem: React.FC<BlockItemProps> = ({ block, nodeId, isLast, ope
             </Button>
         </div>
 
-        {/* Drag Handle (Visible on Hover) - Left side */}
+        {/* Drag Handle (Visible on Hover/Active) - Left side */}
         <div 
-            className="absolute top-1/2 -left-3 -translate-y-1/2 cursor-grab active:cursor-grabbing opacity-0 group-hover/block:opacity-100 transition-opacity p-1 hover:bg-slate-100 rounded"
+            className={cn(
+                "absolute top-1/2 -left-3 -translate-y-1/2 cursor-grab active:cursor-grabbing transition-opacity p-1 hover:bg-slate-100 rounded",
+                isActive ? "opacity-100" : "opacity-0 group-hover/block:opacity-100"
+            )}
             onPointerDown={(e) => dragControls.start(e)}
         >
             <GripVertical size={14} className="text-slate-400" />
         </div>
 
-        {/* Connection Handles (Visible on Hover) - Floating outside */}
-        <div className="absolute top-1/2 -translate-y-1/2 -left-2 opacity-0 group-hover/block:opacity-100 transition-opacity z-10">
+        {/* Connection Handles (Visible on Hover/Active) - Floating outside */}
+        <div className={cn(
+            "absolute top-1/2 -translate-y-1/2 -left-2 transition-opacity z-10",
+            isActive ? "opacity-100" : "opacity-0 group-hover/block:opacity-100"
+        )}>
             <Handle type="target" position={Position.Left} id={`t-${block.id}`} className="!w-2.5 !h-2.5 !bg-blue-500 !border-2 !border-white shadow-sm" />
         </div>
-        <div className="absolute top-1/2 -translate-y-1/2 -right-2 opacity-0 group-hover/block:opacity-100 transition-opacity z-10">
+        <div className={cn(
+            "absolute top-1/2 -translate-y-1/2 -right-2 transition-opacity z-10",
+            isActive ? "opacity-100" : "opacity-0 group-hover/block:opacity-100"
+        )}>
             <Handle type="source" position={Position.Right} id={`s-${block.id}`} className="!w-2.5 !h-2.5 !bg-blue-500 !border-2 !border-white shadow-sm" />
         </div>
     </Reorder.Item>

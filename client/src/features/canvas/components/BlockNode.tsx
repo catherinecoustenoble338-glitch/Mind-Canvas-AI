@@ -17,8 +17,14 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [pageDetailsDialogOpen, setPageDetailsDialogOpen] = useState(false);
   const [selectedBlockForDetails, setSelectedBlockForDetails] = useState<BlockItemType | null>(null);
+  
+  // Mobile/Tap State: Track which block inside this node is "active" (tapped) to show its controls
+  const [tappedBlockId, setTappedBlockId] = useState<string | null>(null);
 
-  // Effect to handle external navigation to this node's blocks (e.g. from Settings > Chats)
+  // Clear tapped block when clicking elsewhere on the node (optional, might conflict with node selection)
+  // or just let it stay active until another is tapped.
+
+  // Effect to handle external navigation to this node's blocks
   useEffect(() => {
     if (activeBlockId) {
       const block = data.blocks.find(b => b.id === activeBlockId);
@@ -38,6 +44,10 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
       setSelectedBlockForDetails(block);
       setDetailsDialogOpen(true);
   };
+  
+  const handleBlockTap = (blockId: string) => {
+      setTappedBlockId(prev => prev === blockId ? blockId : blockId);
+  };
 
   return (
     <div 
@@ -45,10 +55,29 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
         "relative rounded-sm transition-all duration-200 group bg-transparent flex flex-col items-center",
         viewMode === 'visual' ? (showDetails ? "w-[400px]" : "w-[200px]") : "w-[200px]" 
       )}
+      onClick={() => {
+        // If clicking the node background, maybe clear block selection?
+        // But we need to distinguish between block click and node click.
+        // For now, let's just leave it.
+      }}
     >
-      {/* Handles */}
-      <Handle type="target" position={Position.Top} className="!bg-slate-300 !w-2 !h-2 !-top-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-      <Handle type="source" position={Position.Bottom} className="!bg-slate-300 !w-2 !h-2 !-bottom-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+      {/* Handles - Visible on Hover OR when Node is Selected */}
+      <Handle 
+        type="target" 
+        position={Position.Top} 
+        className={cn(
+            "!bg-slate-300 !w-2 !h-2 !-top-2 transition-opacity",
+            selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+        )} 
+      />
+      <Handle 
+        type="source" 
+        position={Position.Bottom} 
+        className={cn(
+            "!bg-slate-300 !w-2 !h-2 !-bottom-2 transition-opacity",
+            selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+        )} 
+      />
 
       {/* Header (Status, Assignee, Title, etc.) */}
       <BlockNodeHeader 
@@ -73,6 +102,8 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                  nodeId={id}
                  isLast={index === data.blocks.length - 1}
                  openDetails={openDetails}
+                 isActive={tappedBlockId === block.id}
+                 onActivate={() => handleBlockTap(block.id)}
                />
             ))}
             {data.blocks.length === 0 && (
@@ -85,8 +116,11 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
          <div className="h-1 bg-slate-50"></div>
       </div>
       
-      {/* Bottom Plus Button (Add Child) - Visible on Hover */}
-      <div className="absolute -bottom-5 opacity-0 group-hover:opacity-100 transition-opacity z-50">
+      {/* Bottom Plus Button (Add Child) - Visible on Hover OR when Selected */}
+      <div className={cn(
+          "absolute -bottom-5 transition-opacity z-50",
+          selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+      )}>
         <button 
            className="bg-white hover:bg-slate-50 text-slate-400 hover:text-blue-500 rounded-full shadow-md border border-slate-200 p-1 transition-colors"
            onClick={(e) => {
