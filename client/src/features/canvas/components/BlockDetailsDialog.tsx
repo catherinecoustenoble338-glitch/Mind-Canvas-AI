@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useAppStore, BlockItem } from '@/store/useAppStore';
+import { useAppStore, BlockItem, Task, TeamMember } from '@/store/useAppStore';
 import { 
   Dialog,
   DialogContent,
@@ -12,9 +12,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageSquare, Paperclip, Send, FileText, Check, X, Target, List, User, Bot, Loader2, Sparkles } from 'lucide-react';
+import { MessageSquare, Paperclip, Send, FileText, Check, X, Target, List, User, Bot, Loader2, Sparkles, Plus, Calendar, Clock, CheckCircle2, Circle, AlertCircle, LayoutList, BarChart3, UserPlus } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
 
 interface BlockDetailsDialogProps {
   nodeId: string;
@@ -24,7 +34,7 @@ interface BlockDetailsDialogProps {
 }
 
 export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockDetailsDialogProps) {
-  const { updateBlockDescription, updateBlockLabel, updateBlockVFP, updateBlockFeatures, addBlockChatMessage } = useAppStore();
+  const { updateBlockDescription, updateBlockLabel, updateBlockVFP, updateBlockFeatures, addBlockChatMessage, addTask, updateTask, removeTask, addTaskChatMessage, teamMembers } = useAppStore();
   const [messageText, setMessageText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -34,6 +44,10 @@ export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockD
   const [tempDescription, setTempDescription] = useState(block.description || '');
   const [tempVFP, setTempVFP] = useState(block.vfp || '');
   const [tempFeatures, setTempFeatures] = useState(block.features || '');
+
+  // Task State
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [taskViewMode, setTaskViewMode] = useState<'list' | 'gantt'>('list');
 
   // Sync state when dialog opens or block changes
   useEffect(() => {
@@ -137,9 +151,31 @@ export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockD
       });
   };
 
+  const handleAddTask = () => {
+      if (!newTaskTitle.trim()) return;
+      addTask(nodeId, block.id, {
+          title: newTaskTitle,
+          status: 'todo',
+          priority: 'medium',
+          startDate: Date.now(),
+          endDate: Date.now() + 86400000 * 3 // 3 days default
+      });
+      setNewTaskTitle('');
+  };
+
+  const getStatusColor = (status: Task['status']) => {
+      switch(status) {
+          case 'todo': return 'bg-slate-100 text-slate-600 border-slate-200';
+          case 'in_progress': return 'bg-blue-100 text-blue-700 border-blue-200';
+          case 'review': return 'bg-purple-100 text-purple-700 border-purple-200';
+          case 'done': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+          default: return 'bg-slate-100 text-slate-600';
+      }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full h-full sm:h-[700px] sm:max-w-[500px] flex flex-col p-0 gap-0 overflow-hidden bg-white sm:rounded-lg rounded-none border-none sm:border">
+      <DialogContent className="w-full h-full sm:h-[800px] sm:max-w-[700px] flex flex-col p-0 gap-0 overflow-hidden bg-white sm:rounded-lg rounded-none border-none sm:border">
         <DialogHeader className="p-4 border-b border-slate-100 bg-slate-50/50 flex flex-row items-center justify-between space-y-0">
           <div className="flex-1 mr-4">
              <div className="flex items-center gap-2 mb-1">
@@ -159,8 +195,9 @@ export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockD
 
         <Tabs defaultValue="specs" className="flex-1 flex flex-col overflow-hidden">
             <div className="px-4 pt-2 border-b border-slate-100 bg-white">
-                <TabsList className="grid w-full grid-cols-2 h-8">
+                <TabsList className="grid w-full grid-cols-3 h-8">
                     <TabsTrigger value="specs" className="text-xs">Specs & VFP</TabsTrigger>
+                    <TabsTrigger value="tasks" className="text-xs">Tasks & Plan</TabsTrigger>
                     <TabsTrigger value="chat" className="text-xs">Chat & Files</TabsTrigger>
                 </TabsList>
             </div>
@@ -226,6 +263,203 @@ export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockD
                         Сохранить спецификации
                     </Button>
                 </div>
+            </TabsContent>
+
+            <TabsContent value="tasks" className="flex-1 p-0 m-0 overflow-hidden flex flex-col bg-slate-50/50">
+               <div className="p-3 border-b border-slate-100 bg-white flex justify-between items-center gap-2">
+                   <div className="flex gap-1 bg-slate-100 p-1 rounded-md">
+                       <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          className={cn("h-7 px-2 text-xs", taskViewMode === 'list' && "bg-white shadow-sm")}
+                          onClick={() => setTaskViewMode('list')}
+                       >
+                           <LayoutList size={14} className="mr-1.5" /> List
+                       </Button>
+                       <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          className={cn("h-7 px-2 text-xs", taskViewMode === 'gantt' && "bg-white shadow-sm")}
+                          onClick={() => setTaskViewMode('gantt')}
+                       >
+                           <BarChart3 size={14} className="mr-1.5" /> Gantt
+                       </Button>
+                   </div>
+                   
+                   <div className="flex items-center gap-2 flex-1 max-w-xs">
+                       <Input 
+                          placeholder="New task..." 
+                          className="h-8 text-xs bg-slate-50 border-slate-200"
+                          value={newTaskTitle}
+                          onChange={(e) => setNewTaskTitle(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
+                       />
+                       <Button size="icon" className="h-8 w-8 bg-slate-800 hover:bg-slate-900 shrink-0" onClick={handleAddTask}>
+                           <Plus size={14} />
+                       </Button>
+                   </div>
+               </div>
+               
+               <ScrollArea className="flex-1">
+                   <div className="p-4">
+                       {(!block.tasks || block.tasks.length === 0) ? (
+                           <div className="flex flex-col items-center justify-center py-10 opacity-50">
+                               <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                                   <CheckCircle2 size={24} className="text-slate-400" />
+                               </div>
+                               <p className="text-sm font-medium text-slate-600">No tasks created yet</p>
+                               <p className="text-xs text-slate-400 text-center max-w-[200px] mt-1">Break down this block into actionable tasks.</p>
+                           </div>
+                       ) : taskViewMode === 'list' ? (
+                           <div className="space-y-2">
+                               {block.tasks.map(task => (
+                                   <div key={task.id} className="bg-white border border-slate-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow group">
+                                       <div className="flex items-start justify-between gap-3">
+                                           <div className="flex items-start gap-3 flex-1">
+                                               <div className={cn("mt-1 shrink-0", 
+                                                   task.status === 'done' ? "text-emerald-500" : "text-slate-300"
+                                               )}>
+                                                   {task.status === 'done' ? <CheckCircle2 size={18} /> : <Circle size={18} />}
+                                               </div>
+                                               <div className="flex-1 min-w-0">
+                                                   <Input 
+                                                       className="h-7 p-0 border-none shadow-none text-sm font-medium focus-visible:ring-0"
+                                                       value={task.title}
+                                                       onChange={(e) => updateTask(nodeId, block.id, task.id, { title: e.target.value })}
+                                                   />
+                                                   <div className="flex items-center gap-3 mt-1 text-xs text-slate-500">
+                                                       <span className="flex items-center gap-1">
+                                                           <Calendar size={10} />
+                                                           {task.endDate ? format(task.endDate, 'MMM d') : '-'}
+                                                       </span>
+                                                       {task.assignee && (
+                                                           <span className="flex items-center gap-1 bg-slate-100 px-1.5 py-0.5 rounded-full">
+                                                               <User size={10} />
+                                                               {teamMembers.find(m => m.id === task.assignee)?.name || 'Unknown'}
+                                                           </span>
+                                                       )}
+                                                       <Popover>
+                                                          <PopoverTrigger asChild>
+                                                              <Button variant="ghost" size="sm" className="h-5 px-1 text-[10px] text-slate-400 hover:text-blue-500">
+                                                                  <MessageSquare size={10} className="mr-1" />
+                                                                  {task.chatMessages?.length || 0}
+                                                              </Button>
+                                                          </PopoverTrigger>
+                                                          <PopoverContent className="w-64 p-3" align="start">
+                                                              <h4 className="font-semibold text-xs mb-2">Task Comments</h4>
+                                                              <div className="max-h-40 overflow-y-auto space-y-2 mb-2">
+                                                                  {task.chatMessages?.map((msg, idx) => (
+                                                                      <div key={idx} className="bg-slate-50 p-2 rounded text-xs">
+                                                                          <p>{msg.text}</p>
+                                                                          <span className="text-[9px] text-slate-400 block mt-0.5">{format(msg.timestamp, 'HH:mm')}</span>
+                                                                      </div>
+                                                                  ))}
+                                                                  {(!task.chatMessages || task.chatMessages.length === 0) && <p className="text-xs text-slate-400 italic">No comments yet.</p>}
+                                                              </div>
+                                                              <div className="flex gap-1">
+                                                                  <Input placeholder="Comment..." className="h-7 text-xs" onKeyDown={(e) => {
+                                                                      if (e.key === 'Enter') {
+                                                                          addTaskChatMessage(nodeId, block.id, task.id, {
+                                                                              text: e.currentTarget.value,
+                                                                              sender: 'user'
+                                                                          });
+                                                                          e.currentTarget.value = '';
+                                                                      }
+                                                                  }} />
+                                                              </div>
+                                                          </PopoverContent>
+                                                       </Popover>
+                                                   </div>
+                                               </div>
+                                           </div>
+                                           
+                                           <div className="flex items-center gap-2">
+                                               <Select 
+                                                  value={task.status} 
+                                                  onValueChange={(val: any) => updateTask(nodeId, block.id, task.id, { status: val })}
+                                               >
+                                                  <SelectTrigger className={cn("h-7 text-[10px] w-[110px] uppercase font-bold tracking-wider", getStatusColor(task.status))}>
+                                                      <SelectValue />
+                                                  </SelectTrigger>
+                                                  <SelectContent>
+                                                      <SelectItem value="todo">To Do</SelectItem>
+                                                      <SelectItem value="in_progress">In Progress</SelectItem>
+                                                      <SelectItem value="review">Review</SelectItem>
+                                                      <SelectItem value="done">Done</SelectItem>
+                                                  </SelectContent>
+                                               </Select>
+                                               
+                                               <Button 
+                                                  variant="ghost" 
+                                                  size="icon" 
+                                                  className="h-7 w-7 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                  onClick={() => removeTask(nodeId, block.id, task.id)}
+                                               >
+                                                  <X size={14} />
+                                               </Button>
+                                           </div>
+                                       </div>
+                                       
+                                       {/* Reviewer / Approval UI */}
+                                       {task.status === 'review' && (
+                                           <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between bg-purple-50/50 p-2 rounded">
+                                               <div className="text-xs text-purple-700 flex items-center gap-2">
+                                                   <AlertCircle size={12} />
+                                                   <span>Ready for review by Admin or {task.reviewer ? teamMembers.find(m => m.id === task.reviewer)?.name : 'Reviewer'}</span>
+                                               </div>
+                                               <div className="flex gap-2">
+                                                   <Button size="sm" className="h-6 text-[10px] bg-emerald-600 hover:bg-emerald-700" onClick={() => updateTask(nodeId, block.id, task.id, { status: 'done' })}>
+                                                       Approve
+                                                   </Button>
+                                                   <Button size="sm" variant="outline" className="h-6 text-[10px] border-purple-200 text-purple-700 hover:bg-purple-100" onClick={() => updateTask(nodeId, block.id, task.id, { status: 'in_progress' })}>
+                                                       Reject
+                                                   </Button>
+                                               </div>
+                                           </div>
+                                       )}
+                                   </div>
+                               ))}
+                           </div>
+                       ) : (
+                           <div className="space-y-1">
+                               {/* Simple Gantt Visualization */}
+                               <div className="flex border-b border-slate-200 pb-2 mb-2">
+                                   <div className="w-1/4 text-xs font-semibold text-slate-500 pl-2">Task</div>
+                                   <div className="w-3/4 flex justify-between text-xs text-slate-400 px-2">
+                                       <span>Start</span>
+                                       <span>Duration</span>
+                                       <span>End</span>
+                                   </div>
+                               </div>
+                               {block.tasks.map(task => {
+                                   const start = task.startDate || Date.now();
+                                   const end = task.endDate || Date.now() + 86400000;
+                                   const duration = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                                   
+                                   return (
+                                       <div key={task.id} className="flex items-center gap-2 group">
+                                           <div className="w-1/4 truncate text-xs font-medium text-slate-700 pl-2">{task.title}</div>
+                                           <div className="w-3/4 relative h-6 bg-slate-50 rounded overflow-hidden flex items-center">
+                                               <div 
+                                                   className={cn(
+                                                       "absolute h-4 rounded ml-1",
+                                                       task.status === 'done' ? "bg-emerald-400" :
+                                                       task.status === 'in_progress' ? "bg-blue-400" :
+                                                       task.status === 'review' ? "bg-purple-400" : "bg-slate-300"
+                                                   )}
+                                                   style={{ width: `${Math.min(duration * 10, 90)}%` }} // Mock width logic
+                                               ></div>
+                                                <span className="relative z-10 text-[9px] text-slate-500 ml-2 pl-[100%] whitespace-nowrap">
+                                                    {duration} days
+                                                </span>
+                                           </div>
+                                       </div>
+                                   );
+                               })}
+                           </div>
+                       )}
+                   </div>
+               </ScrollArea>
             </TabsContent>
 
             <TabsContent value="chat" className="flex-1 flex flex-col m-0 overflow-hidden bg-slate-50/30">

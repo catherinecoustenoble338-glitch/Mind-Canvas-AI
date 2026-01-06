@@ -41,17 +41,39 @@ export default function Chats() {
 
     nodes.forEach(node => {
         node.data.blocks.forEach(block => {
+            // Block Chats
             if (block.chatMessages && block.chatMessages.length > 0) {
                 const lastMsg = block.chatMessages[block.chatMessages.length - 1];
                 allChats.push({
                     id: `${node.id}-${block.id}`,
                     nodeId: node.id,
                     blockId: block.id,
+                    taskId: undefined,
                     title: block.label || block.type,
-                    subtitle: node.data.label,
+                    subtitle: `${node.data.label} (Block)`,
                     lastMessage: lastMsg,
                     messages: block.chatMessages,
                     avatarColor: 'bg-blue-100 text-blue-600'
+                });
+            }
+
+            // Task Chats
+            if (block.tasks && block.tasks.length > 0) {
+                block.tasks.forEach(task => {
+                    if (task.chatMessages && task.chatMessages.length > 0) {
+                        const lastMsg = task.chatMessages[task.chatMessages.length - 1];
+                        allChats.push({
+                            id: `${node.id}-${block.id}-${task.id}`,
+                            nodeId: node.id,
+                            blockId: block.id,
+                            taskId: task.id,
+                            title: task.title,
+                            subtitle: `${block.label} (Task)`,
+                            lastMessage: lastMsg,
+                            messages: task.chatMessages,
+                            avatarColor: 'bg-emerald-100 text-emerald-600'
+                        });
+                    }
                 });
             }
         });
@@ -73,10 +95,26 @@ export default function Chats() {
     e.preventDefault();
     if (!messageInput.trim() || !activeChat) return;
 
-    addBlockChatMessage(activeChat.nodeId, activeChat.blockId, {
-        text: messageInput,
-        sender: 'user',
-    });
+    if (activeChat.taskId) {
+        // Send to Task
+        // We need a store action for this or reuse something?
+        // We added addTaskChatMessage in the slice
+        // But we need to expose it in the component if it's not already
+        // Wait, I need to check useAppStore export.
+        // I added addTaskChatMessage to slice, but need to make sure it's available here.
+        // It is available via useAppStore().
+        useAppStore.getState().addTaskChatMessage(activeChat.nodeId, activeChat.blockId, activeChat.taskId, {
+            text: messageInput,
+            sender: 'user',
+        });
+    } else {
+        // Send to Block
+        addBlockChatMessage(activeChat.nodeId, activeChat.blockId, {
+            text: messageInput,
+            sender: 'user',
+        });
+    }
+    
     setMessageInput('');
   };
 

@@ -63,6 +63,12 @@ export interface ProjectSlice {
   removeIconFromNode: (nodeId: string, icon: string) => void;
   layoutNodes: () => void;
   updateEdgeData: (id: string, data: Partial<Edge>) => void;
+  
+  // Task Management
+  addTask: (nodeId: string, blockId: string, task: Omit<Task, 'id' | 'chatMessages'>) => void;
+  updateTask: (nodeId: string, blockId: string, taskId: string, updates: Partial<Task>) => void;
+  removeTask: (nodeId: string, blockId: string, taskId: string) => void;
+  addTaskChatMessage: (nodeId: string, blockId: string, taskId: string, message: Omit<ChatMessage, 'id' | 'timestamp'>) => void;
 }
 
 export const createProjectSlice: StateCreator<ProjectSlice, [], [], ProjectSlice> = (set, get: any) => ({
@@ -84,6 +90,10 @@ export const createProjectSlice: StateCreator<ProjectSlice, [], [], ProjectSlice
                 { id: 'cm1', text: 'Can we make the logo bigger?', sender: 'user', timestamp: Date.now() - 86400000 },
                 { id: 'cm2', text: 'Sure, I have updated it to 32px height.', sender: 'system', timestamp: Date.now() - 86000000 },
                 { id: 'cm3', text: 'Looks great now!', sender: 'user', timestamp: Date.now() - 85000000 }
+            ],
+            tasks: [
+                { id: 't1', title: 'Design Logo', status: 'done', priority: 'high', chatMessages: [], startDate: Date.now() - 100000000, endDate: Date.now() - 90000000 },
+                { id: 't2', title: 'Implement Responsive Menu', status: 'done', priority: 'medium', chatMessages: [], startDate: Date.now() - 80000000, endDate: Date.now() - 70000000 }
             ]
           },
           { id: 'b2', type: 'hero_arrows', label: 'Hero Section', description: 'Hero section with carousel and call to action' },
@@ -425,5 +435,78 @@ export const createProjectSlice: StateCreator<ProjectSlice, [], [], ProjectSlice
         return edge;
       }),
     });
+  },
+
+  addTask: (nodeId, blockId, task) => {
+    get().pushToHistory?.('Added Task');
+    const node = get().nodes.find((n: any) => n.id === nodeId);
+    if (node) {
+      const updatedBlocks = node.data.blocks.map((b: any) => {
+        if (b.id === blockId) {
+            const newTask: Task = {
+                id: Math.random().toString(36).substr(2, 9),
+                chatMessages: [],
+                ...task
+            };
+            return { ...b, tasks: [...(b.tasks || []), newTask] };
+        }
+        return b;
+      });
+      get().updateNodeData(nodeId, { blocks: updatedBlocks });
+    }
+  },
+
+  updateTask: (nodeId, blockId, taskId, updates) => {
+    get().pushToHistory?.('Updated Task');
+    const node = get().nodes.find((n: any) => n.id === nodeId);
+    if (node) {
+      const updatedBlocks = node.data.blocks.map((b: any) => {
+        if (b.id === blockId) {
+            const updatedTasks = b.tasks?.map((t: Task) => t.id === taskId ? { ...t, ...updates } : t) || [];
+            return { ...b, tasks: updatedTasks };
+        }
+        return b;
+      });
+      get().updateNodeData(nodeId, { blocks: updatedBlocks });
+    }
+  },
+
+  removeTask: (nodeId, blockId, taskId) => {
+    get().pushToHistory?.('Removed Task');
+    const node = get().nodes.find((n: any) => n.id === nodeId);
+    if (node) {
+      const updatedBlocks = node.data.blocks.map((b: any) => {
+        if (b.id === blockId) {
+            return { ...b, tasks: b.tasks?.filter((t: Task) => t.id !== taskId) || [] };
+        }
+        return b;
+      });
+      get().updateNodeData(nodeId, { blocks: updatedBlocks });
+    }
+  },
+
+  addTaskChatMessage: (nodeId, blockId, taskId, message) => {
+    get().pushToHistory?.('Added Task Comment');
+    const node = get().nodes.find((n: any) => n.id === nodeId);
+    if (node) {
+      const updatedBlocks = node.data.blocks.map((b: any) => {
+        if (b.id === blockId) {
+            const updatedTasks = b.tasks?.map((t: Task) => {
+                if (t.id === taskId) {
+                    const newMessage: ChatMessage = {
+                        id: Math.random().toString(36).substr(2, 9),
+                        timestamp: Date.now(),
+                        ...message
+                    };
+                    return { ...t, chatMessages: [...(t.chatMessages || []), newMessage] };
+                }
+                return t;
+            }) || [];
+            return { ...b, tasks: updatedTasks };
+        }
+        return b;
+      });
+      get().updateNodeData(nodeId, { blocks: updatedBlocks });
+    }
   },
 });

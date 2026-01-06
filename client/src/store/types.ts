@@ -46,6 +46,18 @@ export interface ChatMessage {
   attachments?: string[];
 }
 
+export interface Task {
+  id: string;
+  title: string;
+  status: 'todo' | 'in_progress' | 'review' | 'done';
+  assignee?: string; // TeamMember ID
+  reviewer?: string; // TeamMember ID (if different from admin)
+  startDate?: number; // timestamp
+  endDate?: number; // timestamp
+  chatMessages: ChatMessage[];
+  priority?: 'low' | 'medium' | 'high';
+}
+
 export interface BlockItem {
   id: string;
   type: WireframeType;
@@ -55,6 +67,7 @@ export interface BlockItem {
   vfp?: string; 
   features?: string; 
   assignee?: string; 
+  tasks?: Task[];
 }
 
 export interface BlockData {
