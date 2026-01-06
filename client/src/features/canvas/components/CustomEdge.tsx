@@ -66,13 +66,17 @@ const CustomEdge = ({
   };
 
   const handleColorChange = (color: string) => {
+    // Ensure we preserve the marker type, defaulting to arrowclosed if missing
+    const currentMarker = typeof markerEnd === 'object' ? markerEnd : { type: 'arrowclosed' };
+    
     updateEdgeData(id, { 
       style: { 
         ...style, 
         stroke: color
       },
       markerEnd: {
-        ...markerEnd,
+        ...currentMarker,
+        type: currentMarker.type || 'arrowclosed', // Explicitly ensure type exists
         color: color
       } as any
     });
@@ -135,16 +139,6 @@ const CustomEdge = ({
                       />
                   ))}
                </div>
-
-               <DropdownMenuSeparator />
-               <DropdownMenuLabel className="text-xs text-slate-500 uppercase tracking-wider">Effect</DropdownMenuLabel>
-
-               <DropdownMenuItem onClick={() => handleAnimationChange('static')} className="text-xs gap-2 cursor-pointer">
-                 <Minus size={14} /> Static
-               </DropdownMenuItem>
-               <DropdownMenuItem onClick={() => handleAnimationChange('dynamic')} className="text-xs gap-2 cursor-pointer">
-                 <Activity size={14} /> Dynamic Flow
-               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
