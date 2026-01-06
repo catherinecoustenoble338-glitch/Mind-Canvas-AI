@@ -4,10 +4,21 @@ import {
   DropdownMenu, 
   DropdownMenuContent, 
   DropdownMenuItem, 
-  DropdownMenuTrigger 
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel
 } from "@/components/ui/dropdown-menu";
 import { useAppStore } from '@/store/useAppStore';
-import { MoreHorizontal, Spline, Zap, Activity, Minus } from 'lucide-react';
+import { MoreHorizontal, Spline, Zap, Activity, Minus, Palette, BarChart2 } from 'lucide-react';
+
+const COLORS = [
+  { name: 'Slate', value: '#CACACA' },
+  { name: 'Blue', value: '#3B82F6' },
+  { name: 'Green', value: '#10B981' },
+  { name: 'Red', value: '#EF4444' },
+  { name: 'Purple', value: '#8B5CF6' },
+  { name: 'Amber', value: '#F59E0B' },
+];
 
 const CustomEdge = ({
   id,
@@ -20,7 +31,7 @@ const CustomEdge = ({
   style = {},
   markerEnd,
   data,
-  animated // Destructure animated prop
+  animated 
 }: EdgeProps) => {
   const { updateEdgeData } = useAppStore();
   const [edgePath, labelX, labelY] = getBezierPath({
@@ -32,12 +43,38 @@ const CustomEdge = ({
     targetPosition,
   });
 
-  const handleStyleChange = (type: 'solid' | 'dashed') => {
+  const handleStyleChange = (type: 'solid' | 'dashed' | 'barcode') => {
+    let strokeDasharray;
+    let strokeWidth = style.strokeWidth || 2;
+
+    if (type === 'dashed') strokeDasharray = '5,5';
+    else if (type === 'barcode') {
+        strokeDasharray = '10,5'; // Thicker dashes resembling barcode
+        strokeWidth = 4;
+    } else {
+        strokeDasharray = undefined;
+        strokeWidth = 2;
+    }
+
     updateEdgeData(id, { 
       style: { 
         ...style, 
-        strokeDasharray: type === 'dashed' ? '5,5' : undefined 
+        strokeWidth,
+        strokeDasharray 
       } 
+    });
+  };
+
+  const handleColorChange = (color: string) => {
+    updateEdgeData(id, { 
+      style: { 
+        ...style, 
+        stroke: color
+      },
+      markerEnd: {
+        ...markerEnd,
+        color: color
+      } as any
     });
   };
 
@@ -54,7 +91,7 @@ const CustomEdge = ({
         markerEnd={markerEnd} 
         style={{
           ...style,
-          ...(animated ? { animation: 'dashdraw 0.5s linear infinite', strokeDasharray: '5' } : {})
+          ...(animated ? { animation: 'dashdraw 0.5s linear infinite', strokeDasharray: style.strokeDasharray || '5' } : {})
         }}
       />
       <EdgeLabelRenderer>
@@ -68,27 +105,45 @@ const CustomEdge = ({
           className="nodrag nopan"
         >
           <DropdownMenu>
-            <DropdownMenuTrigger className="bg-white rounded-full p-1 shadow-sm border border-slate-200 hover:border-blue-400 opacity-0 hover:opacity-100 transition-opacity focus:opacity-100">
-               <MoreHorizontal size={12} className="text-slate-500" />
+            <DropdownMenuTrigger className="bg-white rounded-full p-1.5 shadow-md border border-slate-200 hover:border-blue-400 opacity-0 hover:opacity-100 transition-opacity focus:opacity-100 text-slate-500 hover:text-slate-800">
+               <MoreHorizontal size={14} />
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-40">
-               <div className="px-2 py-1.5 text-xs font-semibold text-slate-500">Edge Style</div>
+            <DropdownMenuContent className="w-48">
+               <DropdownMenuLabel className="text-xs text-slate-500 uppercase tracking-wider">Style</DropdownMenuLabel>
                
-               <DropdownMenuItem onClick={() => handleStyleChange('solid')} className="text-xs gap-2">
-                 <Minus size={12} /> Solid
+               <DropdownMenuItem onClick={() => handleStyleChange('solid')} className="text-xs gap-2 cursor-pointer">
+                 <Minus size={14} /> Solid (Classic)
                </DropdownMenuItem>
-               <DropdownMenuItem onClick={() => handleStyleChange('dashed')} className="text-xs gap-2">
-                 <MoreHorizontal size={12} /> Dashed
+               <DropdownMenuItem onClick={() => handleStyleChange('dashed')} className="text-xs gap-2 cursor-pointer">
+                 <MoreHorizontal size={14} /> Dashed
+               </DropdownMenuItem>
+               <DropdownMenuItem onClick={() => handleStyleChange('barcode')} className="text-xs gap-2 cursor-pointer">
+                 <BarChart2 size={14} className="rotate-90" /> Barcode
                </DropdownMenuItem>
                
-               <div className="h-[1px] bg-slate-100 my-1"></div>
-               <div className="px-2 py-1.5 text-xs font-semibold text-slate-500">Animation</div>
+               <DropdownMenuSeparator />
+               <DropdownMenuLabel className="text-xs text-slate-500 uppercase tracking-wider">Color</DropdownMenuLabel>
+               
+               <div className="grid grid-cols-6 gap-1 p-2">
+                  {COLORS.map(c => (
+                      <button
+                        key={c.name}
+                        className="w-5 h-5 rounded-full border border-slate-100 hover:scale-110 transition-transform ring-1 ring-transparent hover:ring-slate-300"
+                        style={{ backgroundColor: c.value }}
+                        title={c.name}
+                        onClick={() => handleColorChange(c.value)}
+                      />
+                  ))}
+               </div>
 
-               <DropdownMenuItem onClick={() => handleAnimationChange('static')} className="text-xs gap-2">
-                 <Minus size={12} /> Static
+               <DropdownMenuSeparator />
+               <DropdownMenuLabel className="text-xs text-slate-500 uppercase tracking-wider">Effect</DropdownMenuLabel>
+
+               <DropdownMenuItem onClick={() => handleAnimationChange('static')} className="text-xs gap-2 cursor-pointer">
+                 <Minus size={14} /> Static
                </DropdownMenuItem>
-               <DropdownMenuItem onClick={() => handleAnimationChange('dynamic')} className="text-xs gap-2">
-                 <Activity size={12} /> Dynamic
+               <DropdownMenuItem onClick={() => handleAnimationChange('dynamic')} className="text-xs gap-2 cursor-pointer">
+                 <Activity size={14} /> Dynamic Flow
                </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -177,7 +177,7 @@ export const createProjectSlice: StateCreator<ProjectSlice, [], [], ProjectSlice
   onConnect: (connection: Connection) => {
     get().pushToHistory?.('Connected Nodes');
     set({
-      edges: addEdge({ ...connection, animated: true, style: { stroke: '#CACACA', strokeWidth: 2 }, markerEnd: { type: 'arrowclosed' as any, color: '#CACACA' } }, get().edges),
+      edges: addEdge({ ...connection, animated: false, style: { stroke: '#CACACA', strokeWidth: 2 }, markerEnd: { type: 'arrowclosed' as any, color: '#CACACA' } }, get().edges),
     });
   },
 
@@ -362,8 +362,8 @@ export const createProjectSlice: StateCreator<ProjectSlice, [], [], ProjectSlice
       id: `e${parentId}-${newNodeId}`,
       source: parentId,
       target: newNodeId,
-      animated: true,
-      style: { stroke: '#CACACA', strokeWidth: 2, strokeDasharray: '5,5' },
+      animated: false,
+      style: { stroke: '#CACACA', strokeWidth: 2 },
       markerEnd: { type: 'arrowclosed' as any, color: '#CACACA' }
     };
 
