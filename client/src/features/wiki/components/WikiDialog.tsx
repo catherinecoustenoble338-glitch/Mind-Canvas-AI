@@ -99,10 +99,55 @@ A global toggle that transforms the entire canvas:
 - **Details Mode (Expanded)**: Optimized for content. Width: 400px. Reveals VFP (Valuable Final Product) and Feature bullet points for every block.
 
 ## 7. Design System & Aesthetics
-- **Color Palette**: Neutral Slate scale (50-900) for UI chrome. Semantic colors (Emerald, Blue, Amber, Rose) used sparingly for Status indicators.
-- **Typography**: Clean sans-serif (Inter) for UI, Monospace for IDs and technical labels.
-- **Depth**: Subtle borders (\`border-slate-200\`) and soft shadows (\`shadow-lg\`). Active elements get a \`ring-2\` focus state.
-- **Motion**: Instant feedback. Hover states are snappy (150ms), layout changes use spring physics.
+### 7.1 Visual Direction: "Clean Engineering"
+The UI should feel like a premium CAD tool or a technical blueprint.
+- **Background**: Infinite canvas with a subtle dot grid (\`BackgroundVariant.Dots\`) in Slate-200.
+- **Lines & Connectors**: Orthogonal edges with rounded corners (\`step\`). Dashed lines indicate optional/future flows.
+- **Shadows**:
+    - *Resting*: \`shadow-sm\` (1px border, subtle lift).
+    - *Hover*: \`shadow-md\` (softer, more diffusion).
+    - *Selected*: \`ring-2 ring-blue-500 ring-offset-2\`.
+- **Typography**:
+    - *Headers*: **Inter** (Bold/Semibold) for readability.
+    - *Metadata*: **JetBrains Mono** (or system-ui mono) for IDs, dates, and technical specs.
+
+### 7.2 Color Palette (Tailwind)
+We stick to a strict, functional palette. No decorative gradients.
+| Semantic Role | Tailwind Class | Hex | Usage |
+|:---|:---|:---|:---|
+| **Surface** | \`bg-white\` | #FFFFFF | Cards, Panels |
+| **Canvas** | \`bg-slate-50\` | #F8FAFC | Infinite background |
+| **Primary Text** | \`text-slate-900\` | #0F172A | Titles, Body |
+| **Secondary** | \`text-slate-500\` | #64748B | Metadata, Hints |
+| **Border** | \`border-slate-200\` | #E2E8F0 | Dividers, Outlines |
+| **Accent (Blue)** | \`text-blue-600\` | #2563EB | Primary Actions, Selection |
+| **Success** | \`text-emerald-600\` | #059669 | "Done" Status |
+| **Warning** | \`text-amber-600\` | #D97706 | "Idea" Status |
+| **Danger** | \`text-red-600\` | #DC2626 | Delete, Errors |
+
+### 7.3 Component Specifications
+#### The Node Card (\`BlockNode\`)
+- **Border Radius**: \`rounded-[24px]\` (Smooth, modern feel).
+- **Header**: Detached from body. Floating avatar pile and status badges above the card.
+- **Body**: White background, vertical stack of wireframes.
+- **Interactions**:
+    - *Hover*: Shows "Add Child" (+) button at bottom.
+    - *Drag*: Card lifts (\`scale-105\`) and casts shadow.
+
+#### The Wireframe Block (\`BlockItem\`)
+- **Height**: Fixed 40px (Visual Mode) or Auto (Details Mode).
+- **Style**: Schematic representation using grey blocks (\`bg-slate-200\`) to represent images/text.
+- **Hover**: Reveals action strip (Chat, Delete, Drag Handle) on the right.
+
+#### The Sidebar
+- **Behavior**: Drawer on Mobile (Absolute), Push on Desktop (Relative).
+- **Content**: Accordion-based library of blocks (Header, Hero, Features, Footer).
+- **Drag Source**: Users drag from Sidebar -> Canvas to add blocks.
+
+### 7.4 Micro-Interactions & Animation
+- **Reorder**: When dragging blocks, use \`framer-motion\` layout animations. Other blocks should slide out of the way smoothly.
+- **Modals**: Scale-in/Fade-in entry (\`scale-95\` -> \`scale-100\`, \`opacity-0\` -> \`opacity-100\`).
+- **Tooltips**: Instant appearance on hover for icon-only buttons.
 
 ## 8. Future Roadmap & Extension Points
 - **Roadmap View**: Visualize pages on a Gantt chart based on status and assignee.
