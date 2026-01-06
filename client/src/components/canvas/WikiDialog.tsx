@@ -56,8 +56,8 @@ export function WikiDialog({ open, onOpenChange }: WikiDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[600px] max-h-[80vh] flex flex-col p-0 gap-0 overflow-hidden bg-white sm:rounded-lg">
-        <DialogHeader className="p-4 border-b border-slate-100 flex flex-row items-center justify-between space-y-0 bg-slate-50/50">
+      <DialogContent className="max-w-[600px] max-h-[80vh] flex flex-col p-0 gap-0 overflow-hidden bg-white sm:rounded-lg [&>button]:hidden">
+        <DialogHeader className="p-4 border-b border-slate-100 flex flex-row items-center justify-between space-y-0 bg-slate-50/50 shrink-0">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">
               <Book size={18} />
@@ -80,7 +80,7 @@ export function WikiDialog({ open, onOpenChange }: WikiDialogProps) {
           </div>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 p-6">
+        <div className="flex-1 overflow-y-auto p-6">
             <div className="prose prose-sm prose-slate max-w-none">
                 {WIKI_CONTENT.split('\n').map((line, i) => {
                     if (line.startsWith('# ')) {
@@ -114,7 +114,7 @@ export function WikiDialog({ open, onOpenChange }: WikiDialogProps) {
                     return <p key={i} className="text-slate-600 mb-2 leading-relaxed">{line}</p>;
                 })}
             </div>
-        </ScrollArea>
+        </div>
       </DialogContent>
     </Dialog>
   );
