@@ -12,17 +12,20 @@ import {
   Lightbulb, 
   ShieldCheck, 
   ChevronRight,
-  ExternalLink
+  ExternalLink,
+  Book
 } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useAppStore } from '@/store/useAppStore';
 import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
+import { WikiDialog } from './WikiDialog';
 
 export function NavigationPopup() {
   const [, setLocation] = useLocation();
   const { nodes, setActiveBlockId } = useAppStore();
   const [open, setOpen] = useState(false);
+  const [wikiOpen, setWikiOpen] = useState(false);
 
   // Aggregate chats (reused logic from Settings)
   const blocksWithChats = useMemo(() => {
@@ -85,6 +88,27 @@ export function NavigationPopup() {
             </div>
             
             <div className="p-2 space-y-1">
+                {/* Wiki Button */}
+                <Button 
+                    variant="ghost" 
+                    className="w-full justify-between h-auto py-3 px-3 hover:bg-slate-50 text-slate-700"
+                    onClick={() => {
+                        setWikiOpen(true);
+                        setOpen(false);
+                    }}
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center">
+                            <Book size={16} />
+                        </div>
+                        <div className="flex flex-col items-start">
+                            <span className="text-sm font-medium">OctoFlow Wiki</span>
+                            <span className="text-[10px] text-slate-400">Project documentation</span>
+                        </div>
+                    </div>
+                    <ChevronRight size={14} className="text-slate-300" />
+                </Button>
+
                 {/* Admin - Only visible to admins, at the top */}
                 <Button 
                     variant="ghost" 
@@ -178,6 +202,9 @@ export function NavigationPopup() {
             </div>
         </div>
       </PopoverContent>
+      
+      {/* Wiki Dialog */}
+      <WikiDialog open={wikiOpen} onOpenChange={setWikiOpen} />
     </Popover>
   );
 }
