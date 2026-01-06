@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import MindMap from '@/components/canvas/MindMap';
-import { Sidebar } from '@/components/canvas/Sidebar';
+import MindMap from '@/features/canvas/MindMap';
+import { Sidebar } from '@/features/canvas/components/Sidebar';
 import { ReactFlowProvider } from 'reactflow';
 import { Button } from '@/components/ui/button';
 import { Menu, PanelLeftClose, PanelLeftOpen } from 'lucide-react';

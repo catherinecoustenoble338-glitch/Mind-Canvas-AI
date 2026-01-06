@@ -1,0 +1,123 @@
+import React, { memo, useState, useEffect } from 'react';
+import { Handle, Position, NodeProps } from 'reactflow';
+import { useAppStore, BlockData, BlockItem as BlockItemType } from '@/store/useAppStore';
+import { cn } from '@/lib/utils';
+import { Reorder } from 'framer-motion';
+import { PlusCircle } from 'lucide-react';
+
+import { BlockDetailsDialog } from './BlockDetailsDialog';
+import { PageDetailsDialog } from './PageDetailsDialog';
+import { BlockNodeHeader } from './nodes/BlockNodeHeader';
+import { BlockItem } from './nodes/BlockItem';
+
+const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
+  const { viewMode, showDetails, reorderBlocks, addChildNode, activeBlockId, setActiveBlockId } = useAppStore();
+  
+  // Dialog States
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [pageDetailsDialogOpen, setPageDetailsDialogOpen] = useState(false);
+  const [selectedBlockForDetails, setSelectedBlockForDetails] = useState<BlockItemType | null>(null);
+
+  // Effect to handle external navigation to this node's blocks (e.g. from Settings > Chats)
+  useEffect(() => {
+    if (activeBlockId) {
+      const block = data.blocks.find(b => b.id === activeBlockId);
+      if (block) {
+        setSelectedBlockForDetails(block);
+        setDetailsDialogOpen(true);
+        setActiveBlockId(null); // Reset global trigger
+      }
+    }
+  }, [activeBlockId, data.blocks, setActiveBlockId]);
+
+  const handleReorder = (newOrder: any[]) => {
+    reorderBlocks(id, newOrder);
+  };
+
+  const openDetails = (block: BlockItemType) => {
+      setSelectedBlockForDetails(block);
+      setDetailsDialogOpen(true);
+  };
+
+  return (
+    <div 
+      className={cn(
+        "relative rounded-sm transition-all duration-200 group bg-transparent flex flex-col items-center",
+        viewMode === 'visual' ? (showDetails ? "w-[400px]" : "w-[200px]") : "w-[200px]" 
+      )}
+    >
+      {/* Handles */}
+      <Handle type="target" position={Position.Top} className="!bg-slate-300 !w-2 !h-2 !-top-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+      <Handle type="source" position={Position.Bottom} className="!bg-slate-300 !w-2 !h-2 !-bottom-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+
+      {/* Header (Status, Assignee, Title, etc.) */}
+      <BlockNodeHeader 
+        id={id}
+        data={data}
+        selected={selected}
+        onOpenPageDetails={() => setPageDetailsDialogOpen(true)}
+      />
+
+      {/* PAGE CONTAINER */}
+      <div className={cn(
+         "w-full bg-white rounded-[24px] overflow-hidden shadow-lg border-2 border-[#74859A] ring-1 ring-black/5 transition-colors",
+         selected ? "ring-2 ring-blue-500 ring-offset-2" : "hover:border-[#64748B]" 
+      )}>
+         
+         {/* BLOCKS STACK */}
+         <Reorder.Group axis="y" values={data.blocks} onReorder={handleReorder} className={cn("flex flex-col w-full bg-white min-h-[40px]", showDetails ? "p-3 gap-0" : "p-2 gap-1")}>
+            {data.blocks.map((block, index) => (
+               <BlockItem 
+                 key={block.id}
+                 block={block}
+                 nodeId={id}
+                 isLast={index === data.blocks.length - 1}
+                 openDetails={openDetails}
+               />
+            ))}
+            {data.blocks.length === 0 && (
+               <div className="py-8 text-center text-[10px] text-slate-300 italic">
+                  Drop blocks here
+               </div>
+            )}
+         </Reorder.Group>
+         
+         <div className="h-1 bg-slate-50"></div>
+      </div>
+      
+      {/* Bottom Plus Button (Add Child) - Visible on Hover */}
+      <div className="absolute -bottom-5 opacity-0 group-hover:opacity-100 transition-opacity z-50">
+        <button 
+           className="bg-white hover:bg-slate-50 text-slate-400 hover:text-blue-500 rounded-full shadow-md border border-slate-200 p-1 transition-colors"
+           onClick={(e) => {
+             e.stopPropagation();
+             addChildNode(id);
+           }}
+           title="Add child page"
+        >
+           <PlusCircle size={20} />
+        </button>
+      </div>
+
+      {/* Details Dialog */}
+      {selectedBlockForDetails && (
+          <BlockDetailsDialog 
+             nodeId={id} 
+             block={selectedBlockForDetails} 
+             open={detailsDialogOpen} 
+             onOpenChange={setDetailsDialogOpen} 
+          />
+      )}
+
+      {/* Page Details Dialog */}
+      <PageDetailsDialog 
+         nodeId={id} 
+         data={data} 
+         open={pageDetailsDialogOpen} 
+         onOpenChange={setPageDetailsDialogOpen} 
+      />
+    </div>
+  );
+};
+
+export default memo(CustomBlockNode);

@@ -12,10 +12,10 @@ import ReactFlow, {
   useReactFlow
 } from 'reactflow';
 import { useAppStore } from '@/store/useAppStore';
-import CustomBlockNode from './BlockNode';
-import CustomEdge from './CustomEdge';
-import { NavigationPopup } from './NavigationPopup';
-import { SettingsDialog } from './SettingsDialog';
+import CustomBlockNode from './components/BlockNode';
+import CustomEdge from './components/CustomEdge';
+import { NavigationPopup } from '../navigation/components/NavigationPopup';
+import { SettingsDialog } from './components/SettingsDialog';
 import { Button } from '@/components/ui/button';
 import { Plus, Minus, Maximize, ZoomIn, ZoomOut, LayoutTemplate, FileText, Layers, Undo2, Redo2 } from 'lucide-react';
 import 'reactflow/dist/style.css';

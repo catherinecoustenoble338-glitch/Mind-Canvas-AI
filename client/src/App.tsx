@@ -7,7 +7,7 @@ import NotFound from "@/pages/not-found";
 import Board from "@/pages/Board";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
-import AdminDashboard from "@/pages/AdminDashboard";
+import AdminDashboard from "@/features/admin/AdminDashboard";
 import Chats from "@/pages/Chats";
 
 function Router() {

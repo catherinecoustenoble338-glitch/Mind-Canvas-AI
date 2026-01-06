@@ -19,7 +19,7 @@ import { useLocation } from 'wouter';
 import { useAppStore } from '@/store/useAppStore';
 import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
-import { WikiDialog } from './WikiDialog';
+import { WikiDialog } from '../../wiki/components/WikiDialog';
 
 export function NavigationPopup() {
   const [, setLocation] = useLocation();
