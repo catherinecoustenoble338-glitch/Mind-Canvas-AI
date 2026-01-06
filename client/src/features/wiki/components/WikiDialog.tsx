@@ -15,37 +15,100 @@ interface WikiDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const WIKI_CONTENT = `# OctoFlow Wiki
+const WIKI_CONTENT = `# OctoFlow Blueprint: The Living Spec
 
-## About OctoFlow
-OctoFlow is a collaborative visual sitemap and wireframe planning tool designed to help teams plan website and application structures effectively.
+## 1. Vision & Philosophy
+**Elevator Pitch**: OctoFlow is a hybrid of Miro and Linear—a visual sitemap editor where every node is not just a static image but an interactive list of wireframes with attached chats, status tracking, and "Valuable Final Product" (VFP) definitions.
 
-## Key Features
+**Key Metaphor**: "Technical Blueprint". The design aesthetic mimics an engineering drawing: monospaced fonts (JetBrains Mono/Inter), dashed connector lines, technical grid backgrounds (dots), and soft, functional pastel colors.
 
-### Visual Sitemap Planning
-- **Draggable Page Nodes**: Easily organize your site structure using a drag-and-drop interface.
-- **Visual Block Representation**: Represent page content using visual blocks instead of abstract lists.
-- **Dual View Modes**: Switch between "Visual Mode" for high-level structure and "Details Mode" for in-depth content planning.
+### UX Principles
+- **Direct Manipulation**: Everything is draggable. Reordering blocks, moving nodes, and connecting pages happens directly on the canvas.
+- **Context Over Modal**: Editing happens "inline" wherever possible. Modals are reserved only for heavy configuration or deep-dive detailing.
+- **Living Spec**: This is not a static artifact. It is the "source of truth" for the project's structure, evolving from "Idea" to "Done".
 
-### Detailed Specifications
-- **VFP (Valuable Final Product)**: Define the specific outcome or value for each page and block (ЦКП).
-- **Feature Lists**: Document detailed functional requirements and features for every component.
-- **Block-Level Details**: Drill down into individual blocks to specify their purpose and functionality.
+## 2. Technology Stack (The Constitution)
+- **Core Framework**: React 18, Vite, TypeScript.
+- **Styling Engine**: TailwindCSS, \`tailwind-merge\`, \`clsx\`, \`shadcn/ui\` (Radix Primitives) for accessible interactive components.
+- **State Management**: **Zustand**. We avoid Context API for business logic. The store is split into "Slices" (Project, UI, Team, History) to maintain modularity.
+- **Canvas Engine**: \`reactflow\` (v11). Custom nodes and edges are the heart of the application.
+- **Animation**: \`framer-motion\`. Used for smooth list reordering and layout transitions.
+- **Layout Engine**: \`dagre\`. Provides deterministic auto-layout for the node graph (Top-to-Bottom flow).
+- **Icons**: \`lucide-react\` for UI icons, \`Simple Icons\` (via CDN) for tech stack logos.
 
-### Collaboration Tools
-- **Team Assignments**: Assign team members to specific pages.
-- **Status Tracking**: Track the progress of each page (Idea, In Progress, Review, Done).
-- **Tech Stack**: Define the technology stack used for each page.
-- **Chat & Files**: Discuss requirements and attach documents directly within block context.
+## 3. Architecture & Structure
+### 3.1 Feature-Based Directory Structure
+The codebase is organized by domain features, not technical layers:
+- **src/features/canvas**: The core editor logic. Contains \`components/nodes\` (BlockNode), \`MindMap.tsx\`, \`Sidebar.tsx\`.
+- **src/features/admin**: Administration dashboard, user management tables.
+- **src/features/wiki**: Documentation system (this dialog).
+- **src/features/chat**: Commenting system, message threads.
+- **src/features/navigation**: Main app navigation, popups.
+- **src/store**: Global state slices.
+- **src/components/ui**: Shared atomic components (Button, Dialog, Input).
 
-## Workflow
-1. **Create Pages**: Start by mapping out your main pages.
-2. **Add Blocks**: Populate pages with content blocks (Headers, Features, Forms, etc.).
-3. **Define Specs**: Switch to Details Mode to add VFP and Feature lists.
-4. **Assign & Track**: Assign tasks to team members and monitor progress.
+### 3.2 State Management Pattern (Zustand Slices)
+We use a single \`useAppStore\` hook that combines multiple slices:
+- **ProjectSlice**: Manages the graph data (\`nodes\`, \`edges\`), block CRUD operations (\`addBlock\`, \`removeBlock\`), and structural logic.
+- **UISlice**: Controls visual state (\`viewMode\`, \`sidebarOpen\`, \`showDetails\`).
+- **TeamSlice**: Manages \`adminUsers\` (system-wide) and \`teamMembers\` (project-specific).
+- **HistorySlice**: Implements a robust Undo/Redo stack using deep cloning of state snapshots.
 
-## Technical Details
-OctoFlow is built using React, ReactFlow, and Tailwind CSS, optimized for performance and ease of use.
+## 4. Core Components Deep Dive
+### 4.1 BlockNode (The God Component)
+The \`BlockNode\` is the primary interactive element. It is decomposed into:
+- **BlockNodeHeader**: Displays page status (Idea/In Progress), Assignee avatar, and tech stack icons. Handles page-level actions (Delete, Rename).
+- **BlockItem**: Represents a single wireframe row. It supports two modes:
+- **Visual Mode**: A compact, graphical representation of the UI block (e.g., a "Hero" wireframe).
+- **Details Mode**: Expands to show the "Visual" on the left and text specifications (VFP, Feature List) on the right.
+- **BlockReorder**: Uses \`Reorder.Group\` to allow dragging blocks within a page.
+
+### 4.2 WireframeVisual (The Renderer)
+A polymorphic component that takes a \`type\` (e.g., 'hero_arrows', 'text_video') and renders a schematic SVG/CSS representation. It uses a **Registry Pattern** (\`BlockRegistry\`) to map types to components, avoiding massive switch statements.
+
+### 4.3 MindMap (The Wrapper)
+Wraps \`ReactFlow\` and provides:
+- **CustomControls**: Zoom, History (Undo/Redo), Auto-Layout triggers.
+- **Background**: Dot pattern \`BackgroundVariant.Dots\` for the engineering look.
+- **CustomEdge**: Animated, styled connector lines.
+
+## 5. Data Models & Types
+Strict TypeScript interfaces define the domain:
+- **WireframeType**: Union type of 50+ block kinds ('header', 'hero', 'footer', etc.).
+- **PageStatus**: 'idea' | 'in_progress' | 'review' | 'done' | 'error'.
+- **BlockItem**: \`{ id, type, label, vfp?, features?, chatMessages[] }\`.
+- **BlockData**: \`{ label, status, blocks[], assignee?, icons? }\`.
+
+## 6. Business Logic & Behavior
+### 6.1 Auto-Layout System
+We use \`dagre\` to calculate node positions.
+- **Direction**: 'TB' (Top-Bottom).
+- **Spacing**: Dynamic rank separation based on \`showDetails\` mode (nodes get taller in Details mode).
+- **Trigger**: Layout runs on initial load and when explicitly requested by the user.
+
+### 6.2 History & Time Travel
+Every significant user action (Move, Edit, Delete) triggers a snapshot:
+1. **Capture**: Deep clone \`nodes\` and \`edges\`.
+2. **Push**: Add to \`past\` stack.
+3. **Log**: Record action in \`historyLog\` for the debug console.
+4. **Restore**: Pop from \`past\` and apply to current state.
+
+### 6.3 "Caps Lock" Details Mode
+A global toggle that transforms the entire canvas:
+- **Visual Mode (Default)**: Optimized for structure. Width: 200px. Shows only visual wireframes.
+- **Details Mode (Expanded)**: Optimized for content. Width: 400px. Reveals VFP (Valuable Final Product) and Feature bullet points for every block.
+
+## 7. Design System & Aesthetics
+- **Color Palette**: Neutral Slate scale (50-900) for UI chrome. Semantic colors (Emerald, Blue, Amber, Rose) used sparingly for Status indicators.
+- **Typography**: Clean sans-serif (Inter) for UI, Monospace for IDs and technical labels.
+- **Depth**: Subtle borders (\`border-slate-200\`) and soft shadows (\`shadow-lg\`). Active elements get a \`ring-2\` focus state.
+- **Motion**: Instant feedback. Hover states are snappy (150ms), layout changes use spring physics.
+
+## 8. Future Roadmap & Extension Points
+- **Roadmap View**: Visualize pages on a Gantt chart based on status and assignee.
+- **Export Engine**: Generate high-res PDF/PNG of the entire flow.
+- **Live Collaboration**: Replace local state with Yjs/WebSockets for multiplayer editing.
+- **Templates**: Pre-built page structures (Landing, Auth, Dashboard).
 `;
 
 export function WikiDialog({ open, onOpenChange }: WikiDialogProps) {
