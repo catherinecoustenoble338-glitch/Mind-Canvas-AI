@@ -36,26 +36,17 @@ import {
   AlertTriangle,
   Lock,
   Globe,
-  Briefcase
+  Briefcase,
+  Code
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useAppStore, BlockItem } from '@/store/useAppStore';
 import { formatDistanceToNow } from 'date-fns';
-import { 
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { toast } from 'sonner';
 
 export function SettingsDialog() {
   const [open, setOpen] = useState(false);
-  const { historyLog, nodes, setActiveBlockId, createSnapshot, restoreSnapshot, teamMembers, addTeamMember, removeTeamMember, updateTeamMemberRole } = useAppStore();
+  const { historyLog, nodes, edges, setActiveBlockId, createSnapshot, restoreSnapshot, teamMembers, addTeamMember, removeTeamMember, updateTeamMemberRole } = useAppStore();
   const [showSnapshotsOnly, setShowSnapshotsOnly] = useState(false);
   const [snapshotLabel, setSnapshotLabel] = useState('');
   
@@ -67,7 +58,17 @@ export function SettingsDialog() {
     ? historyLog.filter(log => log.type === 'snapshot') 
     : historyLog;
 
+  const handleCopyState = () => {
+    const stateToExport = {
+      nodes,
+      edges,
+    };
+    navigator.clipboard.writeText(JSON.stringify(stateToExport, null, 2));
+    toast.success("Current state JSON copied to clipboard!");
+  };
+
   const handleCreateSnapshot = () => {
+
       const label = snapshotLabel.trim() || `Snapshot ${new Date().toLocaleTimeString()}`;
       createSnapshot(label);
       setSnapshotLabel('');
@@ -181,6 +182,11 @@ export function SettingsDialog() {
                          <div className="flex justify-between items-center w-full gap-2">
                             <span className="flex items-center gap-2"><History size={14} /> History</span>
                             <Badge variant="secondary" className="h-4 px-1 text-[9px] min-w-[16px] justify-center bg-blue-100 text-blue-700 hidden sm:flex">{historyLog.length}</Badge>
+                         </div>
+                      </TabsTrigger>
+                      <TabsTrigger value="dev" className="justify-start gap-2 px-3 py-2 h-9 text-xs data-[state=active]:bg-white data-[state=active]:shadow-sm border border-transparent data-[state=active]:border-slate-200/60 w-full shrink-0">
+                         <div className="flex justify-between items-center w-full gap-2">
+                            <span className="flex items-center gap-2 text-slate-500"><Code size={14} /> Dev Tools</span>
                          </div>
                       </TabsTrigger>
                    </TabsList>
@@ -567,6 +573,47 @@ export function SettingsDialog() {
                            </div>
                         ))
                      )}
+                  </div>
+               </TabsContent>
+
+               {/* Dev Tools Tab */}
+               <TabsContent value="dev" className="flex-1 m-0 p-4 sm:p-6 space-y-6 overflow-auto w-full">
+                  <div className="space-y-1">
+                     <h3 className="text-lg font-semibold text-slate-800">Developer Tools</h3>
+                     <p className="text-xs text-slate-500">Utilities for persistence and debugging.</p>
+                  </div>
+                  
+                  <div className="bg-slate-950 p-6 rounded-lg border border-slate-800 text-slate-200 space-y-4">
+                     <div>
+                        <h4 className="font-mono text-sm text-emerald-400 mb-2 flex items-center gap-2">
+                           <Save size={14} /> Export State JSON
+                        </h4>
+                        <p className="text-xs text-slate-400 mb-4">
+                           Copy the current application state (Nodes & Edges) as a JSON object. 
+                           You can send this to the developer to "hardcode" your current progress into the repository.
+                        </p>
+                        <Button 
+                           onClick={handleCopyState}
+                           variant="secondary" 
+                           className="w-full bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-mono text-xs h-10"
+                        >
+                           <Settings size={14} className="mr-2" /> Copy Current State to Clipboard
+                        </Button>
+                     </div>
+
+                     <div className="pt-4 border-t border-slate-800">
+                        <h4 className="font-mono text-sm text-blue-400 mb-2 flex items-center gap-2">
+                           <History size={14} /> Local Persistence
+                        </h4>
+                        <p className="text-xs text-slate-400 mb-2">
+                           The application automatically saves your changes to <code>localStorage</code>.
+                           You can reload the page without losing data.
+                        </p>
+                        <div className="flex items-center gap-2 text-[10px] text-slate-500 bg-slate-900/50 p-2 rounded">
+                           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                           Auto-save active
+                        </div>
+                     </div>
                   </div>
                </TabsContent>
 
