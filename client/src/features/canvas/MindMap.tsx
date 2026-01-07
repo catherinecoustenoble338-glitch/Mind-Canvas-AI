@@ -17,7 +17,7 @@ import CustomEdge from './components/CustomEdge';
 import { NavigationPopup } from '../navigation/components/NavigationPopup';
 import { SettingsDialog } from './components/SettingsDialog';
 import { Button } from '@/components/ui/button';
-import { Plus, Minus, Maximize, ZoomIn, ZoomOut, LayoutTemplate, FileText, Layers, Undo2, Redo2 } from 'lucide-react';
+import { Plus, Minus, Maximize, ZoomIn, ZoomOut, LayoutTemplate, FileText, Layers, Undo2, Redo2, Code } from 'lucide-react';
 import 'reactflow/dist/style.css';
 import { cn } from '@/lib/utils';
 
@@ -135,6 +135,24 @@ function CustomControls() {
                       showDetails ? "opacity-100 scale-100" : "opacity-0 scale-0"
                     )} />
                  </Button>
+             </div>
+
+             {/* Dev Tools Button (Export/Save) */}
+             <div className="bg-white rounded-lg shadow-sm border border-slate-200">
+                <SettingsDialog 
+                    trigger={
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-12 w-12 md:h-9 md:w-9 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                            title="Developer Tools (Export/Save)"
+                        >
+                            <Code size={24} className="md:w-[18px] md:h-[18px] md:hidden" />
+                            <Code size={18} className="hidden md:block" />
+                        </Button>
+                    }
+                    initialTab="dev"
+                />
              </div>
 
              {/* Settings Button */}

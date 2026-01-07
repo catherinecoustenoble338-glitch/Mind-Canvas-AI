@@ -44,7 +44,12 @@ import { useAppStore, BlockItem } from '@/store/useAppStore';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 
-export function SettingsDialog() {
+interface SettingsDialogProps {
+  trigger?: React.ReactNode;
+  initialTab?: string;
+}
+
+export function SettingsDialog({ trigger, initialTab = "profile" }: SettingsDialogProps) {
   const [open, setOpen] = useState(false);
   const { historyLog, nodes, edges, setActiveBlockId, createSnapshot, restoreSnapshot, teamMembers, addTeamMember, removeTeamMember, updateTeamMemberRole } = useAppStore();
   const [showSnapshotsOnly, setShowSnapshotsOnly] = useState(false);
@@ -137,14 +142,16 @@ export function SettingsDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-12 w-12 md:h-9 md:w-9 bg-white border border-slate-200 shadow-sm rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50">
-          <Settings size={18} className="md:w-[18px] md:h-[18px]" />
-        </Button>
+        {trigger || (
+            <Button variant="ghost" size="icon" className="h-12 w-12 md:h-9 md:w-9 bg-white border border-slate-200 shadow-sm rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50">
+            <Settings size={18} className="md:w-[18px] md:h-[18px]" />
+            </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="w-full h-full sm:max-w-[800px] sm:h-[600px] p-0 flex flex-col overflow-hidden gap-0 bg-white sm:rounded-lg rounded-none border-none sm:border">
         <div className="flex flex-col sm:flex-row h-full">
           {/* Mobile Header / Desktop Sidebar */}
-          <Tabs defaultValue="profile" orientation="vertical" className="flex flex-col sm:flex-row w-full h-full">
+          <Tabs defaultValue={initialTab} orientation="vertical" className="flex flex-col sm:flex-row w-full h-full">
             <div className="w-full sm:w-[200px] border-b sm:border-b-0 sm:border-r border-slate-100 bg-slate-50/50 p-2 flex flex-col gap-1 shrink-0">
                <div className="px-3 py-2 mb-2 flex justify-between items-center sm:block">
                   <h2 className="text-sm font-bold text-slate-800">Settings</h2>
