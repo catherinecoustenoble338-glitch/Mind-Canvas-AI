@@ -31,10 +31,8 @@ interface BlockNodeHeaderProps {
   onOpenPageDetails: () => void;
 }
 
-export const BlockNodeHeader: React.FC<BlockNodeHeaderProps> = ({ id, data, selected, onOpenPageDetails }) => {
-  const { updateNodeData, removeIconFromNode, removeNode, adminUsers, showDetails } = useAppStore();
-  const [isEditingTitle, setIsEditingTitle] = useState(false);
-
+export const BlockNodeStatusStrip: React.FC<BlockNodeHeaderProps> = ({ id, data, selected }) => {
+  const { updateNodeData, removeIconFromNode, adminUsers } = useAppStore();
   const assigneeUser = adminUsers.find(u => u.id === data.assignee);
 
   const statusLabels: Record<PageStatus, string> = {
@@ -58,9 +56,7 @@ export const BlockNodeHeader: React.FC<BlockNodeHeaderProps> = ({ id, data, sele
   };
 
   return (
-    <>
-      {/* TOP STRIP: Status & Icons (Detached) */}
-      <div className="w-full flex justify-between items-end gap-1 mb-1 min-h-[20px]">
+      <div className="w-full flex justify-between items-end gap-1 mb-1 min-h-[20px] px-1">
           {/* Left Group: Assignee & Status Combined */}
           <div className="flex items-center bg-white rounded-full shadow-sm border border-slate-100 p-0.5 gap-0.5 pr-1.5 transition-all hover:shadow-md hover:border-slate-200">
              {/* Assignee Avatar Dropdown */}
@@ -158,9 +154,15 @@ export const BlockNodeHeader: React.FC<BlockNodeHeaderProps> = ({ id, data, sele
             )}
           </div>
       </div>
+  );
+};
 
-      {/* HEADER (Title and Delete) */}
-      <div className="bg-white border-b border-slate-100 px-[8px] py-2 flex flex-col items-center relative group/header min-h-[36px] rounded-t-[22px]">
+export const BlockNodeTitle: React.FC<BlockNodeHeaderProps> = ({ id, data, selected, onOpenPageDetails }) => {
+  const { updateNodeData, removeNode, showDetails } = useAppStore();
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+
+  return (
+      <div className="bg-white border-b border-slate-100 px-[8px] py-2 flex flex-col items-center relative group/header min-h-[36px]">
          {/* Title Input/Display - Centered */}
          <div className="w-full px-6 flex justify-center">
              {isEditingTitle ? (
@@ -305,6 +307,15 @@ export const BlockNodeHeader: React.FC<BlockNodeHeaderProps> = ({ id, data, sele
              </AlertDialog>
          </div>
       </div>
-    </>
   );
+};
+
+// Backwards compatibility if needed, though I'll update usage
+export const BlockNodeHeader: React.FC<BlockNodeHeaderProps> = (props) => {
+    return (
+        <>
+            <BlockNodeStatusStrip {...props} />
+            <BlockNodeTitle {...props} />
+        </>
+    );
 };

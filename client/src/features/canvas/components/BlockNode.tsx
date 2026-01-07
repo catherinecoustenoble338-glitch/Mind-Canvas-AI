@@ -1,5 +1,5 @@
 import React, { memo, useState, useEffect } from 'react';
-import { Handle, Position, NodeProps } from 'reactflow';
+import { Handle, Position, NodeProps, useUpdateNodeInternals } from 'reactflow';
 import { useAppStore, BlockData, BlockItem as BlockItemType } from '@/store/useAppStore';
 import { cn } from '@/lib/utils';
 import { Reorder } from 'framer-motion';
@@ -7,11 +7,12 @@ import { PlusCircle } from 'lucide-react';
 
 import { BlockDetailsDialog } from './BlockDetailsDialog';
 import { PageDetailsDialog } from './PageDetailsDialog';
-import { BlockNodeHeader } from './nodes/BlockNodeHeader';
+import { BlockNodeStatusStrip, BlockNodeTitle } from './nodes/BlockNodeHeader';
 import { BlockItem } from './nodes/BlockItem';
 
 const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
   const { viewMode, showDetails, reorderBlocks, addChildNode, activeBlockId, setActiveBlockId } = useAppStore();
+  const updateNodeInternals = useUpdateNodeInternals();
   
   // Dialog States
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
@@ -20,9 +21,6 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
   
   // Mobile/Tap State: Track which block inside this node is "active" (tapped) to show its controls
   const [tappedBlockId, setTappedBlockId] = useState<string | null>(null);
-
-  // Clear tapped block when clicking elsewhere on the node (optional, might conflict with node selection)
-  // or just let it stay active until another is tapped.
 
   // Effect to handle external navigation to this node's blocks
   useEffect(() => {
@@ -35,6 +33,11 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
       }
     }
   }, [activeBlockId, data.blocks, setActiveBlockId]);
+
+  // Force update handles when blocks change or view details changes
+  useEffect(() => {
+    updateNodeInternals(id);
+  }, [data.blocks, showDetails, updateNodeInternals, id]);
 
   const handleReorder = (newOrder: any[]) => {
     reorderBlocks(id, newOrder);
@@ -55,11 +58,6 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
         "relative rounded-sm transition-all duration-200 group bg-transparent flex flex-col items-center",
         viewMode === 'visual' ? (showDetails ? "w-[400px]" : "w-[200px]") : "w-[200px]" 
       )}
-      onClick={() => {
-        // If clicking the node background, maybe clear block selection?
-        // But we need to distinguish between block click and node click.
-        // For now, let's just leave it.
-      }}
     >
       {/* Handles - Visible on Hover OR when Node is Selected */}
       <Handle 
@@ -79,20 +77,28 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
         )} 
       />
 
-      {/* Header (Status, Assignee, Title, etc.) */}
-      <BlockNodeHeader 
+      {/* TOP STRIP: Status & Icons (Detached) */}
+      <BlockNodeStatusStrip 
         id={id}
         data={data}
         selected={selected}
         onOpenPageDetails={() => setPageDetailsDialogOpen(true)}
       />
 
-      {/* PAGE CONTAINER */}
+      {/* PAGE CONTAINER - Unified Card */}
       <div className={cn(
-         "w-full bg-white rounded-[24px] overflow-hidden shadow-lg border-2 border-[#74859A] ring-1 ring-black/5 transition-colors",
+         "w-full bg-white rounded-[24px] overflow-hidden shadow-lg border-2 border-[#74859A] ring-1 ring-black/5 transition-colors flex flex-col",
          selected ? "ring-2 ring-blue-500 ring-offset-2" : "hover:border-[#64748B]" 
       )}>
          
+         {/* HEADER TITLE (Now inside the card) */}
+         <BlockNodeTitle 
+            id={id}
+            data={data}
+            selected={selected}
+            onOpenPageDetails={() => setPageDetailsDialogOpen(true)}
+         />
+
          {/* BLOCKS STACK */}
          <Reorder.Group axis="y" values={data.blocks} onReorder={handleReorder} className={cn("flex flex-col w-full bg-white min-h-[40px]", showDetails ? "p-3 gap-0" : "p-2 gap-1")}>
             {data.blocks.map((block, index) => (
