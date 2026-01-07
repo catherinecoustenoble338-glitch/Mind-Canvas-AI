@@ -104,7 +104,6 @@ const CustomEdge = ({
       {/* And: "make parent arrows... without possibility to edit". */}
       {/* So: Primary = Locked. Secondary = Editable. */}
       
-      {(!data?.isPrimary) && (
       <EdgeLabelRenderer>
         <div
           style={{
@@ -150,7 +149,6 @@ const CustomEdge = ({
           </DropdownMenu>
         </div>
       </EdgeLabelRenderer>
-      )}
     </>
   );
 };
