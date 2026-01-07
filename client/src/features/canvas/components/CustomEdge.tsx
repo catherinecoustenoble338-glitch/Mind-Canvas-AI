@@ -104,6 +104,7 @@ const CustomEdge = ({
       {/* And: "make parent arrows... without possibility to edit". */}
       {/* So: Primary = Locked. Secondary = Editable. */}
       
+      {(!data?.isPrimary) && (
       <EdgeLabelRenderer>
         <div
           style={{
@@ -115,7 +116,7 @@ const CustomEdge = ({
           className="nodrag nopan"
         >
           <DropdownMenu>
-            <DropdownMenuTrigger className="bg-white rounded-full p-1.5 shadow-md border border-slate-200 hover:border-blue-400 text-slate-500 hover:text-slate-800 transition-colors">
+            <DropdownMenuTrigger className="bg-white rounded-full p-1.5 shadow-md border border-slate-200 hover:border-blue-400 opacity-0 hover:opacity-100 transition-opacity focus:opacity-100 text-slate-500 hover:text-slate-800">
                <MoreHorizontal size={14} />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-48">
@@ -149,6 +150,7 @@ const CustomEdge = ({
           </DropdownMenu>
         </div>
       </EdgeLabelRenderer>
+      )}
     </>
   );
 };
