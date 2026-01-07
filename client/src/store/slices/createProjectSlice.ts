@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand';
-import { BlockNode, BlockItem, WireframeType, BlockData, ChatMessage } from '../types';
+import { BlockNode, BlockItem, WireframeType, BlockData, ChatMessage, Task } from '../types';
 import { Edge, NodeChange, EdgeChange, Connection, addEdge, applyNodeChanges, applyEdgeChanges, Node } from 'reactflow';
 import dagre from 'dagre';
 
@@ -16,8 +16,8 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB', sho
   // nodesep: Horizontal distance between nodes
   dagreGraph.setGraph({ 
       rankdir: direction, 
-      ranksep: showDetails ? 150 : 100, 
-      nodesep: showDetails ? 100 : 60 
+      ranksep: 150, // Standardized spacing for both modes to fix layout inconsistency
+      nodesep: showDetails ? 100 : 80 // Slightly increased horizontal separation for classic mode
   });
 
   nodes.forEach((node) => {
@@ -27,7 +27,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB', sho
     // Block Item: ~40px (Visual) or ~100px (Details)
     
     const blocksCount = node.data.blocks?.length || 0;
-    const blockHeight = showDetails ? 120 : 50; // Increased estimates
+    const blockHeight = showDetails ? 120 : 60; // Increased estimate for classic mode
     const baseHeight = 120; // Header + Container padding
     
     const estimatedHeight = baseHeight + (blocksCount * blockHeight);
