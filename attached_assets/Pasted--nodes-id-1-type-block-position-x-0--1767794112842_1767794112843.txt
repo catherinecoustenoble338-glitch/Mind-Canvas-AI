@@ -1,0 +1,264 @@
+{
+  "nodes": [
+    {
+      "id": "1",
+      "type": "block",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "label": "Home Page",
+        "status": "done",
+        "blocks": [
+          {
+            "id": "b1",
+            "type": "interface_header",
+            "label": "Main Nav",
+            "description": "Main navigation header with logo and links",
+            "chatMessages": [
+              {
+                "id": "cm1",
+                "text": "Can we make the logo bigger?",
+                "sender": "user",
+                "timestamp": 1767698644075
+              },
+              {
+                "id": "cm2",
+                "text": "Sure, I have updated it to 32px height.",
+                "sender": "system",
+                "timestamp": 1767699044075
+              },
+              {
+                "id": "cm3",
+                "text": "Looks great now!",
+                "sender": "user",
+                "timestamp": 1767700044075
+              }
+            ],
+            "tasks": [
+              {
+                "id": "t1",
+                "title": "Design Logo",
+                "status": "done",
+                "priority": "high",
+                "chatMessages": [],
+                "startDate": 1767685044075,
+                "endDate": 1767695044075
+              },
+              {
+                "id": "t2",
+                "title": "Implement Responsive Menu",
+                "status": "done",
+                "priority": "medium",
+                "chatMessages": [],
+                "startDate": 1767705044075,
+                "endDate": 1767715044075
+              }
+            ]
+          },
+          {
+            "id": "b2",
+            "type": "hero_arrows",
+            "label": "Hero Section",
+            "description": "Hero section with carousel and call to action"
+          },
+          {
+            "id": "b3",
+            "type": "features",
+            "label": "Key Features",
+            "description": "Grid of 3 key product features"
+          },
+          {
+            "id": "b4",
+            "type": "cta_image",
+            "label": "Sign Up Call",
+            "description": "Large image with sign up form side-by-side",
+            "chatMessages": [
+              {
+                "id": "cm4",
+                "text": "Should we change the button color to orange?",
+                "sender": "user",
+                "timestamp": 1767784924075
+              },
+              {
+                "id": "cm5",
+                "text": "Orange might conflict with the error state. What about a darker blue?",
+                "sender": "system",
+                "timestamp": 1767784984075
+              }
+            ]
+          },
+          {
+            "id": "b5",
+            "type": "footer",
+            "label": "Footer",
+            "description": "Standard footer with sitemap links"
+          }
+        ],
+        "description": "Main landing page structure.",
+        "icons": [
+          "React",
+          "Vite"
+        ]
+      },
+      "width": 400,
+      "height": 656
+    },
+    {
+      "id": "2",
+      "type": "block",
+      "position": {
+        "x": 0,
+        "y": 900
+      },
+      "data": {
+        "label": "Pricing Page",
+        "status": "in_progress",
+        "blocks": [
+          {
+            "id": "b1",
+            "type": "interface_header",
+            "label": "Nav",
+            "description": "Simplified navigation"
+          },
+          {
+            "id": "b2",
+            "type": "plans",
+            "label": "Pricing Tiers",
+            "description": "Comparison of Free, Pro, and Enterprise plans"
+          },
+          {
+            "id": "b3",
+            "type": "faq",
+            "label": "Common Questions",
+            "description": "Accordion list of frequently asked questions"
+          },
+          {
+            "id": "b4",
+            "type": "footer",
+            "label": "Footer"
+          }
+        ],
+        "description": "Pricing tiers and comparison.",
+        "icons": [
+          "Stripe"
+        ]
+      },
+      "width": 400,
+      "height": 531
+    },
+    {
+      "id": "3",
+      "type": "block",
+      "position": {
+        "x": 520,
+        "y": 900
+      },
+      "data": {
+        "label": "Chat Feature Roadmap",
+        "status": "idea",
+        "vfp": "Complete collaboration suite for team feedback",
+        "features": "- Real-time messaging\n- File attachments\n- @mentions\n- Email notifications",
+        "blocks": [
+          {
+            "id": "r1",
+            "type": "timeline",
+            "label": "Q1: Core Messaging",
+            "description": "Basic text exchange and UI",
+            "vfp": "Users can exchange text messages on blocks",
+            "features": "- Message bubbles\n- Timestamps\n- Sender avatars\n- History persistence"
+          },
+          {
+            "id": "r2",
+            "type": "upload_button",
+            "label": "Q2: Media Support",
+            "description": "File upload and previews",
+            "vfp": "Contextual feedback via screenshots/files",
+            "features": "- Drag & drop upload\n- Image previews\n- PDF viewer integration\n- File size limits"
+          },
+          {
+            "id": "r3",
+            "type": "profile",
+            "label": "Q3: Team Features",
+            "description": "Mentions and notifications",
+            "vfp": "Team members are notified of relevant feedback",
+            "features": "- @mention autocomplete\n- In-app notification center\n- Email digests\n- Read receipts"
+          }
+        ]
+      },
+      "width": 400,
+      "height": 546,
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "fvef1k08v",
+      "type": "block",
+      "position": {
+        "x": 520,
+        "y": 1800
+      },
+      "data": {
+        "label": "New Child Page",
+        "status": "idea",
+        "blocks": [
+          {
+            "id": "xwgck0c13",
+            "type": "interface_header",
+            "label": "Header"
+          }
+        ],
+        "description": "Child page description...",
+        "icons": []
+      },
+      "width": 400,
+      "height": 254
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1-2",
+      "source": "1",
+      "target": "2",
+      "animated": false,
+      "style": {
+        "stroke": "#CACACA",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#CACACA"
+      }
+    },
+    {
+      "id": "e1-3",
+      "source": "1",
+      "target": "3",
+      "animated": true,
+      "style": {
+        "stroke": "#CACACA",
+        "strokeWidth": 2,
+        "strokeDasharray": "5,5"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#CACACA"
+      }
+    },
+    {
+      "id": "e3-fvef1k08v",
+      "source": "3",
+      "target": "fvef1k08v",
+      "animated": false,
+      "style": {
+        "stroke": "#CACACA",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#CACACA"
+      }
+    }
+  ]
+}
