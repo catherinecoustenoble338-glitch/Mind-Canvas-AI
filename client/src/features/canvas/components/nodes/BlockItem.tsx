@@ -15,9 +15,10 @@ interface BlockItemProps {
   openDetails: (block: BlockItemType) => void;
   isActive: boolean;
   onActivate: () => void;
+  onDeactivate: () => void;
 }
 
-export const BlockItem: React.FC<BlockItemProps> = ({ block, nodeId, isLast, openDetails, isActive, onActivate }) => {
+export const BlockItem: React.FC<BlockItemProps> = ({ block, nodeId, isLast, openDetails, isActive, onActivate, onDeactivate }) => {
   const { updateBlockLabel, removeBlockFromNode, showDetails, viewMode } = useAppStore();
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
   const dragControls = useDragControls();
@@ -83,6 +84,12 @@ export const BlockItem: React.FC<BlockItemProps> = ({ block, nodeId, isLast, ope
                 openDetails(block);
             }
         }}
+        onMouseLeave={() => {
+            // For desktop: ensure we clear active state when leaving the block
+            if (isActive) {
+                onDeactivate();
+            }
+        }}
         className="cursor-pointer hover:brightness-95 transition-all relative flex gap-4 items-start"
         >
             {/* LEFT SIDE: Visual */}
@@ -134,21 +141,21 @@ export const BlockItem: React.FC<BlockItemProps> = ({ block, nodeId, isLast, ope
             <Button 
                 size="icon" 
                 variant="ghost" 
-                className="h-5 w-5 bg-black/50 hover:bg-black/70 text-white rounded-[2px] backdrop-blur-sm"
+                className="h-5 w-5 text-slate-300 hover:text-blue-500 rounded-[2px]"
                 onClick={(e) => {
                 e.stopPropagation();
                 openDetails(block);
                 }}
                 title="Details & Chat"
             >
-                <MessageSquare size={10} className={cn(block.chatMessages && block.chatMessages.length > 0 ? "text-blue-300" : "text-white")} />
+                <MessageSquare size={10} className={cn(block.chatMessages && block.chatMessages.length > 0 ? "text-blue-400" : "")} />
             </Button>
 
             {/* Delete Button */}
             <Button 
                 size="icon" 
                 variant="ghost" 
-                className="h-5 w-5 bg-red-500/80 hover:bg-red-600 text-white rounded-[2px] backdrop-blur-sm"
+                className="h-5 w-5 text-slate-300 hover:text-red-500 rounded-[2px]"
                 onClick={handleRemove}
                 title="Remove Block"
             >
@@ -167,18 +174,18 @@ export const BlockItem: React.FC<BlockItemProps> = ({ block, nodeId, isLast, ope
             <GripVertical size={14} className="text-slate-400" />
         </div>
 
-        {/* Connection Handles (Visible on Hover/Active) - Floating outside */}
+        {/* Connection Handles (Visible on Hover/Active) - Adjusted to be slightly inside to avoid clipping */}
         <div className={cn(
-            "absolute top-1/2 -translate-y-1/2 -left-2 transition-opacity z-10",
+            "absolute top-1/2 -translate-y-1/2 left-0 transition-opacity z-10",
             isActive ? "opacity-100" : "opacity-0 group-hover/block:opacity-100"
         )}>
-            <Handle type="target" position={Position.Left} id={`t-${block.id}`} className="!w-2.5 !h-2.5 !bg-blue-500 !border-2 !border-white shadow-sm" />
+            <Handle type="target" position={Position.Left} id={`t-${block.id}`} className="!w-2.5 !h-2.5 !bg-blue-500 !border-2 !border-white shadow-sm !-left-1" />
         </div>
         <div className={cn(
-            "absolute top-1/2 -translate-y-1/2 -right-2 transition-opacity z-10",
+            "absolute top-1/2 -translate-y-1/2 right-0 transition-opacity z-10",
             isActive ? "opacity-100" : "opacity-0 group-hover/block:opacity-100"
         )}>
-            <Handle type="source" position={Position.Right} id={`s-${block.id}`} className="!w-2.5 !h-2.5 !bg-blue-500 !border-2 !border-white shadow-sm" />
+            <Handle type="source" position={Position.Right} id={`s-${block.id}`} className="!w-2.5 !h-2.5 !bg-blue-500 !border-2 !border-white shadow-sm !-right-1" />
         </div>
     </Reorder.Item>
   );

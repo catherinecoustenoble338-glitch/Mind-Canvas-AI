@@ -48,7 +48,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
       setDetailsDialogOpen(true);
   };
   
-  const handleBlockTap = (blockId: string) => {
+  const handleBlockTap = (blockId: string | null) => {
       setTappedBlockId(prev => prev === blockId ? blockId : blockId);
   };
 
@@ -87,7 +87,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
 
       {/* PAGE CONTAINER - Unified Card */}
       <div className={cn(
-         "w-full bg-white rounded-[24px] overflow-hidden shadow-lg border-2 border-[#74859A] ring-1 ring-black/5 transition-colors flex flex-col",
+         "w-full bg-white rounded-[24px] shadow-lg border-2 border-[#74859A] ring-1 ring-black/5 transition-colors flex flex-col",
          selected ? "ring-2 ring-blue-500 ring-offset-2" : "hover:border-[#64748B]" 
       )}>
          
@@ -110,6 +110,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
                  openDetails={openDetails}
                  isActive={tappedBlockId === block.id}
                  onActivate={() => handleBlockTap(block.id)}
+                 onDeactivate={() => handleBlockTap(null)} // Pass null to clear
                />
             ))}
             {data.blocks.length === 0 && (
