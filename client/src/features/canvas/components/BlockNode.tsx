@@ -100,7 +100,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
          />
 
          {/* BLOCKS STACK */}
-         <Reorder.Group axis="y" values={data.blocks} onReorder={handleReorder} className={cn("flex flex-col w-full bg-white min-h-[40px]", showDetails ? "p-3 gap-0" : "p-2 gap-1")}>
+         <Reorder.Group axis="y" values={data.blocks} onReorder={handleReorder} className={cn("flex flex-col w-full bg-transparent min-h-[40px]", showDetails ? "p-3 gap-0" : "p-2 gap-1")}>
             {data.blocks.map((block, index) => (
                <BlockItem 
                  key={block.id}
@@ -120,7 +120,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
             )}
          </Reorder.Group>
          
-         <div className="h-1 bg-slate-50"></div>
+         <div className="h-1 bg-transparent rounded-b-[22px]"></div>
       </div>
       
       {/* Bottom Plus Button (Add Child) - Visible on Hover OR when Selected */}

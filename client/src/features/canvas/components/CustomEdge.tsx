@@ -98,6 +98,8 @@ const CustomEdge = ({
           ...(animated ? { animation: 'dashdraw 0.5s linear infinite', strokeDasharray: style.strokeDasharray || '5' } : {})
         }}
       />
+      {/* Hide controls for Primary edges as requested ("Without possibility to edit this arrow on canvas") */}
+      {!data?.isPrimary && (
       <EdgeLabelRenderer>
         <div
           style={{
@@ -143,6 +145,7 @@ const CustomEdge = ({
           </DropdownMenu>
         </div>
       </EdgeLabelRenderer>
+      )}
     </>
   );
 };

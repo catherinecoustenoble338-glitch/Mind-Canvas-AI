@@ -8,17 +8,27 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB', sho
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-  const nodeWidth = showDetails ? 440 : 240; // Block width (200px or 400px) + reduced spacing
-  const nodeHeight = showDetails ? 800 : 500; // Increased height estimate to prevent vertical overlap
+  // Standard width
+  const nodeWidth = showDetails ? 440 : 240; 
 
-  dagreGraph.setGraph({ rankdir: direction, align: 'DL', ranksep: 100, nodesep: showDetails ? 80 : 40 }); // Increased spacing for better separation
+  dagreGraph.setGraph({ rankdir: direction, ranksep: 100, nodesep: showDetails ? 80 : 40 });
 
   nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+    // Dynamic height calculation: Header (approx 60) + Blocks * (approx 40-60 depending on view) + Padding
+    const blocksCount = node.data.blocks?.length || 0;
+    const estimatedHeight = 100 + (blocksCount * (showDetails ? 80 : 50));
+    
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: estimatedHeight });
   });
 
-  edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target);
+  // Filter edges for layout hierarchy - only use "Primary" edges (tree structure)
+  // If no primary edges exist (e.g. old data), use all edges to be safe, or default to standard behavior
+  const primaryEdges = edges.filter(e => e.data?.isPrimary);
+  const edgesToLayout = primaryEdges.length > 0 ? primaryEdges : edges;
+
+  edgesToLayout.forEach((edge) => {
+    // Set higher weight for primary edges to enforce tree structure
+    dagreGraph.setEdge(edge.source, edge.target, { weight: 10 });
   });
 
   dagre.layout(dagreGraph);
@@ -30,7 +40,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB', sho
       ...node,
       position: {
         x: nodeWithPosition.x - nodeWidth / 2,
-        y: nodeWithPosition.y - nodeHeight / 2,
+        y: nodeWithPosition.y - nodeWithPosition.height / 2, // Center based on dynamic height
       },
     };
   });
@@ -170,8 +180,24 @@ export const createProjectSlice: StateCreator<ProjectSlice, [], [], ProjectSlice
     },
   ],
   edges: [
-    { id: 'e1-2', source: '1', target: '2', animated: false, style: { stroke: '#CACACA', strokeWidth: 2 }, markerEnd: { type: 'arrowclosed' as any, color: '#CACACA' } },
-    { id: 'e1-3', source: '1', target: '3', animated: true, style: { stroke: '#CACACA', strokeWidth: 2, strokeDasharray: '5,5' }, markerEnd: { type: 'arrowclosed' as any, color: '#CACACA' } },
+    { 
+      id: 'e1-2', 
+      source: '1', 
+      target: '2', 
+      animated: false, 
+      style: { stroke: '#74859A', strokeWidth: 4 }, 
+      markerEnd: { type: 'arrowclosed' as any, color: '#74859A' },
+      data: { isPrimary: true }
+    },
+    { 
+      id: 'e1-3', 
+      source: '1', 
+      target: '3', 
+      animated: true, 
+      style: { stroke: '#CACACA', strokeWidth: 2, strokeDasharray: '5,5' }, 
+      markerEnd: { type: 'arrowclosed' as any, color: '#CACACA' } 
+      // Secondary edge
+    },
   ],
 
   onNodesChange: (changes: NodeChange[]) => {
@@ -373,8 +399,9 @@ export const createProjectSlice: StateCreator<ProjectSlice, [], [], ProjectSlice
       source: parentId,
       target: newNodeId,
       animated: false,
-      style: { stroke: '#CACACA', strokeWidth: 2 },
-      markerEnd: { type: 'arrowclosed' as any, color: '#CACACA' }
+      style: { stroke: '#74859A', strokeWidth: 4 },
+      markerEnd: { type: 'arrowclosed' as any, color: '#74859A' },
+      data: { isPrimary: true }
     };
 
     const updatedNodes = [...get().nodes, newNode];
