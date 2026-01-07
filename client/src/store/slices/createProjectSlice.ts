@@ -11,23 +11,35 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB', sho
   // Standard width
   const nodeWidth = showDetails ? 440 : 240; 
 
-  dagreGraph.setGraph({ rankdir: direction, ranksep: 100, nodesep: showDetails ? 80 : 40 });
+  // SIGNIFICANTLY Increased separation to prevent overlapping and ensure consistent gaps
+  // ranksep: Vertical distance between levels
+  // nodesep: Horizontal distance between nodes
+  dagreGraph.setGraph({ 
+      rankdir: direction, 
+      ranksep: showDetails ? 150 : 100, 
+      nodesep: showDetails ? 100 : 60 
+  });
 
   nodes.forEach((node) => {
-    // Dynamic height calculation: Header (approx 60) + Blocks * (approx 40-60 depending on view) + Padding
+    // Dynamic height calculation is critical for correct spacing
+    // We must estimate the height VERY accurately or slightly overestimate
+    // Header ~60px + Padding ~20px + Footer ~20px = ~100px base
+    // Block Item: ~40px (Visual) or ~100px (Details)
+    
     const blocksCount = node.data.blocks?.length || 0;
-    const estimatedHeight = 100 + (blocksCount * (showDetails ? 80 : 50));
+    const blockHeight = showDetails ? 120 : 50; // Increased estimates
+    const baseHeight = 120; // Header + Container padding
+    
+    const estimatedHeight = baseHeight + (blocksCount * blockHeight);
     
     dagreGraph.setNode(node.id, { width: nodeWidth, height: estimatedHeight });
   });
 
   // Filter edges for layout hierarchy - only use "Primary" edges (tree structure)
-  // If no primary edges exist (e.g. old data), use all edges to be safe, or default to standard behavior
   const primaryEdges = edges.filter(e => e.data?.isPrimary);
   const edgesToLayout = primaryEdges.length > 0 ? primaryEdges : edges;
 
   edgesToLayout.forEach((edge) => {
-    // Set higher weight for primary edges to enforce tree structure
     dagreGraph.setEdge(edge.source, edge.target, { weight: 10 });
   });
 
@@ -40,7 +52,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB', sho
       ...node,
       position: {
         x: nodeWithPosition.x - nodeWidth / 2,
-        y: nodeWithPosition.y - nodeWithPosition.height / 2, // Center based on dynamic height
+        y: nodeWithPosition.y - nodeWithPosition.height / 2,
       },
     };
   });

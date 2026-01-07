@@ -98,8 +98,13 @@ const CustomEdge = ({
           ...(animated ? { animation: 'dashdraw 0.5s linear infinite', strokeDasharray: style.strokeDasharray || '5' } : {})
         }}
       />
-      {/* Hide controls for Primary edges as requested ("Without possibility to edit this arrow on canvas") */}
-      {!data?.isPrimary && (
+      {/* Only hide controls for Primary edges if explicitly flagged, but allow user interaction otherwise */}
+      {/* User requested ability to edit "normal" arrows again. Only strict Primary arrows from "Add Child" might be locked if desired, but user said "normal arrows" too. */}
+      {/* Actually, user said: "make it possible to edit normal arrows, as it was before". */}
+      {/* And: "make parent arrows... without possibility to edit". */}
+      {/* So: Primary = Locked. Secondary = Editable. */}
+      
+      {(!data?.isPrimary) && (
       <EdgeLabelRenderer>
         <div
           style={{

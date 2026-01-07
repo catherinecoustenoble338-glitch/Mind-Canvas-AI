@@ -162,7 +162,7 @@ export const BlockNodeTitle: React.FC<BlockNodeHeaderProps> = ({ id, data, selec
   const [isEditingTitle, setIsEditingTitle] = useState(false);
 
   return (
-      <div className="bg-white border-b border-slate-100 px-[8px] py-2 flex flex-col items-center relative group/header min-h-[36px]">
+      <div className="bg-white border-b border-slate-100 px-[8px] py-2 flex flex-col items-center relative group/header min-h-[36px] rounded-t-[22px] overflow-hidden">
          {/* Title Input/Display - Centered */}
          <div className="w-full px-6 flex justify-center">
              {isEditingTitle ? (
