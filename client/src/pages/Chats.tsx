@@ -28,10 +28,11 @@ export default function Chats() {
 
   // Extract chats from all blocks that have messages
   const chats = React.useMemo(() => {
-    const allChats: { 
+    const allChats: {
         id: string; // combining node and block id for uniqueness
         nodeId: string;
         blockId: string;
+        taskId?: string;
         title: string;
         subtitle: string;
         lastMessage: any;
