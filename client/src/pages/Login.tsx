@@ -5,27 +5,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lock, Mail } from 'lucide-react';
+import { useLogin } from '@/hooks/useAuth';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [, setLocation] = useLocation();
+  const login = useLogin();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      // Determine destination based on email (mock logic)
-      if (email.includes('admin')) {
-        setLocation('/admin');
-      } else {
-        setLocation('/');
-      }
-    }, 1000);
+    login.mutate({ email, password });
   };
 
   return (
@@ -44,14 +34,21 @@ export default function Login() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
+            {login.error && (
+              <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md p-3">
+                {login.error.message.includes("401")
+                  ? "Invalid email or password"
+                  : "Something went wrong. Please try again."}
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                <Input 
-                  id="email" 
-                  placeholder="name@example.com" 
-                  type="email" 
+                <Input
+                  id="email"
+                  placeholder="name@example.com"
+                  type="email"
                   className="pl-9 bg-white"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -66,9 +63,9 @@ export default function Login() {
               </div>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                <Input 
-                  id="password" 
-                  type="password" 
+                <Input
+                  id="password"
+                  type="password"
                   className="pl-9 bg-white"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -76,15 +73,15 @@ export default function Login() {
                 />
               </div>
             </div>
-            <Button className="w-full bg-blue-600 hover:bg-blue-700" type="submit" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign In"}
+            <Button className="w-full bg-blue-600 hover:bg-blue-700" type="submit" disabled={login.isPending}>
+              {login.isPending ? "Signing in..." : "Sign In"}
             </Button>
           </form>
         </CardContent>
         <CardFooter className="flex flex-col gap-4 text-center">
           <div className="text-sm text-slate-500">
             Don't have an account?{" "}
-            <span 
+            <span
               className="text-blue-600 font-medium cursor-pointer hover:underline"
               onClick={() => setLocation('/register')}
             >

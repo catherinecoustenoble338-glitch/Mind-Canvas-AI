@@ -9,7 +9,8 @@ export interface ProjectSlice {
   onNodesChange: (changes: NodeChange[]) => void;
   onEdgesChange: (changes: EdgeChange[]) => void;
   onConnect: (connection: Connection) => void;
-  
+  loadProjectData: (nodes: BlockNode[], edges: Edge[]) => void;
+
   addNode: (position: { x: number, y: number }) => void;
   addBlockToNode: (nodeId: string, type: WireframeType, insertAfterBlockId?: string | null) => void;
   removeBlockFromNode: (nodeId: string, blockId: string) => void;
@@ -154,6 +155,10 @@ export const createProjectSlice: StateCreator<ProjectSlice, [], [], ProjectSlice
       // Secondary edge
     },
   ],
+
+  loadProjectData: (nodes: BlockNode[], edges: Edge[]) => {
+    set({ nodes, edges });
+  },
 
   onNodesChange: (changes: NodeChange[]) => {
     set({

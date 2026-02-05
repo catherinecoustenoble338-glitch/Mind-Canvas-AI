@@ -5,23 +5,20 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lock, Mail, User } from 'lucide-react';
+import { useRegister } from '@/hooks/useAuth';
 
 export default function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [, setLocation] = useLocation();
+  const register = useRegister();
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      setLocation('/');
-    }, 1000);
+    // Derive username from email (before @)
+    const username = email.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '_');
+    register.mutate({ username, email, name, password });
   };
 
   return (
@@ -40,13 +37,20 @@ export default function Register() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleRegister} className="space-y-4">
+            {register.error && (
+              <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md p-3">
+                {register.error.message.includes("409")
+                  ? "Email or username already taken"
+                  : "Something went wrong. Please try again."}
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
               <div className="relative">
                 <User className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                <Input 
-                  id="name" 
-                  placeholder="John Doe" 
+                <Input
+                  id="name"
+                  placeholder="John Doe"
                   className="pl-9 bg-white"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -58,10 +62,10 @@ export default function Register() {
               <Label htmlFor="email">Email</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                <Input 
-                  id="email" 
-                  placeholder="name@example.com" 
-                  type="email" 
+                <Input
+                  id="email"
+                  placeholder="name@example.com"
+                  type="email"
                   className="pl-9 bg-white"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -73,25 +77,27 @@ export default function Register() {
               <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                <Input 
-                  id="password" 
-                  type="password" 
+                <Input
+                  id="password"
+                  type="password"
                   className="pl-9 bg-white"
+                  placeholder="Min. 6 characters"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  minLength={6}
                   required
                 />
               </div>
             </div>
-            <Button className="w-full bg-blue-600 hover:bg-blue-700" type="submit" disabled={isLoading}>
-              {isLoading ? "Creating account..." : "Create Account"}
+            <Button className="w-full bg-blue-600 hover:bg-blue-700" type="submit" disabled={register.isPending}>
+              {register.isPending ? "Creating account..." : "Create Account"}
             </Button>
           </form>
         </CardContent>
         <CardFooter className="flex flex-col gap-4 text-center">
           <div className="text-sm text-slate-500">
             Already have an account?{" "}
-            <span 
+            <span
               className="text-blue-600 font-medium cursor-pointer hover:underline"
               onClick={() => setLocation('/login')}
             >
