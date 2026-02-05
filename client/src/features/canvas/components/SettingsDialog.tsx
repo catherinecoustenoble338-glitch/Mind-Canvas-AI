@@ -51,7 +51,7 @@ import {
   Code
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { useAppStore, BlockItem } from '@/store/useAppStore';
+import { useAppStore, type BlockItem, type TeamRole } from '@/store/useAppStore';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -299,7 +299,7 @@ export function SettingsDialog({ trigger, initialTab = "profile" }: SettingsDial
                                 id="new-member-role"
                                 className="h-9 w-full rounded-md border border-input bg-white px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                                 value={newMemberRole}
-                                onChange={(e) => setNewMemberRole(e.target.value as any)}
+                                onChange={(e) => setNewMemberRole(e.target.value as TeamRole)}
                            >
                                <option value="admin">Admin</option>
                                <option value="editor">Editor</option>
@@ -343,7 +343,7 @@ export function SettingsDialog({ trigger, initialTab = "profile" }: SettingsDial
                               <select 
                                   className="h-7 text-xs rounded border border-slate-200 bg-white px-2 py-0 focus:outline-none focus:border-blue-300"
                                   value={member.role}
-                                  onChange={(e) => updateTeamMemberRole(member.id, e.target.value as any)}
+                                  onChange={(e) => updateTeamMemberRole(member.id, e.target.value as TeamRole)}
                               >
                                   <option value="admin">Admin</option>
                                   <option value="editor">Editor</option>

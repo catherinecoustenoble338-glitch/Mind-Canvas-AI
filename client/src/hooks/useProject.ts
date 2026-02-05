@@ -1,18 +1,12 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import type { ProjectResponse } from "@shared/types";
 
-interface Project {
-  id: string;
-  userId: string;
-  name: string;
-  description: string;
-  canvasData: { nodes: unknown[]; edges: unknown[] };
-  createdAt: string;
-  updatedAt: string;
-}
+/** Looser canvas type for mutation inputs (accepts reactflow types that JSON-serialize correctly) */
+type CanvasInput = { nodes: unknown[]; edges: unknown[] };
 
 export function useProjects() {
-  return useQuery<Project[]>({
+  return useQuery<ProjectResponse[]>({
     queryKey: ["/api/projects"],
     queryFn: async () => {
       const res = await fetch("/api/projects", { credentials: "include" });
@@ -23,7 +17,7 @@ export function useProjects() {
 }
 
 export function useProject(id: string | undefined) {
-  return useQuery<Project>({
+  return useQuery<ProjectResponse>({
     queryKey: ["/api/projects", id],
     queryFn: async () => {
       const res = await fetch(`/api/projects/${id}`, {
@@ -41,10 +35,10 @@ export function useCreateProject() {
     mutationFn: async (data: {
       name: string;
       description?: string;
-      canvasData?: { nodes: unknown[]; edges: unknown[] };
+      canvasData?: CanvasInput;
     }) => {
       const res = await apiRequest("POST", "/api/projects", data);
-      return res.json() as Promise<Project>;
+      return res.json() as Promise<ProjectResponse>;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
@@ -61,10 +55,10 @@ export function useSaveProject() {
       id: string;
       name?: string;
       description?: string;
-      canvasData?: { nodes: unknown[]; edges: unknown[] };
+      canvasData?: CanvasInput;
     }) => {
       const res = await apiRequest("PUT", `/api/projects/${id}`, data);
-      return res.json() as Promise<Project>;
+      return res.json() as Promise<ProjectResponse>;
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useAppStore, BlockItem, Task, TeamMember } from '@/store/useAppStore';
+import { useAppStore, type BlockItem, type Task, type TeamMember, type TaskStatus } from '@/store/useAppStore';
 import { 
   Dialog,
   DialogContent,
@@ -376,7 +376,7 @@ export function BlockDetailsDialog({ nodeId, block, open, onOpenChange }: BlockD
                                            <div className="flex items-center gap-2">
                                                <Select 
                                                   value={task.status} 
-                                                  onValueChange={(val: any) => updateTask(nodeId, block.id, task.id, { status: val })}
+                                                  onValueChange={(val: string) => updateTask(nodeId, block.id, task.id, { status: val as TaskStatus })}
                                                >
                                                   <SelectTrigger className={cn("h-7 text-[10px] w-[110px] uppercase font-bold tracking-wider", getStatusColor(task.status))}>
                                                       <SelectValue />

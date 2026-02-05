@@ -5,6 +5,13 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { storage } from "./storage";
 import { requireAuth, sanitizeUser } from "./auth";
+import type { CanvasData } from "@shared/types";
+
+/** Zod schema for canvas data (validates structure, cast to CanvasData for storage) */
+const canvasDataSchema = z.object({
+  nodes: z.array(z.record(z.unknown())),
+  edges: z.array(z.record(z.unknown())),
+});
 
 export async function registerRoutes(
   httpServer: Server,
@@ -124,17 +131,16 @@ export async function registerRoutes(
         .object({
           name: z.string().min(1).max(200),
           description: z.string().max(2000).optional().default(""),
-          canvasData: z
-            .object({
-              nodes: z.array(z.any()),
-              edges: z.array(z.any()),
-            })
+          canvasData: canvasDataSchema
             .optional()
             .default({ nodes: [], edges: [] }),
         })
         .parse(req.body);
 
-      const project = await storage.createProject(req.user!.id, body);
+      const project = await storage.createProject(req.user!.id, {
+        ...body,
+        canvasData: body.canvasData as unknown as CanvasData,
+      });
       res.status(201).json(project);
     } catch (err) {
       if (err instanceof z.ZodError) {
@@ -151,19 +157,17 @@ export async function registerRoutes(
         .object({
           name: z.string().min(1).max(200).optional(),
           description: z.string().max(2000).optional(),
-          canvasData: z
-            .object({
-              nodes: z.array(z.any()),
-              edges: z.array(z.any()),
-            })
-            .optional(),
+          canvasData: canvasDataSchema.optional(),
         })
         .parse(req.body);
 
       const project = await storage.updateProject(
         req.params.id,
         req.user!.id,
-        body,
+        {
+          ...body,
+          canvasData: body.canvasData as unknown as CanvasData | undefined,
+        },
       );
       if (!project) {
         return res.status(404).json({ message: "Project not found" });

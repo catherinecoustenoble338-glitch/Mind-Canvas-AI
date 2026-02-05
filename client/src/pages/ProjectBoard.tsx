@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useCallback } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { useProject, useSaveProject } from '@/hooks/useProject';
 import { useAuth } from '@/hooks/useAuth';
-import { useAppStore } from '@/store/useAppStore';
+import { useAppStore, type BlockNode } from '@/store/useAppStore';
+import type { Edge } from 'reactflow';
 import Board from './Board';
 
 export default function ProjectBoard() {
@@ -30,9 +31,9 @@ export default function ProjectBoard() {
   // Load project data into store when project loads
   useEffect(() => {
     if (project && !hasLoadedRef.current) {
-      const canvas = project.canvasData as { nodes: unknown[]; edges: unknown[] } | null;
+      const canvas = project.canvasData as { nodes: BlockNode[]; edges: Edge[] } | null;
       if (canvas && Array.isArray(canvas.nodes)) {
-        loadProjectData(canvas.nodes as any, canvas.edges as any);
+        loadProjectData(canvas.nodes, canvas.edges);
       } else {
         loadProjectData([], []);
       }

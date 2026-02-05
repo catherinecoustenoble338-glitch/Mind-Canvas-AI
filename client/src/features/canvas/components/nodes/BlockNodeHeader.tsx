@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAppStore, PageStatus } from '@/store/useAppStore';
+import { useAppStore, type BlockData, type PageStatus } from '@/store/useAppStore';
 import { cn, getInitials } from '@/lib/utils';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { X, CheckCircle2, AlertCircle, Loader2, Eye, Lightbulb, User, FileText, Trash2, AlertTriangle, Target, List } from 'lucide-react';
@@ -26,7 +26,7 @@ import { Button } from '@/components/ui/button';
 
 interface BlockNodeHeaderProps {
   id: string;
-  data: any; // BlockData
+  data: BlockData;
   selected: boolean;
   onOpenPageDetails: () => void;
 }

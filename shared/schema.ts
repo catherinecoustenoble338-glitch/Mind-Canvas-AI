@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import { pgTable, text, varchar, jsonb, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import type { CanvasData } from "./types";
 
 // ── Users ──────────────────────────────────────────────────────────
 export const users = pgTable("users", {
@@ -32,7 +33,7 @@ export const projects = pgTable("projects", {
   name: text("name").notNull(),
   description: text("description").default(""),
   canvasData: jsonb("canvas_data")
-    .$type<{ nodes: unknown[]; edges: unknown[] }>()
+    .$type<CanvasData>()
     .default({ nodes: [], edges: [] })
     .notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),

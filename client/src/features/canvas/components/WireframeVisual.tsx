@@ -30,12 +30,12 @@ export function WireframeVisual({ type, className, label }: WireframeVisualProps
   );
 
   // Helper for generic lines - Using Design System Stroke
-  const Line = ({ w, h = "h-1", bg = "bg-transparent border border-block-stroke", rounded = "rounded-full", className = "" }: any) => (
+  const Line = ({ w, h = "h-1", bg = "bg-transparent border border-block-stroke", rounded = "rounded-full", className = "" }: { w: string; h?: string; bg?: string; rounded?: string; className?: string }) => (
     <div className={`${w} ${h} ${bg} ${rounded} ${className}`}></div>
   );
-  
+
   // Helper for generic box - Using Design System Stroke
-  const Box = ({ w, h, bg = "bg-transparent", border = "border border-block-stroke", rounded = "rounded-md", className = "" }: any) => (
+  const Box = ({ w, h, bg = "bg-transparent", border = "border border-block-stroke", rounded = "rounded-md", className = "" }: { w: string; h: string; bg?: string; border?: string; rounded?: string; className?: string }) => (
     <div className={`${w} ${h} ${bg} ${border} ${rounded} ${className}`}></div>
   );
 

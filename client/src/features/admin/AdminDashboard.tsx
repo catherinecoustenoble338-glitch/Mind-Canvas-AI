@@ -18,7 +18,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { useAppStore } from '@/store/useAppStore';
+import { useAppStore, type TeamRole } from '@/store/useAppStore';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,7 +45,7 @@ export default function AdminDashboard() {
   
   // Add User Dialog State
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
-  const [newUser, setNewUser] = useState({ name: '', email: '', role: 'editor' as const });
+  const [newUser, setNewUser] = useState<{ name: string; email: string; role: TeamRole }>({ name: '', email: '', role: 'editor' });
 
   // Filter users
   const filteredUsers = adminUsers.filter(user => 
@@ -279,7 +279,7 @@ export default function AdminDashboard() {
                 id="role"
                 className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 value={newUser.role}
-                onChange={(e) => setNewUser({ ...newUser, role: e.target.value as any })}
+                onChange={(e) => setNewUser({ ...newUser, role: e.target.value as TeamRole })}
               >
                 <option value="admin">Admin</option>
                 <option value="editor">Editor</option>

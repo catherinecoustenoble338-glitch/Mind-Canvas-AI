@@ -2,21 +2,14 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { useLocation } from "wouter";
-
-interface AuthUser {
-  id: string;
-  username: string;
-  email: string;
-  name: string;
-  createdAt: string;
-}
+import type { SafeUser } from "@shared/types";
 
 export function useAuth() {
   const {
     data: user,
     isLoading,
     error,
-  } = useQuery<AuthUser | null>({
+  } = useQuery<SafeUser | null>({
     queryKey: ["/api/auth/me"],
     queryFn: async () => {
       try {

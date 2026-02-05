@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { BaseEdge, EdgeLabelRenderer, EdgeProps, getBezierPath } from 'reactflow';
+import { BaseEdge, EdgeLabelRenderer, EdgeProps, getBezierPath, MarkerType } from 'reactflow';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -66,19 +66,19 @@ const CustomEdge = ({
   };
 
   const handleColorChange = (color: string) => {
-    // Ensure we preserve the marker type, defaulting to arrowclosed if missing
-    const currentMarker = typeof markerEnd === 'object' ? markerEnd : { type: 'arrowclosed' };
-    
-    updateEdgeData(id, { 
-      style: { 
-        ...style, 
+    // Ensure we preserve the marker type, defaulting to ArrowClosed if missing
+    const currentMarker = typeof markerEnd === 'object' ? markerEnd : { type: MarkerType.ArrowClosed };
+
+    updateEdgeData(id, {
+      style: {
+        ...style,
         stroke: color
       },
       markerEnd: {
         ...currentMarker,
-        type: currentMarker.type || 'arrowclosed', // Explicitly ensure type exists
+        type: ((currentMarker as { type?: MarkerType }).type || MarkerType.ArrowClosed) as MarkerType,
         color: color
-      } as any
+      }
     });
   };
 

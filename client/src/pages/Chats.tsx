@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation } from 'wouter';
-import { useAppStore } from '@/store/useAppStore';
+import { useAppStore, type ChatMessage } from '@/store/useAppStore';
 import { 
   MessageSquare, 
   Search, 
@@ -35,8 +35,8 @@ export default function Chats() {
         taskId?: string;
         title: string;
         subtitle: string;
-        lastMessage: any;
-        messages: any[];
+        lastMessage: ChatMessage;
+        messages: ChatMessage[];
         avatarColor: string;
     }[] = [];
 

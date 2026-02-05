@@ -2,12 +2,19 @@ import {
   type User,
   type InsertUser,
   type Project,
-  type InsertProject,
   users,
   projects,
 } from "@shared/schema";
+import type { CanvasData } from "@shared/types";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
+
+/** What the routes layer passes for project creation/update */
+export interface ProjectInput {
+  name: string;
+  description?: string | null;
+  canvasData?: CanvasData;
+}
 
 export interface IStorage {
   // Users
@@ -19,11 +26,11 @@ export interface IStorage {
   // Projects
   getProjectsByUser(userId: string): Promise<Project[]>;
   getProject(id: string): Promise<Project | undefined>;
-  createProject(userId: string, data: InsertProject): Promise<Project>;
+  createProject(userId: string, data: ProjectInput): Promise<Project>;
   updateProject(
     id: string,
     userId: string,
-    data: Partial<InsertProject>,
+    data: Partial<ProjectInput>,
   ): Promise<Project | undefined>;
   deleteProject(id: string, userId: string): Promise<boolean>;
 }
@@ -75,7 +82,7 @@ export class DatabaseStorage implements IStorage {
 
   async createProject(
     userId: string,
-    data: InsertProject,
+    data: ProjectInput,
   ): Promise<Project> {
     const [project] = await db
       .insert(projects)
@@ -87,7 +94,7 @@ export class DatabaseStorage implements IStorage {
   async updateProject(
     id: string,
     userId: string,
-    data: Partial<InsertProject>,
+    data: Partial<ProjectInput>,
   ): Promise<Project | undefined> {
     const [project] = await db
       .update(projects)

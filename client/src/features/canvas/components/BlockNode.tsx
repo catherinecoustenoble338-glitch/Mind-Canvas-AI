@@ -39,7 +39,7 @@ const CustomBlockNode = ({ id, data, selected }: NodeProps<BlockData>) => {
     updateNodeInternals(id);
   }, [data.blocks, showDetails, updateNodeInternals, id]);
 
-  const handleReorder = (newOrder: any[]) => {
+  const handleReorder = (newOrder: BlockItemType[]) => {
     reorderBlocks(id, newOrder);
   };
 
